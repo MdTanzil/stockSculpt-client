@@ -1,19 +1,31 @@
+import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import NavLinkCustom from "./NavLinkCustom";
 import logo from "/logo.png";
 const NavBar = () => {
+  const { user ,logOut} = useAuth();
   const navList = (
     <>
-      <li>
-        <a>Home</a>
-      </li>
-      <li className="">
+      <NavLinkCustom to={"/"}>Home</NavLinkCustom>
+      <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom>
+      <NavLinkCustom to={"/watch-video"}> Watch Video </NavLinkCustom>
+
+
+      {/* <li className="">
         <a>Create-Shop</a>
       </li>
-      <li>
-        <a>Register</a>
-      </li>
+      <NavLink to={'/login'} 
      
+     >
+      <li>
+        <a>Login</a>
+      </li>
+      </NavLink> */}
     </>
   );
+  // console.log(user);
+
+
 
   return (
     <div className="navbar bg-primary text-black md:text-white">
@@ -47,12 +59,39 @@ const NavBar = () => {
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          {navList}
-        </ul>
+        <ul className="menu menu-horizontal px-1">{navList}</ul>
       </div>
       <div className="navbar-end">
-        {/* <a className="btn">Button</a> */}
+        {!user ? (
+          <Link to={"/login"} className="btn  btn-primary shadow-lg ">
+            Login
+          </Link>
+        ) : (
+          <>
+            <div className="dropdown dropdown-bottom dropdown-end">
+              <label tabIndex={0} className=" m-1">
+              <div className="avatar">
+              <div className="w-10 rounded-full">
+                <img src={user?.photoURL} />
+              </div>
+            </div>
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content z-[1] menu p-2 shadow  rounded-box w-52 bg-secondary"
+              >
+                 <li>
+                  <p className="text-bold text-primary">Hi ! {user?.displayName}</p>
+                </li>
+                
+                <li>
+                  <button onClick={()=> logOut()} className="btn btn-sm btn-primary ">Logout</button>
+                </li>
+              </ul>
+            </div>
+            
+          </>
+        )}
       </div>
     </div>
   );

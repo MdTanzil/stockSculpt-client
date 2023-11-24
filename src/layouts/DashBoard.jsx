@@ -4,15 +4,17 @@ import Footer from "../components/Footer";
 
 const DashBoard = () => {
     return (
-        <div>
+        <div >
             <NavBar></NavBar>
-            <div className="flex  gap-4 ">
-                <div className="w-64 min-h-screen bg-accent space-y-2 s ">
-                <button className="btn  btn-primary m-4 ">Neutral</button>
-            
+            <div className="flex   container mx-auto ">
+                <div className="w-64 min-h-screen bg-gray-200 space-y-2 flex justify-center ">
+                <button className="btn  btn-primary m-4  w-[80%]">Home</button>
 
                 </div>
-                <div className="w-3/4  bg-red-300">
+
+
+                <div className="divider divider-horizontal divider-primary m-1 p-1"></div>
+                <div className="w-full bg-red-300">
                     <Outlet />
                 </div>
             </div>
