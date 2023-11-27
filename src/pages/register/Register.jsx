@@ -18,7 +18,7 @@ const Register = () => {
   const onSubmit = (data) => {
     const { name, password, photoUrl, email } = data;
     createUser(email, password)
-      .then((userCredential) => {
+      .then(() => {
         // Signed up
         // const user = userCredential.user;
         if (name && photoUrl) {

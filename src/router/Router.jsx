@@ -6,6 +6,9 @@ import Error from "../pages/Error";
 import Login from "../pages/login/Login";
 import Register from "../pages/register/Register";
 import PrivateRouter from "./PrivateRouter";
+import CreateShop from "../pages/createShop/CreateShop";
+import AddProduct from "../pages/deshboard/AddProduct";
+import DeshboardHome from "../pages/deshboard/DeshboardHome";
 
   const router = createBrowserRouter([
     {
@@ -19,8 +22,12 @@ import PrivateRouter from "./PrivateRouter";
         },
         {
           path: "create-store",
-          element: <PrivateRouter>  <h1>store</h1></PrivateRouter>
+          element: <PrivateRouter> <CreateShop></CreateShop> </PrivateRouter>
         
+        },
+        {
+          path:'subscription',
+          element: <p>subscription</p>
         }
       ]
     },
@@ -30,8 +37,12 @@ import PrivateRouter from "./PrivateRouter";
       errorElement: <Error></Error>,
       children:[
         {
-          path:'home',
-          element: <h2> home</h2>
+          index: true,
+          element: <DeshboardHome></DeshboardHome>
+        },
+        {
+          path: 'add-product',
+          element: <AddProduct></AddProduct>
         }
       ]
 

@@ -2,12 +2,25 @@ import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import NavLinkCustom from "./NavLinkCustom";
 import logo from "/logo.png";
+import useShop from "../hooks/useShop";
 const NavBar = () => {
   const { user ,logOut} = useAuth();
+  const {data} = useShop()
+
+  // console.log(shopData );
   const navList = (
     <>
       <NavLinkCustom to={"/"}>Home</NavLinkCustom>
+      {
+        data?.roll === "manager" ? <> 
+        <NavLinkCustom to={'/dashboard'}>Dashboard</NavLinkCustom>
+      <NavLinkCustom to={"/subscription"}>Subscription</NavLinkCustom>
+
+        </> : <>
       <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom>
+        </>
+      }
+      {/* <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom> */}
       <NavLinkCustom to={"/watch-video"}> Watch Video </NavLinkCustom>
 
 
@@ -59,7 +72,7 @@ const NavBar = () => {
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{navList}</ul>
+        <ul className="menu menu-horizontal px-1 gap-4">{navList}</ul>
       </div>
       <div className="navbar-end">
         {!user ? (
