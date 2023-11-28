@@ -27,7 +27,7 @@ const CreateShop = () => {
       shopLogo: imageUrl || "",
       shopLocation: data.shopLocation,
       limit: 3,
-      role:"manager"
+      role:"shopAdmin"
     };
 
 

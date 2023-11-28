@@ -29,11 +29,22 @@ const DashBoard = () => {
               Home
             </button>
           </Link>
+          <Link to={"/dashboard/manage-product"}>
+            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
+              Manage Product
+            </button>
+          </Link>
           <Link to={"/dashboard/add-product"}>
             <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
               Add Product
             </button>
           </Link>
+          <Link to={"/dashboard/checkout"}>
+            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
+              checkout
+            </button>
+          </Link>
+          
         </div>
 
         <div className="divider divider-horizontal divider-primary m-1 p-1"></div>

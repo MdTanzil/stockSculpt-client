@@ -12,7 +12,7 @@ const NavBar = () => {
     <>
       <NavLinkCustom to={"/"}>Home</NavLinkCustom>
       {
-        data?.roll === "manager" ? <> 
+        data?.roll === "shopAdmin" ? <> 
         <NavLinkCustom to={'/dashboard'}>Dashboard</NavLinkCustom>
       <NavLinkCustom to={"/subscription"}>Subscription</NavLinkCustom>
 

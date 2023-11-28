@@ -9,6 +9,9 @@ import PrivateRouter from "./PrivateRouter";
 import CreateShop from "../pages/createShop/CreateShop";
 import AddProduct from "../pages/deshboard/AddProduct";
 import DeshboardHome from "../pages/deshboard/DeshboardHome";
+import ManageProduct from "../pages/deshboard/ManageProduct";
+import UpdateProduct from "../pages/deshboard/UpdateProduct";
+import CheckOut from "../pages/deshboard/CheckOut";
 
   const router = createBrowserRouter([
     {
@@ -39,10 +42,25 @@ import DeshboardHome from "../pages/deshboard/DeshboardHome";
         {
           index: true,
           element: <DeshboardHome></DeshboardHome>
-        },
+        }
+        ,
+        {
+          path: 'manage-product',
+          element: <ManageProduct></ManageProduct>
+        }
+        ,
         {
           path: 'add-product',
           element: <AddProduct></AddProduct>
+        },
+        {
+          path: 'update-product/:id',
+          element:  <UpdateProduct></UpdateProduct>
+        }
+        ,
+        {
+          path: 'checkout',
+          element:  <CheckOut></CheckOut>
         }
       ]
 

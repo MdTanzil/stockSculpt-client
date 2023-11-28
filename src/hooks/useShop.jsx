@@ -11,7 +11,7 @@ const useShop = () => {
     
     try {
         const url = `/shop/${user?.email || ''}`;
-        const {data,isLoading}= useQuery({queryKey:['user-shop', user?.email] ,queryFn: async()=>{
+        const {data,isLoading,refetch}= useQuery({queryKey:['user-shop', user?.email] ,queryFn: async()=>{
         const response = await axiosPublic.get(url);
             return response.data
         
@@ -20,7 +20,7 @@ const useShop = () => {
         // console.log(data);
         // Extract the data you need from the response
         
-        return {data,isLoading};
+        return {data,isLoading,refetch};
 
     
     } catch (error) {
