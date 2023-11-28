@@ -3,7 +3,6 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { useNavigate } from "react-router-dom";
 const generatePDF = (invoice) => {
   // Create a new jsPDF instance
   const pdf = new jsPDF();
@@ -14,8 +13,13 @@ const generatePDF = (invoice) => {
   // Add content to the PDF using autoTable
   pdf.autoTable({
     startY: 30,
-    head: [["id", "name", "Price"]],
-    body: invoice.items.map((item) => [item.id, item.name, item.price]),
+    head: [["id", "name", "Price", "Total"]],
+    body: invoice.items.map((item) => [
+      item.id,
+      item.name,
+      item.price,
+      item.total,
+    ]),
   });
 
   // Add total price
@@ -29,7 +33,6 @@ const CheckOut = () => {
   const [data, setdata] = useState([]);
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const navigate = useNavigate();
   useEffect(() => {
     axiosSecure.get(`/sale/${user.email}`).then((response) => {
       setdata(response.data);
@@ -37,40 +40,38 @@ const CheckOut = () => {
   }, [axiosSecure, user.email]);
   //   console.log(data);
   const handleGetPaid = () => {
+  
+
     //   return <Pdf></Pdf>
 
     const it = data.map((d) => {
-      return { id: d.productId, name: d.name, price: d.sellingPrice };
-    });
-    const total = it.reduce((accumulator, currentProduct) => {
-      return accumulator + currentProduct.price;
-    }, 0);
+        return { id:  d.productId ,name :d.name ,price: d.sellingPrice}
+    })
     console.log(it);
     const invoiceData = {
       items: it,
-      total: total,
+      total: 35,
     };
-    generatePDF(invoiceData);
+    generatePDF(invoiceData)
 
     const requests = data?.map((p) => {
-      let ids = {
-        productId: p.productId,
-        saleId: p._id,
-      };
-
-      // Return the promise
-      return axiosSecure.post(`/getpaid`, ids);
-    });
-    Promise.all(requests)
-      .then((responses) => {
-        // Handle responses here
-        // console.log(responses);
-      })
-      .catch((error) => {
-        // Handle errors
-        console.error(error);
+        let ids = {
+          productId: p.productId,
+          saleId: p._id,
+        };
+  
+        // Return the promise
+        return axiosSecure.post(`/getpaid`, ids);
       });
-    navigate("/dashboard/manage-product");
+      Promise.all(requests)
+        .then((responses) => {
+          // Handle responses here
+          // console.log(responses);
+        })
+        .catch((error) => {
+          // Handle errors
+          console.error(error);
+        });
   };
 
   return (

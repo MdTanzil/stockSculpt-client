@@ -12,6 +12,8 @@ import DeshboardHome from "../pages/deshboard/DeshboardHome";
 import ManageProduct from "../pages/deshboard/ManageProduct";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
 import CheckOut from "../pages/deshboard/CheckOut";
+import Subscription from "../pages/Subscription";
+import Payment from "../pages/Payment";
 
   const router = createBrowserRouter([
     {
@@ -29,8 +31,13 @@ import CheckOut from "../pages/deshboard/CheckOut";
         
         },
         {
-          path:'subscription',
-          element: <p>subscription</p>
+          path:'/subscription',
+          element: <PrivateRouter><Subscription></Subscription></PrivateRouter>
+        }
+        ,
+        {
+          path:'/payment',
+          element: <PrivateRouter><Payment></Payment></PrivateRouter>
         }
       ]
     },
