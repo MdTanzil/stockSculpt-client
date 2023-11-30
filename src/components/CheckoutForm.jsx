@@ -106,15 +106,17 @@ const CheckoutForm = ({total }) => {
 }
   
   return (
-    <form onSubmit={handleSubmit} className="card-body">
+    <form onSubmit={handleSubmit} className="card-body card ">
+      <h2 className="card-title justify-center text-white mb-3 p-2 rounded-2xl bg-primary">Enter Your card </h2>
+
       <CardElement
         options={{
           style: {
             base: {
-              fontSize: "16px",
+              fontSize: "20px",
               color: "#424770",
               "::placeholder": {
-                color: "#aab7c4",
+                color: "#023047",
               },
             },
             invalid: {
@@ -125,16 +127,13 @@ const CheckoutForm = ({total }) => {
         className="form-control"
       />
       <button
-        className="btn btn-sm btn-primary my-4"
+        className="btn btn-sm btn-secondary mx-auto my-4 w-1/3  mt-4"
         type="submit"
         disabled={!stripe || !clientSecret}
       >
         Pay
       </button>
-      <p className="text-red-600">{error}</p>
-      {transactionId && (
-        <p className="text-green-600"> Your transaction id: {transactionId}</p>
-      )}
+      <p className="text-red-400">{error}</p>
     </form>
   );
 };

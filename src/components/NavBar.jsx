@@ -26,7 +26,7 @@ const NavBar = () => {
       {
         data?.roll == "admin" &&  <NavLinkCustom to={"/admin"}> Admin DashBoard </NavLinkCustom>
       }
-      <NavLinkCustom to={"/watch-video"}> Watch Video </NavLinkCustom>
+      <NavLinkCustom to={"/watch"}> Watch Video </NavLinkCustom>
 
 
       {/* <li className="">
@@ -42,7 +42,7 @@ const NavBar = () => {
     </>
   );
   // console.log(user);
-
+console.log(user);
 
 
   return (

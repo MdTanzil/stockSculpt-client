@@ -10,8 +10,8 @@ const Payment = () => {
     console.log(state.total);
     return (
         <div className="container mx-auto w-1/2">
-            <Elements stripe={stripePromise}>
-                <CheckoutForm total= {state.total}></CheckoutForm>
+            <Elements stripe={stripePromise} >
+                <CheckoutForm total= {state.total} ></CheckoutForm>
             </Elements>
         </div>
     );

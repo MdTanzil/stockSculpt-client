@@ -18,97 +18,104 @@ import AdminDashBoard from "../layouts/AdminDashBoard";
 import MenageShop from "../pages/Admin/MenageShop";
 import AdminHome from "../pages/Admin/AdminHome";
 import ManageUsers from "../pages/Admin/ManageUsers";
+import Watch from "../pages/Watch";
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Main></Main>,
-      errorElement: <Error></Error>,
-      children:[
-        {
-           index:true,
-           element: <Home></Home> 
-        },
-        {
-          path: "create-store",
-          element: <PrivateRouter> <CreateShop></CreateShop> </PrivateRouter>
-        
-        },
-        {
-          path:'/subscription',
-          element: <PrivateRouter><Subscription></Subscription></PrivateRouter>
-        }
-        ,
-        {
-          path:'/payment',
-          element: <PrivateRouter><Payment></Payment></PrivateRouter>
-        }
-      ]
-    },
-    {
-      path: "/dashboard",
-      element: <DashBoard></DashBoard>,
-      errorElement: <Error></Error>,
-      children:[
-        {
-          index: true,
-          element: <DeshboardHome></DeshboardHome>
-        }
-        ,
-        {
-          path: 'manage-product',
-          element: <ManageProduct></ManageProduct>
-        }
-        ,
-        {
-          path: 'add-product',
-          element: <AddProduct></AddProduct>
-        },
-        {
-          path: 'update-product/:id',
-          element:  <UpdateProduct></UpdateProduct>
-        }
-        ,
-        {
-          path: 'checkout',
-          element:  <CheckOut></CheckOut>
-        }
-      ]
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Main></Main>,
+    errorElement: <Error></Error>,
+    children: [
+      {
+        index: true,
+        element: <Home></Home>,
+      },
+      {
+        path: "create-store",
+        element: (
+          <PrivateRouter>
+            {" "}
+            <CreateShop></CreateShop>{" "}
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "/subscription",
+        element: (
+          <PrivateRouter>
+            <Subscription></Subscription>
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "/payment",
+        element: (
+          <PrivateRouter>
+            <Payment></Payment>
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "/watch",
+        element: <Watch></Watch>,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashBoard></DashBoard>,
+    errorElement: <Error></Error>,
+    children: [
+      {
+        index: true,
+        element: <PrivateRouter><DeshboardHome></DeshboardHome>,</PrivateRouter>
+      },
+      {
+        path: "manage-product",
+        element: <PrivateRouter><ManageProduct></ManageProduct>,</PrivateRouter>
+      },
+      {
+        path: "add-product",
+        element:<PrivateRouter> <AddProduct></AddProduct>,</PrivateRouter>
+      },
+      {
+        path: "update-product/:id",
+        element: <PrivateRouter><UpdateProduct></UpdateProduct>,</PrivateRouter>
+      },
+      {
+        path: "checkout",
+        element: <PrivateRouter><CheckOut></CheckOut>,</PrivateRouter>
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminDashBoard></AdminDashBoard>,
+    errorElement:<Error></Error>,
+    children: [
+      {
+        path: "",
+        element:<PrivateRouter><AdminHome></AdminHome>,</PrivateRouter> 
+      },
+      {
+        path: "manageProduct",
+        element: <PrivateRouter><MenageShop></MenageShop>,</PrivateRouter>
+      },
 
-    },
-    {
-      path:'/admin',
-      element: <AdminDashBoard></AdminDashBoard>,
-      children:[
-        {
-          path:'',
-          element: <AdminHome></AdminHome>
-
-        },
-        {
-          path:'manageProduct',
-          element: <MenageShop></MenageShop>
-
-        },
-      
-        {
-          path:'users',
-          element: <ManageUsers></ManageUsers>
-
-        }
-      ]
-    },
-    {
-      path: "/login",
-      element:<Login></Login>
-    }
-    ,
-    {
-      path: "/register",
-      element:<Register></Register>
-    }
-
-  ]);
-
+      {
+        path: "users",
+        element:<PrivateRouter> <ManageUsers></ManageUsers></PrivateRouter>
+      },
+    ],
+  },
+  {
+    path: "/login",
+    element: <Login></Login>,
+  },
+  {
+    path: "/register",
+    element: <Register></Register>,
+  },
+]);
 
 export default router;

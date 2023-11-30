@@ -11,7 +11,7 @@ const ManageUsers = () => {
       return res.data;
     },
   });
-  console.log(userData);
+//   console.log(userData);
   const sendPromotional = async (email) => {
     const { value: text } = await Swal.fire({
       input: "textarea",
@@ -34,7 +34,7 @@ const ManageUsers = () => {
   };
   return (
     <div>
-      <h2 className="text-center text-4xl text-primary">Manage Your user ()</h2>
+      <h2 className="text-center text-4xl text-primary mb-5">Manage Your user ({userData?.length})</h2>
       <div className="overflow-x-auto ">
         <table className="table table-zebra">
           {/* head */}

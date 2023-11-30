@@ -4,6 +4,7 @@ import useShop from "../../hooks/useShop";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useShopDetails from "../../hooks/useShopDetails";
 import useSales from "../../hooks/useSales";
+import { PacmanLoader } from "react-spinners";
 
 const DeshboardHome = () => {
   const { user } = useAuth();
@@ -23,11 +24,11 @@ const DeshboardHome = () => {
   //   const totalsales = salesData.reduce((init ,acc)=> )
   console.log(salesData);
   const { data: userInfo, isLoading } = useShop();
-  if (isLoading) {
-    // TODO
+  if(isLoading) {
+    
     return (
       <>
-        <p>spin</p>
+        <PacmanLoader color="#36d7b7" />
       </>
     );
   }
@@ -37,7 +38,7 @@ const DeshboardHome = () => {
   );
   return (
     <div className="container mx-auto mt-1">
-      {/* TODO  */}
+     
       <h3 className="text-2xl text-primary font-bold">
         Total {products?.length} product added, <br /> Your product limit{" "}
         {shopDetails?.limit}{" "}

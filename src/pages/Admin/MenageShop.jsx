@@ -9,7 +9,7 @@ const MenageShop = () => {
         const res = await axiosSecure.get('/shops')
         return res.data
     }})
-    console.log(shops);
+    // console.log(shops);
     const sendNotice = async (email) => {
         const { value: text } = await Swal.fire({
           input: "textarea",

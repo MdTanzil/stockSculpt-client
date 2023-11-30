@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 import app from "./../firebase/firebase.config";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+import { PacmanLoader } from 'react-spinners';
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -77,6 +78,9 @@ const AuthProvider = ({ children }) => {
     });
     return () => unsubscribe();
   }, []);
+  if (loading) {
+    return <PacmanLoader color="#36d7b7" />
+  }
   const authData = {
     user,
     loading,
