@@ -14,6 +14,10 @@ import UpdateProduct from "../pages/deshboard/UpdateProduct";
 import CheckOut from "../pages/deshboard/CheckOut";
 import Subscription from "../pages/Subscription";
 import Payment from "../pages/Payment";
+import AdminDashBoard from "../layouts/AdminDashBoard";
+import MenageShop from "../pages/Admin/MenageShop";
+import AdminHome from "../pages/Admin/AdminHome";
+import ManageUsers from "../pages/Admin/ManageUsers";
 
   const router = createBrowserRouter([
     {
@@ -71,6 +75,28 @@ import Payment from "../pages/Payment";
         }
       ]
 
+    },
+    {
+      path:'/admin',
+      element: <AdminDashBoard></AdminDashBoard>,
+      children:[
+        {
+          path:'',
+          element: <AdminHome></AdminHome>
+
+        },
+        {
+          path:'manageProduct',
+          element: <MenageShop></MenageShop>
+
+        },
+      
+        {
+          path:'users',
+          element: <ManageUsers></ManageUsers>
+
+        }
+      ]
     },
     {
       path: "/login",

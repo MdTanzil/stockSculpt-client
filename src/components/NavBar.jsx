@@ -17,10 +17,15 @@ const NavBar = () => {
       <NavLinkCustom to={"/subscription"}>Subscription</NavLinkCustom>
 
         </> : <>
-      <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom>
+        {
+          data?.roll == 'admin' || <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom> 
+        }
         </>
       }
       {/* <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom> */}
+      {
+        data?.roll == "admin" &&  <NavLinkCustom to={"/admin"}> Admin DashBoard </NavLinkCustom>
+      }
       <NavLinkCustom to={"/watch-video"}> Watch Video </NavLinkCustom>
 
 

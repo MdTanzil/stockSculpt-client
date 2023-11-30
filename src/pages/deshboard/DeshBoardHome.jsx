@@ -39,7 +39,7 @@ const DeshboardHome = () => {
     <div className="container mx-auto mt-1">
       {/* TODO  */}
       <h3 className="text-2xl text-primary font-bold">
-        Total {products?.length} product added your product limit{" "}
+        Total {products?.length} product added, <br /> Your product limit{" "}
         {shopDetails?.limit}{" "}
       </h3>
       <div className="mt-10 flex justify-center">
@@ -107,8 +107,8 @@ const DeshboardHome = () => {
           <tbody>
             {/* row 1 */}
             {salesData?.map((data,idx) => (
-              <tr key={data?._id}>
-                <th>{idx + 1}</th>
+              <tr key={data?._id} className=" text-lg ">
+                <th className="">{idx + 1}</th>
                 <td>{data?._id}</td>
                 <td>{data?.name}</td>
                 <td>{data?.sellingPrice}</td>

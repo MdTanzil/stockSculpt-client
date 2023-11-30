@@ -84,7 +84,7 @@ const ManageProduct = () => {
             <tbody className="">
               {/* row 1 */}
               {products?.map((product, idx) => (
-                <tr key={product?._id} className="text-center">
+                <tr key={product?._id} className="text-center text-lg ">
                   <td>{idx + 1}</td>
                   <td>
                     <div className="flex items-center justify-center gap-3">
@@ -104,16 +104,17 @@ const ManageProduct = () => {
                   <td className="">{product?.sellingPrice}</td>
                   <td className="flex gap-1 justify-center items-center ">
                     <Link to={`/dashboard/update-product/${product?._id}`}>
-                      <button className="btn btn-xs border-none">
-                        <FaEdit className="text-primary text-md" />
+                      <button className="btn btn-xs bg-primary hover:bg-primary border-none">
+                        <FaEdit className="text-white text-md" />
                       </button>
                     </Link>
+                    <div className=" m-0 divider-horizontal">|</div>
                     <button
-                      className="btn btn-xs border-none"
+                      className="btn btn-xs border-none bg-red-500"
                       onClick={() => handleDelete(product?._id)}
                     >
                       {" "}
-                      <FaTrash className="text-primary text-md"></FaTrash>
+                      <FaTrash className="text-white text-md"></FaTrash>
                     </button>
                   </td>
                   <td> <button  className="btn btn-xs btn-primary text-white" onClick={()=> handleCheckOut(product?._id,product?.sellingPrice,product?.name)}>check out</button></td>
