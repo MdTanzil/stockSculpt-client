@@ -10,7 +10,10 @@
 * Payment system
 * Email sending system
 
+### Admin Email Password
 
+ * Email:  admin@admin.com
+ * Password: T123456t@
 
 
 ## Authors
