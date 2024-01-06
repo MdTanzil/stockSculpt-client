@@ -4,7 +4,7 @@ const Team = () => {
     return <>
     <div className="flex flex-col mt-8">
             {/* <!-- Meet the Team --> */}
-            <div className="container max-w-7xl px-4">
+            <div className="container max-w-7xl px-4 mx-auto">
                 {/* <!-- Section Header --> */}
                 <div className="flex flex-wrap justify-center text-center mb-24">
                     <div className="w-full lg:w-6/12 px-4">
