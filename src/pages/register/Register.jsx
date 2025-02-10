@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from "../../components/SocialLogin";
+import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Register = () => {
@@ -11,7 +11,7 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const axiosPublic = useAxiosPublic()
+  const axiosPublic = useAxiosPublic();
   const { createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
 
@@ -21,6 +21,7 @@ const Register = () => {
       .then(() => {
         // Signed up
         // const user = userCredential.user;
+
         if (name && photoUrl) {
           updateUserProfile(name, name);
         } else if (name) {
@@ -28,13 +29,12 @@ const Register = () => {
         } else if (photoUrl) {
           updateUserProfile("", photoUrl);
         }
-        axiosPublic.post('/users', {name,email})
-        .then(res =>{
-            console.log(res.data);
-            
-    
-        })
-        toast.success('Successfully register  !');
+
+        // TOOD: Make a request in backend for
+        axiosPublic.post("/users", { name, email }).then((res) => {
+          console.log(res.data);
+        });
+        toast.success("Successfully register  !");
         navigate("/");
 
         // ...
@@ -157,9 +157,9 @@ const Register = () => {
           </label>
         </div>
         <div className="divider divider-primary">or</div>
-          <div className="mb-5">
+        <div className="mb-5">
           <SocialLogin></SocialLogin>
-          </div>
+        </div>
       </div>
     </div>
   );

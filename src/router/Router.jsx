@@ -1,24 +1,24 @@
 import { createBrowserRouter } from "react-router-dom";
-import Main from "../layouts/Main";
-import Home from "../pages/Home";
+import AdminDashBoard from "../layouts/AdminDashBoard";
 import DashBoard from "../layouts/DashBoard";
-import Error from "../pages/Error";
-import Login from "../pages/login/Login";
-import Register from "../pages/register/Register";
-import PrivateRouter from "./PrivateRouter";
+import Main from "../layouts/Main";
+import AdminHome from "../pages/Admin/AdminHome";
+import ManageUsers from "../pages/Admin/ManageUsers";
+import MenageShop from "../pages/Admin/MenageShop";
 import CreateShop from "../pages/createShop/CreateShop";
 import AddProduct from "../pages/deshboard/AddProduct";
+import CheckOut from "../pages/deshboard/CheckOut";
 import DeshboardHome from "../pages/deshboard/DeshboardHome";
 import ManageProduct from "../pages/deshboard/ManageProduct";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
-import CheckOut from "../pages/deshboard/CheckOut";
-import Subscription from "../pages/Subscription";
+import Error from "../pages/Error";
+import Home from "../pages/Home";
+import Login from "../pages/login/Login";
 import Payment from "../pages/Payment";
-import AdminDashBoard from "../layouts/AdminDashBoard";
-import MenageShop from "../pages/Admin/MenageShop";
-import AdminHome from "../pages/Admin/AdminHome";
-import ManageUsers from "../pages/Admin/ManageUsers";
+import Register from "../pages/register/Register";
+import Subscription from "../pages/Subscription";
 import Watch from "../pages/Watch";
+import PrivateRouter from "./PrivateRouter";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
-        path: "create-store",
+        path: "/create-store",
         element: (
           <PrivateRouter>
             {" "}
@@ -68,43 +68,77 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <PrivateRouter><DeshboardHome></DeshboardHome>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            <DeshboardHome></DeshboardHome>,
+          </PrivateRouter>
+        ),
       },
       {
         path: "manage-product",
-        element: <PrivateRouter><ManageProduct></ManageProduct>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            <ManageProduct></ManageProduct>,
+          </PrivateRouter>
+        ),
       },
       {
         path: "add-product",
-        element:<PrivateRouter> <AddProduct></AddProduct>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            {" "}
+            <AddProduct></AddProduct>,
+          </PrivateRouter>
+        ),
       },
       {
         path: "update-product/:id",
-        element: <PrivateRouter><UpdateProduct></UpdateProduct>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            <UpdateProduct></UpdateProduct>,
+          </PrivateRouter>
+        ),
       },
       {
         path: "checkout",
-        element: <PrivateRouter><CheckOut></CheckOut>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            <CheckOut></CheckOut>,
+          </PrivateRouter>
+        ),
       },
     ],
   },
   {
     path: "/admin",
     element: <AdminDashBoard></AdminDashBoard>,
-    errorElement:<Error></Error>,
+    errorElement: <Error></Error>,
     children: [
       {
         path: "",
-        element:<PrivateRouter><AdminHome></AdminHome>,</PrivateRouter> 
+        element: (
+          <PrivateRouter>
+            <AdminHome></AdminHome>,
+          </PrivateRouter>
+        ),
       },
       {
         path: "manageProduct",
-        element: <PrivateRouter><MenageShop></MenageShop>,</PrivateRouter>
+        element: (
+          <PrivateRouter>
+            <MenageShop></MenageShop>,
+          </PrivateRouter>
+        ),
       },
 
       {
         path: "users",
-        element:<PrivateRouter> <ManageUsers></ManageUsers></PrivateRouter>
+        element: (
+          <PrivateRouter>
+            {" "}
+            <ManageUsers></ManageUsers>
+          </PrivateRouter>
+        ),
       },
     ],
   },

@@ -1,14 +1,15 @@
 import { Link, Outlet } from "react-router-dom";
-import Footer from "../components/Footer";
-import NavBar from "../components/NavBar";
+
+import { Footer } from "@/components/ui/footer";
+import NavBar from "../components/oldNavbar";
 import useAuth from "../hooks/useAuth";
 
 const AdminDashBoard = () => {
-    const {user}= useAuth()
-    // console.log(object);
-    // console.log(user);
-    return (
-        <div>
+  const { user } = useAuth();
+  // console.log(object);
+  // console.log(user);
+  return (
+    <div>
       <NavBar></NavBar>
       <div className="flex   container mx-auto ">
         <div className="w-64  min-h-screen bg-gray-200   justify-center ">
@@ -23,7 +24,6 @@ const AdminDashBoard = () => {
                 {user?.displayName}
               </p>
             </div>
-            
           </div>
           <Link to={"/admin"}>
             <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
@@ -42,15 +42,14 @@ const AdminDashBoard = () => {
           </Link>
         </div>
 
-
         <div className="divider divider-horizontal divider-primary m-1 p-1"></div>
         <div className="w-full  mx-auto mt-5 p-1">
           <Outlet />
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
-    );
+  );
 };
 
 export default AdminDashBoard;

@@ -1,11 +1,10 @@
+import { Footer } from "@/components/ui/footer";
+import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
-import useShop from "../hooks/useShop";
-import { useEffect, useState } from "react";
+import NavBar from "../components/oldNavbar";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
-import { useQuery } from "@tanstack/react-query";
+import useShop from "../hooks/useShop";
 
 const DashBoard = () => {
   const [limitData, setlimitData] = useState();
@@ -96,7 +95,7 @@ const DashBoard = () => {
           <Outlet />
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 };

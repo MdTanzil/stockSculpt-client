@@ -1,118 +1,109 @@
-import { Link } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import NavLinkCustom from "./NavLinkCustom";
-import logo from "/logo.png";
-import useShop from "../hooks/useShop";
-const NavBar = () => {
-  const { user ,logOut} = useAuth();
-  const {data} = useShop()
+"use client";
 
-  // console.log(shopData );
-  const navList = (
-    <>
-      <NavLinkCustom to={"/"}>Home</NavLinkCustom>
-      {
-        data?.roll === "shopAdmin" ? <> 
-        <NavLinkCustom to={'/dashboard'}>Dashboard</NavLinkCustom>
-      <NavLinkCustom to={"/subscription"}>Subscription</NavLinkCustom>
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
-        </> : <>
-        {
-          data?.roll == 'admin' || <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom> 
-        }
-        </>
-      }
-      {/* <NavLinkCustom to={"/create-store"}> Create shop </NavLinkCustom> */}
-      {
-        data?.roll == "admin" &&  <NavLinkCustom to={"/admin"}> Admin DashBoard </NavLinkCustom>
-      }
-      <NavLinkCustom to={"/watch"}> Watch Video </NavLinkCustom>
-
-
-      {/* <li className="">
-        <a>Create-Shop</a>
-      </li>
-      <NavLink to={'/login'} 
-     
-     >
-      <li>
-        <a>Login</a>
-      </li>
-      </NavLink> */}
-    </>
-  );
-  // console.log(user);
-console.log(user);
-
-
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   return (
-    <div className="navbar bg-primary text-black md:text-white">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <nav className="w-full bg-[#2c3e50] dark:bg-gray-900 shadow-md px-6 py-3 sticky top-0 z-50 ">
+      <div className="container mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="text-xl font-bold dark:text-white">
+          Shop<span className="text-blue-500">Inventory</span>
+        </Link>
+
+        {/* Desktop Menu */}
+        <div className="hidden lg:flex flex-grow items-center justify-center">
+          <div className="flex space-x-6">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `text-md hover:text-[#00796b] ${
+                  isActive ? "active" : "text-white"
+                }`
+              }
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </label>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            {navList}
-          </ul>
+              Home
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                `text-md hover:text-[#00796b] ${
+                  isActive ? "active" : "text-white"
+                }`
+              }
+            >
+              My Shop
+            </NavLink>
+          </div>
         </div>
-        <a className="btn btn-ghost text-xl">
-          <img className=" w-40" src={logo} alt="" />
-        </a>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-4">{navList}</ul>
-      </div>
-      <div className="navbar-end">
-        {!user ? (
-          <Link to={"/login"} className="btn  btn-primary shadow-lg ">
+
+        {/* Login Button (visible on large screens) */}
+        <div className="hidden lg:block">
+          <Button
+            variant="outline"
+            size="lg"
+            className="bg-transparent text-white hover:bg-[#00796b] transition hover:text-white"
+            onClick={() => navigate("/login")}
+          >
             Login
-          </Link>
-        ) : (
-          <>
-            <div className="dropdown dropdown-bottom dropdown-end">
-              <label tabIndex={0} className=" m-1">
-              <div className="avatar">
-              <div className="w-10 rounded-full">
-                <img src={user?.photoURL} />
+          </Button>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="lg:hidden">
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="bg-[#2c3e50] text-white">
+              <div className="flex flex-col space-y-4 mt-6">
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `text-md hover:text-[#00796b] ${
+                      isActive ? "active" : "text-white"
+                    }`
+                  }
+                  onClick={() => setIsOpen(false)}
+                >
+                  Home
+                </NavLink>
+                <Link
+                  to="/products"
+                  className="text-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Products
+                </Link>
+                <Link
+                  to="/orders"
+                  className="text-lg"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Orders
+                </Link>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-[#00796b]"
+                >
+                  Login
+                </Button>
               </div>
-            </div>
-              </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow  rounded-box w-52 bg-secondary"
-              >
-                 <li>
-                  <p className="text-bold text-primary">Hi ! {user?.displayName}</p>
-                </li>
-                
-                <li>
-                  <button onClick={()=> logOut()} className="btn btn-sm btn-primary ">Logout</button>
-                </li>
-              </ul>
-            </div>
-            
-          </>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default NavBar;
+export default Navbar;
