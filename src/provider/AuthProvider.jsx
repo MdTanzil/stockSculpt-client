@@ -1,20 +1,20 @@
 /* eslint-disable react/prop-types */
-import { createContext, useEffect, useState } from "react";
-
-export const AuthContext = createContext(null);
 import {
-  getAuth,
   createUserWithEmailAndPassword,
+  getAuth,
+  GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithPopup,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
-  GoogleAuthProvider,
 } from "firebase/auth";
-import app from "./../firebase/firebase.config";
+import { createContext, useEffect, useState } from "react";
+import { PacmanLoader } from "react-spinners";
 import useAxiosPublic from "../hooks/useAxiosPublic";
-import { PacmanLoader } from 'react-spinners';
+import app from "./../firebase/firebase.config";
+
+export const AuthContext = createContext(null);
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -51,35 +51,46 @@ const AuthProvider = ({ children }) => {
       photoURL: url,
     });
   };
+  console.log(user);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        // const uid = user.uid;
-        const userEmail = { email: user.email };
+        const userEmail = { email: user.email, provider: "google" };
+        console.log(userEmail);
 
-        axiosPublic.post("/jwt", userEmail).then((res) => {
-          if (res.data.token) {
-            localStorage.setItem("access-token", res.data.token);
-            setLoading(false);
+        try {
+          //TODO: send  a request to backend and get token
+          const res = await axiosPublic.post("/auth/login", userEmail);
+          if (res.data.accessToken) {
+            localStorage.setItem(
+              "access-token",
+              `Bearer ${res.data.accessToken}`
+            );
+            console.log("token set");
+          } else {
+            localStorage.removeItem("access-token");
           }
-        });
+        } catch (error) {
+          console.error("JWT request failed:", error);
+          localStorage.removeItem("access-token");
+        } finally {
+          setLoading(false);
+        }
+
         setUser(user);
-        // ...
       } else {
-        // User is signed out
         localStorage.removeItem("access-token");
-        setLoading(false);
-        // ...
         setUser(null);
+        setLoading(false);
       }
     });
+
     return () => unsubscribe();
   }, []);
+
   if (loading) {
-    return <PacmanLoader color="#36d7b7" />
+    return <PacmanLoader color="#36d7b7" />;
   }
   const authData = {
     user,

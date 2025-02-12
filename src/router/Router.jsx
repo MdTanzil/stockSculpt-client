@@ -31,11 +31,10 @@ const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
-        path: "/create-store",
+        path: "/create-shop",
         element: (
           <PrivateRouter>
-            {" "}
-            <CreateShop></CreateShop>{" "}
+            <CreateShop />
           </PrivateRouter>
         ),
       },

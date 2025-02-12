@@ -10,6 +10,8 @@ const Home = () => {
   return (
     <div>
       <Hero></Hero>
+      <Feature />
+
       <PricingCard
         title="Business Pro Plan"
         description="Scale your shop with advanced inventory tools and automation."
@@ -38,8 +40,6 @@ const Home = () => {
         buttonText="Upgrade Now"
         onButtonClick={() => console.log("Upgrade Now Clicked")}
       />
-
-      <Feature />
 
       <Faq3 />
       <Team></Team>

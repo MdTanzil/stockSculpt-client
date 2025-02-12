@@ -2,7 +2,7 @@ import { Hero1 } from "@/components/ui/hero-with-text-and-two-button";
 
 const Hero = () => {
   return (
-    <div className="container mx-auto  min-h-[75vh]">
+    <div className="container mx-auto  min-h-[80vh]">
       {/* <div className="hero-content flex-col lg:flex-row gap-20">
         <img
           src="https://img.freepik.com/free-vector/checking-boxes-concept-illustration_114360-2465.jpg?w=740&t=st=1701186715~exp=1701187315~hmac=2ab3fdb08c1a0430136daaa6bcf453241d4e854966d367f3138f5f5c2eaa10e2"

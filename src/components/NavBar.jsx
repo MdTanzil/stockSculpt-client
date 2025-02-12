@@ -1,14 +1,26 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import useAuth from "@/hooks/useAuth";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { logOut, user } = useAuth();
   const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      toast.success("Successfully Logout  !");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error.message);
+    }
+  };
+
   return (
     <nav className="w-full bg-[#2c3e50] dark:bg-gray-900 shadow-md px-6 py-3 sticky top-0 z-50 ">
       <div className="container mx-auto flex items-center justify-between">
@@ -45,14 +57,25 @@ const Navbar = () => {
 
         {/* Login Button (visible on large screens) */}
         <div className="hidden lg:block">
-          <Button
-            variant="outline"
-            size="lg"
-            className="bg-transparent text-white hover:bg-[#00796b] transition hover:text-white"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
+          {user?.email ? (
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-transparent text-white hover:bg-[#00796b] transition hover:text-white"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-transparent text-white hover:bg-[#00796b] transition hover:text-white"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -92,10 +115,13 @@ const Navbar = () => {
                 </Link>
                 <Button
                   variant="outline"
-                  onClick={() => setIsOpen(false)}
-                  className="bg-[#00796b]"
+                  onClick={() => {
+                    setIsOpen(false);
+                    user?.email ? handleLogout() : navigate("/login");
+                  }}
+                  className={user?.email ? "bg-red-600" : "bg-[#00796b]"}
                 >
-                  Login
+                  {user?.email ? "Log Out" : "Log In"}
                 </Button>
               </div>
             </SheetContent>
