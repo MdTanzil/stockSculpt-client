@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useAuth from "@/hooks/useAuth";
+import useShop from "@/hooks/useShop";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -9,6 +10,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { logOut, user } = useAuth();
+  const { shop } = useShop();
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
@@ -43,15 +45,49 @@ const Navbar = () => {
               Home
             </NavLink>
             <NavLink
-              to="/shop"
+              to="/about"
               className={({ isActive }) =>
                 `text-md hover:text-[#00796b] ${
                   isActive ? "active" : "text-white"
                 }`
               }
             >
-              My Shop
+              About
             </NavLink>
+            <NavLink
+              to="/services"
+              className={({ isActive }) =>
+                `text-md hover:text-[#00796b] ${
+                  isActive ? "active" : "text-white"
+                }`
+              }
+            >
+              Services
+            </NavLink>
+            {user && shop && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `text-md hover:text-[#00796b] ${
+                    isActive ? "active" : "text-white"
+                  }`
+                }
+              >
+                My Shop
+              </NavLink>
+            )}
+            {user && !shop && (
+              <NavLink
+                to="/create-store-account"
+                className={({ isActive }) =>
+                  `text-md hover:text-[#00796b] ${
+                    isActive ? "active" : "text-white"
+                  }`
+                }
+              >
+                Create Store
+              </NavLink>
+            )}
           </div>
         </div>
 

@@ -1,11 +1,12 @@
+import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/ui/footer";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import AppSidebar from "@/pages/deshboard/AppSidebar";
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
-import NavBar from "../components/oldNavbar";
+import { Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import useShop from "../hooks/useShop";
-
 const DashBoard = () => {
   const [limitData, setlimitData] = useState();
   const { user } = useAuth();
@@ -51,50 +52,16 @@ const DashBoard = () => {
 
   return (
     <div>
-      <NavBar></NavBar>
-      <div className="flex   container mx-auto ">
-        <div className="w-64  min-h-screen bg-gray-200   justify-center ">
-          <div className="bg-slate-300 m-2 flex justify-center ">
-            <div className="">
-              <div className="avatar">
-                <div className="w-24 rounded-xl">
-                  <img src={userInfo?.shopLogo} />
-                </div>
-              </div>
-              <p className="text-lg font-bold text-primary">
-                {userInfo?.shopName}
-              </p>
-            </div>
-          </div>
-          <Link to={"/dashboard"}>
-            <button className="btn btn-sm  btn-primary m-2  w-[80%]">
-              Home
-            </button>
-          </Link>
-          <Link to={"/dashboard/manage-product"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              Manage Product
-            </button>
-          </Link>
-
-          <Link to={"/dashboard/add-product"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              Add Product
-            </button>
-          </Link>
-
-          <Link to={"/dashboard/checkout"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              checkout
-            </button>
-          </Link>
+      <Navbar />
+      <SidebarProvider>
+        <div className="bg-red-300">
+          <AppSidebar />
         </div>
-
-        <div className="divider divider-horizontal divider-primary m-1 p-1"></div>
-        <div className="w-full  mx-auto mt-5 p-1">
+        <main className="flex-1">
+          <SidebarTrigger />
           <Outlet />
-        </div>
-      </div>
+        </main>
+      </SidebarProvider>
       <Footer />
     </div>
   );

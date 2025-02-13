@@ -11,9 +11,9 @@ import {
 } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
 import { PacmanLoader } from "react-spinners";
-import useAxiosPublic from "../hooks/useAxiosPublic";
-import app from "./../firebase/firebase.config";
 
+import useAxiosPublic from "@/hooks/useAxiosPublic";
+import app from "./../firebase/firebase.config";
 export const AuthContext = createContext(null);
 
 const auth = getAuth(app);
@@ -23,7 +23,6 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const axiosPublic = useAxiosPublic();
-
   const signInWithGoogle = () => {
     return signInWithPopup(auth, googleProvider);
   };

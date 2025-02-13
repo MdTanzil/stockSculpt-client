@@ -6,10 +6,10 @@ import AdminHome from "../pages/Admin/AdminHome";
 import ManageUsers from "../pages/Admin/ManageUsers";
 import MenageShop from "../pages/Admin/MenageShop";
 import CreateShop from "../pages/createShop/CreateShop";
-import AddProduct from "../pages/deshboard/AddProduct";
 import CheckOut from "../pages/deshboard/CheckOut";
-import DeshboardHome from "../pages/deshboard/DeshboardHome";
+import DashboardHome from "../pages/deshboard/DashBoardHome";
 import ManageProduct from "../pages/deshboard/ManageProduct";
+import OrderPage from "../pages/deshboard/OrderPage";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
 import Error from "../pages/Error";
 import Home from "../pages/Home";
@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
-        path: "/create-shop",
+        path: "/create-store-account",
         element: (
           <PrivateRouter>
             <CreateShop />
@@ -69,12 +69,12 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <PrivateRouter>
-            <DeshboardHome></DeshboardHome>,
+            <DashboardHome />
           </PrivateRouter>
         ),
       },
       {
-        path: "manage-product",
+        path: "products",
         element: (
           <PrivateRouter>
             <ManageProduct></ManageProduct>,
@@ -82,11 +82,11 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "add-product",
+        path: "orders",
         element: (
           <PrivateRouter>
             {" "}
-            <AddProduct></AddProduct>,
+            <OrderPage />
           </PrivateRouter>
         ),
       },

@@ -1,147 +1,126 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
-import imageUpload from "../../utility/imageUpload";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
-import useShop from "../../hooks/useShop";
-
+import { useNavigate } from "react-router-dom";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import imageUpload from "../../utility/imageUpload";
 const CreateShop = () => {
   const navigate = useNavigate();
-  const shop = useShop()
+  const [loading, setLoading] = useState();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  console.log(shop);
+
   const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
   const onSubmit = async (data) => {
-    // data.preventDefault();
-    const imageUrl = await imageUpload(data?.shopLogo[0]);
-    const shop = {
-      shopName: data.shopName,
-      shopOwnerEmail: user?.email || "",
-      shopOwnerName: user?.displayName || "",
-      shopLogo: imageUrl || "",
-      shopLocation: data.shopLocation,
-      limit: 3,
-      role:"shopAdmin"
-    };
+    const loadingToast = toast.loading("Creating shop...");
 
+    setLoading(true);
+    try {
+      // Upload the image
 
-    const res = await axiosSecure.post(`/shops`, shop);
-    console.log(res.data);
-    if (res.data.updateUserResult.acknowledged) {
+      const imageUrl = await imageUpload(data?.photo[0]);
 
-        toast.success('Shop create successfully')
-        navigate('/dashboard')
+      // Prepare shop data
+      const shop = {
+        name: data.name,
+        logo: imageUrl || "",
+        location: data.address,
+      };
+
+      // Send shop creation request
+      const res = await axiosSecure.post(`/shop`, shop);
+      console.log(res.data);
+
+      // Check for 201 Created status
+      if (res.status === 201) {
+        toast.success("Shop created successfully");
+
+        navigate("/dashboard");
+      } else {
+        toast.error("Failed to create shop. Please try again.");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+      toast.dismiss(loadingToast);
     }
   };
-  console.log(user);
-  return (
-    <div className="container mx-auto mt-10">
-      <div>
-        <h1 className="text-5xl font-bold text-center text-primary">
-          Create Shop
-        </h1>
-        <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex justify-between items-center gap-x-10">
-            <div className="form-control flex-1 ">
-              <label className="label">
-                <span className="label-text">Shop name</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Shop name"
-                className="input input-bordered"
-                {...register("shopName", { required: true })}
-              />
-              {errors.shopName && (
-                <span className="text-red-500">shop name is required</span>
-              )}
-            </div>
-            <div className="form-control flex-1 ">
-              <label className="label">
-                <span className="label-text">Shop Logo</span>
-              </label>
-              <input
-                type="file"
-                className="file-input file-input-bordered file-input-primary w-full max-w-xs"
-                {...register("shopLogo", { required: true })}
-              />
-              {errors.shopLogo && (
-                <span className="text-red-500">shopLogo is required</span>
-              )}
-            </div>
-          </div>
-          <div className="form-control flex-1 ">
-            <label className="label">
-              <span className="label-text">Shop info</span>
-            </label>
-            <textarea
-              type="file"
-              className="textarea border-black  w-3/4"
-              placeholder="Write about your shop"
-              rows={5}
-              {...register("shopInfo", { required: true })}
-            />
-            {errors.shopInfo && (
-              <span className="text-red-500">shopInfo is required</span>
-            )}
-          </div>
 
-          {/* shop  owner  info section  */}
-          <div className="flex justify-between items-center gap-x-10">
-            <div className="form-control flex-1 ">
-              <label className="label">
-                <span className="label-text">Shop-Owner Email</span>
-              </label>
-              <input
+  return (
+    <div className="container mx-auto mt-20 min-h-screen max-w-2xl ">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-center text-primary font-semibold text-4xl tracking-wide">
+            Create shop
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            className="grid gap-4 min-h-full"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="">
+              <Label htmlFor="name">Shop Name</Label>
+
+              <Input
                 type="text"
-                className="input input-bordered"
-                {...register("shopOwnerEmail")}
-                disabled
-                value={user?.email}
+                id="name"
+                placeholder="Shop Name"
+                {...register("name", { required: true })}
               />
+              {errors.name && (
+                <p className="text-red-500 font-light text-sm px-1 mt-1">
+                  Shop Name is required
+                </p>
+              )}
             </div>
-            <div className="form-control flex-1 ">
-              <label className="label">
-                <span className="label-text">Shop-Owner Name</span>
-              </label>
-              <input
+
+            <div className="">
+              <Label htmlFor="picture">Shop Logo</Label>
+              <Input
+                id="picture"
+                type="file"
+                {...register("photo", { required: true })}
+              />
+              {errors.photo && (
+                <p className="text-red-500 font-light text-sm px-1 mt-1">
+                  Shop Logo is required
+                </p>
+              )}
+            </div>
+            <div className="">
+              <Label htmlFor="location">Shop Address</Label>
+
+              <Textarea
                 type="text"
-                className="input input-bordered"
-                {...register("shopOwnerName")}
-                disabled
-                value={user?.displayName}
+                id="location"
+                placeholder="Shop Address"
+                {...register("address", { required: true })}
               />
+              {errors.name && (
+                <p className="text-red-500 font-light text-sm px-1 mt-1">
+                  Shop Address is required
+                </p>
+              )}
             </div>
-          </div>
-          <div className="form-control flex-1 ">
-            <label className="label">
-              <span className="label-text">Shop location</span>
-            </label>
-            <input
-              type="text"
-              className="input input-bordered"
-              {...register("shopLocation", { required: true })}
-            />
-            {errors.shopLocation && (
-              <span className="text-red-500">
-                shopLocation name is required
-              </span>
-            )}
-          </div>
-          <div className="form-control mt-6">
-            <button className="btn btn-primary" type="submit">
-              Create shop
-            </button>
-          </div>
-        </form>
-        <div className="flex justify-center "></div>
-      </div>
+
+            <div className="form-control mt-2">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating..." : "Create Shop"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

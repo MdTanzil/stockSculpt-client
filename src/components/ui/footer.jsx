@@ -2,7 +2,7 @@
 
 export function Footer() {
   return (
-    <footer className="py-4 bg-[#445760] text-white">
+    <footer className="py-4 bg-[#445760] text-white z-10">
       <p
         className="leading-6 text-center font-thin
       "
