@@ -20,7 +20,7 @@ import {
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import OrderTable from "./OrderTable";
@@ -32,6 +32,7 @@ const ManageOrder = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const axiosSecure = useAxiosSecure();
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const {
     register,
     handleSubmit,
@@ -80,26 +81,30 @@ const ManageOrder = () => {
     try {
       const payload = {
         products: selectedProducts.map((p) => ({
-          product: p._id, // Ensure you're using the correct product ID
+          product: p._id,
           quantity: p.quantity,
         })),
         status: selectedCategory,
         totalPrice,
       };
 
-      // Make API request
-      const response = await axiosSecure.post(`/order`, payload);
-      console.log(response);
-
-      if (response.status === 201) {
+      if (selectedOrder) {
+        // If editing, update order
+        await axiosSecure.put(`/order/${selectedOrder._id}`, payload);
+        toast.success("Order updated successfully!");
+      } else {
+        // If new order, create
+        await axiosSecure.post(`/order`, payload);
         toast.success("Order added successfully!");
-        reset();
-        setSelectedProducts([]);
-        setOpen(false);
-        orderRefetch();
       }
+
+      reset();
+      setSelectedProducts([]);
+      setSelectedOrder(null);
+      setOpen(false);
+      orderRefetch();
     } catch (error) {
-      console.log(error.message);
+      console.error(error);
       toast.error("Failed to save order.");
     } finally {
       setIsLoading(false);
@@ -110,8 +115,8 @@ const ManageOrder = () => {
   const handleDelete = async (orderId) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     try {
-      await axiosSecure.delete(`/orders/${orderId}`);
-      setOrders(orders.filter((order) => order._id !== orderId));
+      await axiosSecure.delete(`/order/${orderId}`);
+      orderRefetch();
       toast.success("Order deleted successfully.");
     } catch (error) {
       toast.error("Failed to delete order.");
@@ -123,7 +128,21 @@ const ManageOrder = () => {
     setSelectedOrder(order);
     setModalOpen(true);
   };
-
+  useEffect(() => {
+    if (selectedOrder) {
+      // Populate form fields when editing
+      setSelectedProducts(
+        selectedOrder.products.map((p) => ({
+          _id: p.product._id,
+          name: p.product.name,
+          price: p.product.price,
+          quantity: p.quantity,
+        }))
+      );
+      setValue("category", selectedOrder.status);
+      setOpen(true); // Open modal when editing
+    }
+  }, [selectedOrder, setValue]);
   return (
     <div>
       <p className="text-center font-bold text-4xl text-primary">
