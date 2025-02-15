@@ -1,3 +1,4 @@
+import ManageOrder from "@/pages/deshboard/ManageOrder";
 import { createBrowserRouter } from "react-router-dom";
 import AdminDashBoard from "../layouts/AdminDashBoard";
 import DashBoard from "../layouts/DashBoard";
@@ -9,7 +10,6 @@ import CreateShop from "../pages/createShop/CreateShop";
 import CheckOut from "../pages/deshboard/CheckOut";
 import DashboardHome from "../pages/deshboard/DashBoardHome";
 import ManageProduct from "../pages/deshboard/ManageProduct";
-import OrderPage from "../pages/deshboard/OrderPage";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
 import Error from "../pages/Error";
 import Home from "../pages/Home";
@@ -86,7 +86,7 @@ const router = createBrowserRouter([
         element: (
           <PrivateRouter>
             {" "}
-            <OrderPage />
+            <ManageOrder />
           </PrivateRouter>
         ),
       },

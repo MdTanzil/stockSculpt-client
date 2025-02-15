@@ -10,10 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil, Trash } from "lucide-react";
-const ProductTable = ({ products }) => {
-  //   if no products
+
+const ProductTable = ({ products, onEdit, onDelete }) => {
   if (!products?.length) return <p>No products found.</p>;
-  console.log(products);
 
   return (
     <div className="bg-background">
@@ -36,26 +35,28 @@ const ProductTable = ({ products }) => {
               <TableRow key={product._id}>
                 <TableCell className="py-2 font-medium">
                   <Avatar>
-                    <AvatarImage src={product?.image} alt="@shadcn" />
+                    <AvatarImage src={product.image} alt={product.name} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </TableCell>
-                <TableCell className="py-2">{product?.name}</TableCell>
-                <TableCell className="py-2">{product?.description}</TableCell>
-                <TableCell className="py-2">{product?.category}</TableCell>
-                <TableCell className="py-2">{product?.price}</TableCell>
-                <TableCell className="py-2">{product?.rating}</TableCell>
-                <TableCell className="py-2">{product?.stock}</TableCell>
+                <TableCell className="py-2">{product.name}</TableCell>
+                <TableCell className="py-2">{product.description}</TableCell>
+                <TableCell className="py-2">{product.category}</TableCell>
+                <TableCell className="py-2">${product.price}</TableCell>
+                <TableCell className="py-2">{product.rating}</TableCell>
+                <TableCell className="py-2">{product.stock}</TableCell>
                 <TableCell className="py-2">
-                  <div className="flex gap-1 gap-x-4 ">
-                    <Button size="sm">
-                      {" "}
-                      <Pencil />{" "}
+                  <div className="flex gap-1 gap-x-4">
+                    <Button size="sm" onClick={() => onEdit(product)}>
+                      <Pencil />
                     </Button>
-                    <Button size="sm">
-                      {" "}
+                    <Button
+                      size="sm"
+                      onClick={() => onDelete(product._id)}
+                      variant="destructive"
+                    >
                       <Trash />
-                    </Button>{" "}
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>

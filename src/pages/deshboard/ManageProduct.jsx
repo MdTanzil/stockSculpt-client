@@ -16,12 +16,11 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import imageUpload from "@/utility/imageUpload";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { SelectValue } from "@radix-ui/react-select";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,10 +30,10 @@ import ProductTable from "./ProductTable";
 const ManageProduct = () => {
   const axiosSecure = useAxiosSecure();
   const { shop } = useShop();
-  const queryClient = useQueryClient();
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false); // State for controlling modal
+  const [open, setOpen] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
   const {
     register,
     handleSubmit,
@@ -51,55 +50,100 @@ const ManageProduct = () => {
     }
   };
 
-  const { data: products, refetch } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      const res = await axiosSecure.get(`/shop/${shop._id}/products`);
-      return res.data;
-    },
-  });
+  const { products, refetch, isLoading: isProductLoading } = useShop();
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await axiosSecure.post(`/products`, {
+      const payload = {
         ...data,
         price: Number(data.price),
         stock: Number(data.stock),
         image: imageUrl,
-      });
+        rating: Number(data.rating),
+      };
 
-      if (response.status === 201) {
-        toast.success("Product added successfully!");
+      let response;
+      if (editProduct) {
+        response = await axiosSecure.put(
+          `/products/${editProduct._id}`,
+          payload
+        );
+      } else {
+        response = await axiosSecure.post(`/products`, payload);
+      }
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(
+          `Product ${editProduct ? "updated" : "added"} successfully!`
+        );
         refetch();
         reset();
         setImageUrl("");
-        setOpen(false); // Close the modal after success
+        setOpen(false);
+        setEditProduct(null);
       }
     } catch (error) {
-      toast.error("Failed to add product. Please try again.");
+      toast.error("Failed to save product. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleEdit = (product) => {
+    setEditProduct(product);
+    setValue("name", product.name);
+    setValue("description", product.description);
+    setValue("price", product.price);
+    setValue("stock", product.stock);
+    setValue("category", product.category);
+    setValue("rating", product.rating);
+    setImageUrl(product.image);
+    setOpen(true);
+  };
+
+  const handleDelete = async (productId) => {
+    try {
+      await axiosSecure.delete(`/products/${productId}`);
+      toast.success("Product deleted successfully!");
+      refetch();
+    } catch (error) {
+      toast.error("Failed to delete product.");
+    }
+  };
+
   return (
     <div>
       <p className="text-center font-bold text-4xl text-primary">
         Manage Your Product
       </p>
       <div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={(isOpen) => {
+            setOpen(isOpen);
+            if (!isOpen) {
+              setEditProduct(null); // Reset editProduct when dialog is closed
+              reset(); // Reset the form fields
+              setImageUrl(""); // Clear uploaded image URL
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button onClick={() => setOpen(true)}>
-              Add Product <Plus />
+              {editProduct ? "Edit Product" : "Add Product"} <Plus />
             </Button>
           </DialogTrigger>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <DialogHeader>
-                <DialogTitle>Add Product</DialogTitle>
+                <DialogTitle>
+                  {editProduct ? "Edit Product" : "Add Product"}
+                </DialogTitle>
                 <DialogDescription>
-                  Add your new product to your shop
+                  {editProduct
+                    ? "Edit your product details"
+                    : "Add your new product to your shop"}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -199,6 +243,22 @@ const ManageProduct = () => {
                     </p>
                   )}
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="rating">Rating</Label>
+
+                  <Input
+                    id="rating"
+                    type="number"
+                    {...register("rating", {
+                      required: "Product rating is required",
+                    })}
+                  />
+                  {errors.stock && (
+                    <p className="text-red-500 text-sm">
+                      {errors.stock.message}
+                    </p>
+                  )}
+                </div>
               </div>
               <DialogFooter>
                 <DialogClose asChild>
@@ -207,7 +267,7 @@ const ManageProduct = () => {
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Adding..." : "Add Product"}
+                  {isLoading ? "Saving..." : "Save Product"}
                 </Button>
               </DialogFooter>
             </form>
@@ -215,7 +275,15 @@ const ManageProduct = () => {
         </Dialog>
       </div>
       <div className="p-2 mt-4">
-        <ProductTable products={queryClient.getQueryData(["products"])} />
+        {isLoading ? (
+          <p>Product Loading</p>
+        ) : (
+          <ProductTable
+            products={products}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
     </div>
   );
