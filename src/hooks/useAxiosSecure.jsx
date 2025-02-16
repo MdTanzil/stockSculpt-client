@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import useAuth from "./useAuth";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:3000/api/",
+  // baseURL: "http://localhost:3000/api/",
+  baseURL: "https://stock-sculpt-server.vercel.app/api/",
 });
 
 const useAxiosSecure = () => {
