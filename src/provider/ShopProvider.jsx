@@ -32,13 +32,13 @@ const ShopProvider = ({ children }) => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["products", shop._id], // Include shop._id as dependency
+    queryKey: ["products", shop?._id], // Include shop._id as dependency
     queryFn: async () => {
-      if (!shop._id) return []; // Prevents running when shop is undefined
+      if (!shop?._id) return []; // Prevents running when shop is undefined
       const res = await axiosSecure.get(`/shop/${shop._id}/products`);
       return res.data;
     },
-    enabled: !!shop._id, // Runs query only when shop._id exists
+    enabled: !!shop?._id, // Runs query only when shop._id exists
   });
 
   // Fetch Orders only when shop._id is available
@@ -48,13 +48,13 @@ const ShopProvider = ({ children }) => {
     isLoading: orderLoading,
     error: orderError,
   } = useQuery({
-    queryKey: ["orders", shop._id], // Include shop._id as dependency
+    queryKey: ["orders", shop?._id], // Include shop._id as dependency
     queryFn: async () => {
-      if (!shop._id) return []; // Prevents running when shop is undefined
+      if (!shop?._id) return []; // Prevents running when shop is undefined
       const res = await axiosSecure.get(`/shop/${shop._id}/orders`);
       return res.data;
     },
-    enabled: !!shop._id, // Runs query only when shop._id exists
+    enabled: !!shop?._id, // Runs query only when shop._id exists
   });
 
   const shopAllData = {
