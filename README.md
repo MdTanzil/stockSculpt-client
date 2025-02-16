@@ -1,4 +1,4 @@
-# StockSculpt
+# StockSculpt (V2 Under Development)
 ### Live Link 
 [Stock Sculpt](https://stocksculpt.web.app/)
 
