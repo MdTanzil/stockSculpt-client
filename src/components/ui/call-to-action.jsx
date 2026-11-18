@@ -7,7 +7,7 @@ function CTA() {
   const navigate = useNavigate();
   return (
     <div className="w-full py-10 lg:py-40">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <div className="flex flex-col text-center bg-muted rounded-md p-4 lg:p-14 gap-8 items-center">
           <div>
             <Badge variant={"lg"}>Get started</Badge>

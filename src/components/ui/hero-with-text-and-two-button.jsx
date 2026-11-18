@@ -6,14 +6,14 @@ function Hero1() {
   const navigate = useNavigate();
   return (
     <div className="w-full ">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <div className="flex gap-8 py-20  lg:py-40 items-center justify-center flex-col  ">
           <div className="flex gap-4 flex-col ">
             <motion.h1
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-5xl md:text-7xl max-w-5xl tracking-tighter text-center font-semibold text-[#2c3e50]"
+              className="text-4xl sm:text-5xl md:text-7xl max-w-5xl tracking-tighter text-center font-semibold text-[#2c3e50]"
             >
               Run Your Shop From One Dashboard
             </motion.h1>
@@ -28,10 +28,10 @@ function Hero1() {
               every order — and start free with up to 3 products.
             </motion.p>
           </div>
-          <div className="flex flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
             <Button
               size="lg"
-              className="gap-4"
+              className="gap-4 w-full sm:w-auto"
               variant="outline"
               onClick={() => navigate("/services")}
             >
@@ -39,7 +39,7 @@ function Hero1() {
             </Button>
             <Button
               size="lg"
-              className="gap-4"
+              className="gap-4 w-full sm:w-auto"
               onClick={() => navigate("/register")}
             >
               Create your shop — it&apos;s free <MoveRight className="w-4 h-4" />
