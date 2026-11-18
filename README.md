@@ -23,7 +23,8 @@ manage shops and users.
   (branded header, itemized table, totals)
 - Subscriptions with Stripe checkout (test mode)
 - Shop settings page (name, address, logo)
-- Admin panel — platform stats, manage shops and users
+- Admin panel — platform stats, manage shops and users (admin role
+  required; other users are redirected to their dashboard)
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 

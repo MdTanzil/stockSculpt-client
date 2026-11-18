@@ -21,6 +21,7 @@ const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const axiosPublic = useAxiosPublic();
   const signInWithGoogle = () => {
@@ -40,6 +41,7 @@ const AuthProvider = ({ children }) => {
   const logOut = () => {
     setLoading(false);
     setUser(null);
+    setRole(null);
 
     return signOut(auth);
   };
@@ -64,12 +66,17 @@ const AuthProvider = ({ children }) => {
               "access-token",
               `Bearer ${res.data.accessToken}`
             );
+            // The login response carries the user's role ("user" / "admin");
+            // AdminRouter reads it from context to guard /admin routes.
+            setRole(res.data.role || null);
           } else {
             localStorage.removeItem("access-token");
+            setRole(null);
           }
         } catch (error) {
           console.error("JWT request failed:", error);
           localStorage.removeItem("access-token");
+          setRole(null);
         } finally {
           setLoading(false);
         }
@@ -78,6 +85,7 @@ const AuthProvider = ({ children }) => {
       } else {
         localStorage.removeItem("access-token");
         setUser(null);
+        setRole(null);
         setLoading(false);
       }
     });
@@ -90,6 +98,7 @@ const AuthProvider = ({ children }) => {
   }
   const authData = {
     user,
+    role,
     loading,
     setLoading,
     createUser,

@@ -21,6 +21,7 @@ import Payment from "../pages/Payment";
 import Register from "../pages/register/Register";
 import Subscription from "../pages/Subscription";
 import Watch from "../pages/Watch";
+import AdminRouter from "./AdminRouter";
 import PrivateRouter from "./PrivateRouter";
 
 const router = createBrowserRouter([
@@ -128,33 +129,25 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminDashBoard></AdminDashBoard>,
+    element: (
+      <AdminRouter>
+        <AdminDashBoard></AdminDashBoard>
+      </AdminRouter>
+    ),
     errorElement: <Error></Error>,
     children: [
       {
         path: "",
-        element: (
-          <PrivateRouter>
-            <AdminHome></AdminHome>
-          </PrivateRouter>
-        ),
+        element: <AdminHome></AdminHome>,
       },
       {
         path: "manageProduct",
-        element: (
-          <PrivateRouter>
-            <MenageShop></MenageShop>
-          </PrivateRouter>
-        ),
+        element: <MenageShop></MenageShop>,
       },
 
       {
         path: "users",
-        element: (
-          <PrivateRouter>
-            <ManageUsers></ManageUsers>
-          </PrivateRouter>
-        ),
+        element: <ManageUsers></ManageUsers>,
       },
     ],
   },
