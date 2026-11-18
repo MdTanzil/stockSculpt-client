@@ -15,9 +15,12 @@ manage shops and users.
 - Product management — add, edit, delete, stock tracking with low-stock
   warnings
 - Order management — create orders, update status, per-shop order lists
+- Professional data tables across the dashboard and admin panel —
+  status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and
   recent orders
-- Checkout / invoice page with per-order PDF download
+- Checkout / invoice page with professional per-order PDF invoices
+  (branded header, itemized table, totals)
 - Subscriptions with Stripe checkout (test mode)
 - Shop settings page (name, address, logo)
 - Admin panel — platform stats, manage shops and users

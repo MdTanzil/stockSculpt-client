@@ -1,4 +1,16 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
+import { Mail, Users } from "lucide-react";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
@@ -44,7 +56,7 @@ const ManageUsers = () => {
 
   return (
     <div>
-      <h2 className="mb-5 text-center text-4xl text-primary">
+      <h2 className="mb-5 text-center text-4xl font-bold text-primary">
         Manage Users ({userData?.length || 0})
       </h2>
       {isLoading ? (
@@ -52,60 +64,79 @@ const ManageUsers = () => {
           Loading users...
         </p>
       ) : !userData?.length ? (
-        <p className="py-12 text-center text-lg text-muted-foreground">
-          No users found.
-        </p>
+        <div className="rounded-lg border border-border bg-background py-12 text-center">
+          <Users className="mx-auto h-10 w-10 text-muted-foreground" />
+          <p className="mt-4 text-lg font-medium">No users found</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            New users will appear here once they sign up.
+          </p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            <thead>
-              <tr className="text-center">
-                <th>#</th>
-                <th>Avatar</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="h-10 py-2">#</TableHead>
+                <TableHead className="h-10 py-2">User</TableHead>
+                <TableHead className="h-10 py-2">Email</TableHead>
+                <TableHead className="h-10 py-2">Role</TableHead>
+                <TableHead className="h-10 py-2">Status</TableHead>
+                <TableHead className="h-10 py-2 text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {userData.map((user, idx) => (
-                <tr key={user?._id} className="text-center text-lg">
-                  <td>{idx + 1}</td>
-                  <td>
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle h-12 w-12">
-                          {user?.avatar ? (
-                            <img src={user.avatar} alt={user?.name} />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-primary text-xl font-bold text-white">
-                              {user?.name?.charAt(0) || "U"}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                <TableRow key={user?._id}>
+                  <TableCell className="py-2 tabular-nums text-muted-foreground">
+                    {idx + 1}
+                  </TableCell>
+                  <TableCell className="py-2">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback>
+                          {user?.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{user?.name || "—"}</span>
                     </div>
-                  </td>
-                  <th className="font-semibold">{user?.name}</th>
-                  <td>{user?.email}</td>
-                  <td className="capitalize">{user?.role || "user"}</td>
-                  <td>{user?.isActive ? "Active" : "Inactive"}</td>
-                  <td>
+                  </TableCell>
+                  <TableCell className="py-2">{user?.email}</TableCell>
+                  <TableCell className="py-2 capitalize">
+                    <Badge
+                      variant={user?.role === "admin" ? "default" : "secondary"}
+                    >
+                      {user?.role || "user"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-2">
+                    {user?.isActive ? (
+                      <Badge
+                        variant="outline"
+                        className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
+                      >
+                        Active
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">Inactive</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="py-2 text-right">
                     {user?.role !== "admin" && (
-                      <button
-                        className="btn btn-xs border-none bg-primary text-white hover:bg-primary"
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => sendPromotional(user?.email)}
                       >
-                        Send promotional email
-                      </button>
+                        <Mail className="mr-1 h-4 w-4" />
+                        Send email
+                      </Button>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

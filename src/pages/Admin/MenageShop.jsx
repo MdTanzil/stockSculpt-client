@@ -1,4 +1,16 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
+import { Mail, Store } from "lucide-react";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
@@ -44,7 +56,7 @@ const MenageShop = () => {
 
   return (
     <div>
-      <h2 className="text-center text-4xl text-primary">
+      <h2 className="text-center text-4xl font-bold text-primary">
         Manage Shops ({shops?.length || 0})
       </h2>
       <div className="mt-5">
@@ -53,59 +65,76 @@ const MenageShop = () => {
             Loading shops...
           </p>
         ) : !shops?.length ? (
-          <p className="py-12 text-center text-lg text-muted-foreground">
-            No shops found.
-          </p>
+          <div className="rounded-lg border border-border bg-background py-12 text-center">
+            <Store className="mx-auto h-10 w-10 text-muted-foreground" />
+            <p className="mt-4 text-lg font-medium">No shops found</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Shops will appear here once owners create them.
+            </p>
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="table table-zebra">
-              <thead>
-                <tr className="text-center">
-                  <th>#</th>
-                  <th>Logo</th>
-                  <th>Shop Name</th>
-                  <th>Owner</th>
-                  <th>Plan</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-10 py-2">#</TableHead>
+                  <TableHead className="h-10 py-2">Shop</TableHead>
+                  <TableHead className="h-10 py-2">Owner</TableHead>
+                  <TableHead className="h-10 py-2">Plan</TableHead>
+                  <TableHead className="h-10 py-2 text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {shops.map((shop, idx) => (
-                  <tr key={shop?._id} className="text-center text-lg">
-                    <td>{idx + 1}</td>
-                    <td>
-                      <div className="flex items-center justify-center gap-3">
-                        <div className="avatar">
-                          <div className="mask mask-squircle h-12 w-12">
-                            {shop?.logo ? (
-                              <img src={shop.logo} alt={shop?.name} />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center bg-primary text-xl font-bold text-white">
-                                {shop?.name?.charAt(0) || "S"}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                  <TableRow key={shop?._id}>
+                    <TableCell className="py-2 tabular-nums text-muted-foreground">
+                      {idx + 1}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9 rounded-lg">
+                          <AvatarImage
+                            src={shop?.logo}
+                            alt={shop?.name}
+                            className="rounded-lg"
+                          />
+                          <AvatarFallback className="rounded-lg">
+                            {shop?.name?.charAt(0) || "S"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{shop?.name}</span>
                       </div>
-                    </td>
-                    <td>{shop?.name}</td>
-                    <td>{shop?.owner?.name || shop?.owner?.email || "—"}</td>
-                    <td className="capitalize">
-                      {shop?.subscriptionPlan || "free"}
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-xs border-none bg-primary text-white hover:bg-primary"
+                    </TableCell>
+                    <TableCell className="py-2">
+                      {shop?.owner?.name || shop?.owner?.email || "—"}
+                    </TableCell>
+                    <TableCell className="py-2 capitalize">
+                      <Badge
+                        variant={
+                          shop?.subscriptionPlan &&
+                          shop.subscriptionPlan !== "free"
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {shop?.subscriptionPlan || "free"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => sendNotice(shop.owner?.email)}
                         disabled={!shop.owner?.email}
                       >
+                        <Mail className="mr-1 h-4 w-4" />
                         Send Notice
-                      </button>
-                    </td>
-                  </tr>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>

@@ -1,49 +1,20 @@
+import OrderStatusBadge from "@/components/order-status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import useShop from "@/hooks/useShop";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import formatDate from "@/utils/formatDate";
+import generateInvoicePDF from "@/utils/generateInvoicePDF";
 import { Download, FileText } from "lucide-react";
 
-const generateInvoicePDF = (order, shopName) => {
-  const pdf = new jsPDF();
-
-  pdf.text(`Invoice - ${shopName || "StockSculpt"}`, 14, 22);
-  pdf.setFontSize(11);
-  pdf.text(`Order ID: ${order._id}`, 14, 32);
-  pdf.text(
-    `Date: ${new Date(order.createdAt).toLocaleDateString()}`,
-    14,
-    40
-  );
-  pdf.text(`Status: ${order.orderStatus || "pending"}`, 14, 48);
-
-  pdf.autoTable({
-    startY: 56,
-    head: [["Product", "Quantity", "Price", "Total"]],
-    body: (order.products || []).map((item) => [
-      item.product?.name || "Unknown product",
-      item.quantity,
-      `$${Number(item.product?.price || 0).toFixed(2)}`,
-      `$${(Number(item.product?.price || 0) * item.quantity).toFixed(2)}`,
-    ]),
-  });
-
-  pdf.text(
-    `Total: $${(Number(order.totalPrice) || 0).toFixed(2)}`,
-    14,
-    pdf.autoTable.previous.finalY + 10
-  );
-
-  pdf.save(`invoice-${order._id}.pdf`);
-};
+const formatPrice = (value) => `$${(Number(value) || 0).toFixed(2)}`;
 
 const CheckOut = () => {
   const { shop, orders = [], orderLoading } = useShop();
@@ -55,6 +26,11 @@ const CheckOut = () => {
       </div>
     );
   }
+
+  const totalInvoiced = orders.reduce(
+    (sum, order) => sum + (Number(order.totalPrice) || 0),
+    0
+  );
 
   return (
     <div className="container mx-auto space-y-6 p-4">
@@ -73,16 +49,16 @@ const CheckOut = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-background">
+        <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="h-9 py-2">Order</TableHead>
-                <TableHead className="h-9 py-2">Date</TableHead>
-                <TableHead className="h-9 py-2">Items</TableHead>
-                <TableHead className="h-9 py-2">Status</TableHead>
-                <TableHead className="h-9 py-2">Total</TableHead>
-                <TableHead className="h-9 py-2">Invoice</TableHead>
+              <TableRow>
+                <TableHead className="h-10 py-2">Order</TableHead>
+                <TableHead className="h-10 py-2">Date</TableHead>
+                <TableHead className="h-10 py-2">Items</TableHead>
+                <TableHead className="h-10 py-2">Status</TableHead>
+                <TableHead className="h-10 py-2 text-right">Total</TableHead>
+                <TableHead className="h-10 py-2 text-right">Invoice</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -91,24 +67,24 @@ const CheckOut = () => {
                   <TableCell className="py-2 font-medium">
                     Order #{idx + 1}
                   </TableCell>
-                  <TableCell className="py-2">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                  <TableCell className="py-2 text-muted-foreground">
+                    {formatDate(order.createdAt)}
                   </TableCell>
-                  <TableCell className="py-2">
+                  <TableCell className="py-2 tabular-nums">
                     {order.products?.length || 0} item
                     {order.products?.length === 1 ? "" : "s"}
                   </TableCell>
-                  <TableCell className="py-2 capitalize">
-                    {order.orderStatus}
-                  </TableCell>
-                  <TableCell className="py-2 font-medium">
-                    ${(Number(order.totalPrice) || 0).toFixed(2)}
-                  </TableCell>
                   <TableCell className="py-2">
+                    <OrderStatusBadge status={order.orderStatus} />
+                  </TableCell>
+                  <TableCell className="py-2 text-right font-medium tabular-nums">
+                    {formatPrice(order.totalPrice)}
+                  </TableCell>
+                  <TableCell className="py-2 text-right">
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => generateInvoicePDF(order, shop?.name)}
+                      onClick={() => generateInvoicePDF(order, shop)}
                       aria-label={`Download invoice for order ${idx + 1}`}
                     >
                       <Download className="mr-1 h-4 w-4" />
@@ -118,6 +94,20 @@ const CheckOut = () => {
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3} className="py-2 text-muted-foreground">
+                  {orders.length} order{orders.length === 1 ? "" : "s"}
+                </TableCell>
+                <TableCell className="py-2 text-right font-medium">
+                  Total invoiced
+                </TableCell>
+                <TableCell className="py-2 text-right font-semibold tabular-nums">
+                  {formatPrice(totalInvoiced)}
+                </TableCell>
+                <TableCell />
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
       )}
