@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 import OrderTable from "./OrderTable";
 
 const ManageOrder = () => {
-  const { shop, products, orderRefetch, orders, orderLoading } = useShop();
+  const { products, orderRefetch, orders, orderLoading } = useShop();
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,14 +34,12 @@ const ManageOrder = () => {
   const axiosSecure = useAxiosSecure();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const {
-    register,
     handleSubmit,
     setValue,
     watch,
     reset,
     formState: { errors },
   } = useForm();
-  console.log(orders);
 
   // Filter products based on search input
   const filteredProducts = products.filter((product) =>
@@ -72,11 +70,13 @@ const ManageOrder = () => {
   );
 
   // Get the selected value
-  const selectedCategory = watch("category");
+  const selectedStatus = watch("orderStatus");
 
-  console.log(selectedCategory); // Logs the selected value
-
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
+    if (selectedProducts.length === 0) {
+      toast.error("Please select at least one product for the order.");
+      return;
+    }
     setIsLoading(true);
     try {
       const payload = {
@@ -84,7 +84,7 @@ const ManageOrder = () => {
           product: p._id,
           quantity: p.quantity,
         })),
-        status: selectedCategory,
+        orderStatus: selectedStatus || "pending",
         totalPrice,
       };
 
@@ -126,7 +126,6 @@ const ManageOrder = () => {
   // Edit an order
   const handleEdit = (order) => {
     setSelectedOrder(order);
-    setModalOpen(true);
   };
   useEffect(() => {
     if (selectedOrder) {
@@ -139,7 +138,7 @@ const ManageOrder = () => {
           quantity: p.quantity,
         }))
       );
-      setValue("category", selectedOrder.status);
+      setValue("orderStatus", selectedOrder.orderStatus);
       setOpen(true); // Open modal when editing
     }
   }, [selectedOrder, setValue]);
@@ -169,7 +168,9 @@ const ManageOrder = () => {
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create a New Order</DialogTitle>
+              <DialogTitle>
+                {selectedOrder ? "Edit Order" : "Create a New Order"}
+              </DialogTitle>
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
@@ -222,6 +223,7 @@ const ManageOrder = () => {
                         ${product.price * product.quantity}
                       </span>
                       <Button
+                        type="button"
                         variant="destructive"
                         size="sm"
                         onClick={() =>
@@ -246,10 +248,12 @@ const ManageOrder = () => {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="category">Order Status</Label>
-                <Select onValueChange={(value) => setValue("category", value)}>
+                <Label htmlFor="orderStatus">Order Status</Label>
+                <Select
+                  onValueChange={(value) => setValue("orderStatus", value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="Select a status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pending">pending</SelectItem>
@@ -257,9 +261,9 @@ const ManageOrder = () => {
                     <SelectItem value="canceled">canceled</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.category && (
+                {errors.orderStatus && (
                   <p className="text-red-500 text-sm">
-                    {errors.category.message}
+                    {errors.orderStatus.message}
                   </p>
                 )}
               </div>

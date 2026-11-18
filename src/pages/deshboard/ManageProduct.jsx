@@ -29,7 +29,6 @@ import ProductTable from "./ProductTable";
 
 const ManageProduct = () => {
   const axiosSecure = useAxiosSecure();
-  const { shop } = useShop();
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -103,6 +102,8 @@ const ManageProduct = () => {
   };
 
   const handleDelete = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
     try {
       await axiosSecure.delete(`/products/${productId}`);
       toast.success("Product deleted successfully!");
@@ -253,9 +254,9 @@ const ManageProduct = () => {
                       required: "Product rating is required",
                     })}
                   />
-                  {errors.stock && (
+                  {errors.rating && (
                     <p className="text-red-500 text-sm">
-                      {errors.stock.message}
+                      {errors.rating.message}
                     </p>
                   )}
                 </div>
@@ -275,8 +276,10 @@ const ManageProduct = () => {
         </Dialog>
       </div>
       <div className="p-2 mt-4">
-        {isLoading ? (
-          <p>Product Loading</p>
+        {isProductLoading ? (
+          <p className="text-center text-muted-foreground">
+            Loading products...
+          </p>
         ) : (
           <ProductTable
             products={products}

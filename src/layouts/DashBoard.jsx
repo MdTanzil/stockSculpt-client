@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavBar";
 import { Footer } from "@/components/ui/footer";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/pages/deshboard/AppSidebar";
@@ -8,9 +8,7 @@ const DashBoard = () => {
     <div>
       <Navbar />
       <SidebarProvider>
-        <div className="bg-red-300">
-          <AppSidebar />
-        </div>
+        <AppSidebar />
         <main className="flex-1">
           <SidebarTrigger />
           <Outlet />

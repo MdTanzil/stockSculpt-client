@@ -1,7 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Subscription = () => {
-  const navigate = useNavigate()
   return (
     <div>
       <section className="bg-white ">
@@ -45,13 +44,8 @@ const Subscription = () => {
                 </li>
 
               </ul>
-              <Link to="/payment" state={{total: 10 }} >
-              <a
-                
-                className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
-              >
+              <Link to="/payment" state={{total: 10 }} className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">
                 Get started
-              </a>
               </Link>
             </div>
             {/* <!-- Pricing Card --> */}
@@ -83,13 +77,8 @@ const Subscription = () => {
                 </li>
 
               </ul>
-              <Link to="/payment" state={{total: 20 }} >
-              <a
-                
-                className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
-              >
+              <Link to="/payment" state={{total: 20 }} className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">
                 Get started
-              </a>
               </Link>
             </div>
             {/* <!-- Pricing Card --> */}
@@ -121,13 +110,8 @@ const Subscription = () => {
                 </li>
 
               </ul>
-              <Link to="/payment" state={{total: 50 }} >
-              <a
-                
-                className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:text-white  dark:focus:ring-primary-900"
-              >
+              <Link to="/payment" state={{total: 50 }} className="text-white bg-primary hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:text-white  dark:focus:ring-primary-900">
                 Get started
-              </a>
               </Link>
             </div>
           </div>

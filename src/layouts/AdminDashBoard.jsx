@@ -1,13 +1,11 @@
 import { Link, Outlet } from "react-router-dom";
 
 import { Footer } from "@/components/ui/footer";
-import NavBar from "../components/oldNavbar";
+import NavBar from "../components/NavBar";
 import useAuth from "../hooks/useAuth";
 
 const AdminDashBoard = () => {
   const { user } = useAuth();
-  // console.log(object);
-  // console.log(user);
   return (
     <div>
       <NavBar></NavBar>
@@ -17,7 +15,13 @@ const AdminDashBoard = () => {
             <div className="">
               <div className="avatar">
                 <div className="w-24 rounded-xl">
-                  <img src={user?.photoURL} />
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName || "Admin"} />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-primary text-2xl font-bold text-white">
+                      {user?.displayName?.charAt(0) || "A"}
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="text-lg font-bold text-primary">

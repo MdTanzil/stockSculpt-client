@@ -50,13 +50,11 @@ const AuthProvider = ({ children }) => {
       photoURL: url,
     });
   };
-  console.log(user);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userEmail = { email: user.email, provider: "google" };
-        console.log(userEmail);
 
         try {
           //TODO: send  a request to backend and get token
@@ -66,7 +64,6 @@ const AuthProvider = ({ children }) => {
               "access-token",
               `Bearer ${res.data.accessToken}`
             );
-            console.log("token set");
           } else {
             localStorage.removeItem("access-token");
           }
@@ -86,7 +83,7 @@ const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [axiosPublic]);
 
   if (loading) {
     return <PacmanLoader color="#36d7b7" />;

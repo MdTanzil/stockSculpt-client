@@ -135,20 +135,46 @@ const Navbar = () => {
                 >
                   Home
                 </NavLink>
-                <Link
-                  to="/products"
-                  className="text-lg"
+                <NavLink
+                  to="/about"
+                  className={({ isActive }) =>
+                    `text-md hover:text-[#00796b] ${
+                      isActive ? "active" : "text-white"
+                    }`
+                  }
                   onClick={() => setIsOpen(false)}
                 >
-                  Products
-                </Link>
-                <Link
-                  to="/orders"
-                  className="text-lg"
+                  About
+                </NavLink>
+                <NavLink
+                  to="/services"
+                  className={({ isActive }) =>
+                    `text-md hover:text-[#00796b] ${
+                      isActive ? "active" : "text-white"
+                    }`
+                  }
                   onClick={() => setIsOpen(false)}
                 >
-                  Orders
-                </Link>
+                  Services
+                </NavLink>
+                {user && shop && (
+                  <Link
+                    to="/dashboard/products"
+                    className="text-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Products
+                  </Link>
+                )}
+                {user && shop && (
+                  <Link
+                    to="/dashboard/orders"
+                    className="text-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Orders
+                  </Link>
+                )}
                 <Button
                   variant="outline"
                   onClick={() => {

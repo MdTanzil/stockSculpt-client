@@ -1,4 +1,4 @@
-import { Box, File, Home, Search, Settings } from "lucide-react";
+import { Box, File, Home, ReceiptText, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -31,13 +31,13 @@ const AppSidebar = () => {
       icon: File,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: Search,
+      title: "Checkout",
+      url: "/dashboard/checkout",
+      icon: ReceiptText,
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: Settings,
     },
   ];

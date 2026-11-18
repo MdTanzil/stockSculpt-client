@@ -1,4 +1,3 @@
-import ManageOrder from "@/pages/deshboard/ManageOrder";
 import { createBrowserRouter } from "react-router-dom";
 import AdminDashBoard from "../layouts/AdminDashBoard";
 import DashBoard from "../layouts/DashBoard";
@@ -6,10 +5,14 @@ import Main from "../layouts/Main";
 import AdminHome from "../pages/Admin/AdminHome";
 import ManageUsers from "../pages/Admin/ManageUsers";
 import MenageShop from "../pages/Admin/MenageShop";
+import About from "../pages/About";
+import Services from "../pages/Services";
 import CreateShop from "../pages/createShop/CreateShop";
 import CheckOut from "../pages/deshboard/CheckOut";
 import DashboardHome from "../pages/deshboard/DashBoardHome";
+import ManageOrder from "../pages/deshboard/ManageOrder";
 import ManageProduct from "../pages/deshboard/ManageProduct";
+import Settings from "../pages/deshboard/Settings";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
 import Error from "../pages/Error";
 import Home from "../pages/Home";
@@ -29,6 +32,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home></Home>,
+      },
+      {
+        path: "/about",
+        element: <About></About>,
+      },
+      {
+        path: "/services",
+        element: <Services></Services>,
       },
       {
         path: "/create-store-account",
@@ -77,7 +88,7 @@ const router = createBrowserRouter([
         path: "products",
         element: (
           <PrivateRouter>
-            <ManageProduct></ManageProduct>,
+            <ManageProduct></ManageProduct>
           </PrivateRouter>
         ),
       },
@@ -85,7 +96,6 @@ const router = createBrowserRouter([
         path: "orders",
         element: (
           <PrivateRouter>
-            {" "}
             <ManageOrder />
           </PrivateRouter>
         ),
@@ -94,7 +104,7 @@ const router = createBrowserRouter([
         path: "update-product/:id",
         element: (
           <PrivateRouter>
-            <UpdateProduct></UpdateProduct>,
+            <UpdateProduct></UpdateProduct>
           </PrivateRouter>
         ),
       },
@@ -102,7 +112,15 @@ const router = createBrowserRouter([
         path: "checkout",
         element: (
           <PrivateRouter>
-            <CheckOut></CheckOut>,
+            <CheckOut></CheckOut>
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <PrivateRouter>
+            <Settings></Settings>
           </PrivateRouter>
         ),
       },
@@ -117,7 +135,7 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <PrivateRouter>
-            <AdminHome></AdminHome>,
+            <AdminHome></AdminHome>
           </PrivateRouter>
         ),
       },
@@ -125,7 +143,7 @@ const router = createBrowserRouter([
         path: "manageProduct",
         element: (
           <PrivateRouter>
-            <MenageShop></MenageShop>,
+            <MenageShop></MenageShop>
           </PrivateRouter>
         ),
       },
@@ -134,7 +152,6 @@ const router = createBrowserRouter([
         path: "users",
         element: (
           <PrivateRouter>
-            {" "}
             <ManageUsers></ManageUsers>
           </PrivateRouter>
         ),
@@ -148,6 +165,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register></Register>,
+  },
+  {
+    path: "*",
+    element: <Error></Error>,
   },
 ]);
 

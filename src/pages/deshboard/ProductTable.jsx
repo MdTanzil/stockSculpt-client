@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,14 +10,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash } from "lucide-react";
+import { Package, Pencil, Trash } from "lucide-react";
+
+const getInitials = (name = "") =>
+  name
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "PR";
+
+const getStockBadge = (stock) => {
+  if (stock <= 0) return <Badge variant="destructive">Out of stock</Badge>;
+  if (stock <= 5) return <Badge variant="secondary">Low: {stock}</Badge>;
+  return <span>{stock}</span>;
+};
 
 const ProductTable = ({ products, onEdit, onDelete }) => {
-  if (!products?.length) return <p>No products found.</p>;
+  if (!products?.length) {
+    return (
+      <div className="rounded-lg border border-border bg-background py-12 text-center">
+        <Package className="mx-auto h-10 w-10 text-muted-foreground" />
+        <p className="mt-4 text-lg font-medium">No products yet</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Add your first product to start managing your inventory.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background">
-      <div className="overflow-hidden rounded-lg border border-border bg-background">
+      <div className="overflow-x-auto rounded-lg border border-border bg-background">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -36,26 +61,41 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                 <TableCell className="py-2 font-medium">
                   <Avatar>
                     <AvatarImage src={product.image} alt={product.name} />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback>
+                      {getInitials(product.name)}
+                    </AvatarFallback>
                   </Avatar>
                 </TableCell>
-                <TableCell className="py-2">{product.name}</TableCell>
-                <TableCell className="py-2">{product.description}</TableCell>
+                <TableCell className="py-2 font-medium">
+                  {product.name}
+                </TableCell>
+                <TableCell className="py-2 max-w-[220px] truncate">
+                  {product.description}
+                </TableCell>
                 <TableCell className="py-2">{product.category}</TableCell>
-                <TableCell className="py-2">${product.price}</TableCell>
-                <TableCell className="py-2">{product.rating}</TableCell>
-                <TableCell className="py-2">{product.stock}</TableCell>
                 <TableCell className="py-2">
-                  <div className="flex gap-1 gap-x-4">
-                    <Button size="sm" onClick={() => onEdit(product)}>
-                      <Pencil />
+                  ${(Number(product.price) || 0).toFixed(2)}
+                </TableCell>
+                <TableCell className="py-2">{product.rating}</TableCell>
+                <TableCell className="py-2">
+                  {getStockBadge(Number(product.stock) || 0)}
+                </TableCell>
+                <TableCell className="py-2">
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => onEdit(product)}
+                      aria-label={`Edit ${product.name}`}
+                    >
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => onDelete(product._id)}
                       variant="destructive"
+                      aria-label={`Delete ${product.name}`}
                     >
-                      <Trash />
+                      <Trash className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
@@ -65,7 +105,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
         </Table>
       </div>
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        Product Table
+        {products.length} product{products.length === 1 ? "" : "s"}
       </p>
     </div>
   );

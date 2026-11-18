@@ -6,7 +6,9 @@ import Hero from "../components/homeComponent/Hero";
 import { Faq3 } from "@/components/faq3";
 import { PricingCard } from "@/components/pricing-card";
 import { CTA } from "@/components/ui/call-to-action";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <Hero></Hero>
@@ -38,7 +40,7 @@ const Home = () => {
           },
         ]}
         buttonText="Upgrade Now"
-        onButtonClick={() => console.log("Upgrade Now Clicked")}
+        onButtonClick={() => navigate("/subscription")}
       />
 
       <Faq3 />

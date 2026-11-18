@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 
@@ -9,7 +10,7 @@ import useAuth from "../hooks/useAuth";
 const CheckoutForm = ({total }) => {
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState("");
-  const [transactionId, setTransactionId] = useState("");
+  const [, setTransactionId] = useState("");
   const stripe = useStripe();
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
@@ -22,8 +23,12 @@ const CheckoutForm = ({total }) => {
       axiosSecure
         .post("/create-payment-intent", { price: totalPrice })
         .then((res) => {
-        //   console.log(res.data.clientSecret);
           setClientSecret(res.data.clientSecret);
+        })
+        .catch(() => {
+          setError(
+            "Payment is not available right now. Please try again later."
+          );
         });
     }
   }, [axiosSecure, totalPrice]);
@@ -87,8 +92,6 @@ const CheckoutForm = ({total }) => {
             }
 
             const res = await axiosSecure.post('/payments', payment);
-            console.log('payment saved', res.data);
-            // refetch();
             if (res.data?.paymentResult?.insertedId) {
                 Swal.fire({
                     position: "top-center",
