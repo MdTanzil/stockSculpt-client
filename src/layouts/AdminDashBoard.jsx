@@ -7,10 +7,10 @@ import useAuth from "../hooks/useAuth";
 const AdminDashBoard = () => {
   const { user } = useAuth();
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <NavBar></NavBar>
-      <div className="flex   container mx-auto ">
-        <div className="w-64  min-h-screen bg-gray-200   justify-center ">
+      <div className="flex flex-1 container mx-auto ">
+        <div className="w-64 bg-gray-200   justify-center ">
           <div className="bg-slate-300 m-2 flex justify-center ">
             <div className="">
               <div className="avatar">

@@ -3,10 +3,10 @@ import { Footer } from "@/components/ui/footer";
 import { Outlet } from "react-router-dom";
 const Main = () => {
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
 
-      <div className="">
+      <div className="flex-1">
         <Outlet></Outlet>
       </div>
       <Footer />
@@ -15,5 +15,3 @@ const Main = () => {
 };
 
 export default Main;
-
-<Footer />;

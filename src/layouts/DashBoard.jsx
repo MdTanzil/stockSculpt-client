@@ -5,9 +5,9 @@ import AppSidebar from "@/pages/deshboard/AppSidebar";
 import { Outlet } from "react-router-dom";
 const DashBoard = () => {
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <SidebarProvider>
+      <SidebarProvider className="min-h-0 flex-1">
         <AppSidebar />
         <main className="flex-1">
           <SidebarTrigger />
