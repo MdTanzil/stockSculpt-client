@@ -1,8 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoveRight, PhoneCall } from "lucide-react";
+import { CreditCard, MoveRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function CTA() {
+  const navigate = useNavigate();
   return (
     <div className="w-full py-10 lg:py-40">
       <div className="container mx-auto">
@@ -22,10 +24,14 @@ function CTA() {
             </p>
           </div>
           <div className="flex flex-row gap-4">
-            <Button className="gap-4" variant="outline">
-              Jump on a call <PhoneCall className="w-4 h-4" />
+            <Button
+              className="gap-4"
+              variant="outline"
+              onClick={() => navigate("/subscription")}
+            >
+              View plans <CreditCard className="w-4 h-4" />
             </Button>
-            <Button className="gap-4">
+            <Button className="gap-4" onClick={() => navigate("/register")}>
               Sign up here <MoveRight className="w-4 h-4" />
             </Button>
           </div>

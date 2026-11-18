@@ -27,26 +27,21 @@ const demoData = {
       id: "faq-3",
       question: "Can I track low stock alerts?",
       answer:
-        "Yes, you can set up low stock alerts in your settings. You'll receive notifications when a product reaches a predefined stock level.",
+        "Yes. Your dashboard highlights products that are running low, so you can restock before you run out.",
     },
     {
       id: "faq-4",
-      question: "Does StockSculpt support multiple shops?",
+      question: "How many products can I add for free?",
       answer:
-        "Yes! You can create and manage multiple shops under one account, allowing you to track sales and inventory separately for each shop.",
+        "The free plan includes up to 3 products. If you need more, paid plans raise the limit to 200, 450 or 1,500 products.",
     },
     {
       id: "faq-5",
       question: "Is my inventory data secure?",
       answer:
-        "Absolutely! We use encrypted connections and secure databases to ensure that your inventory data remains private and protected.",
+        "Yes. You sign in with your own account, and every request to your shop data requires your login, so other shop owners can't see your products or orders.",
     },
   ],
-  supportHeading: "Still have questions?",
-  supportDescription:
-    "Can't find the answer you're looking for? Our support team is here to help with any technical questions or concerns.",
-  supportButtonText: "Contact Support",
-  supportButtonUrl: "https://yourinventorysystem.com/support",
 };
 
 const Faq3 = ({

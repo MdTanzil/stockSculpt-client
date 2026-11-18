@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { MoveRight, PhoneCall } from "lucide-react";
+import { MoveRight, Store } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 function Hero1() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function Hero1() {
               transition={{ duration: 0.5 }}
               className="text-5xl md:text-7xl max-w-5xl tracking-tighter text-center font-semibold text-[#2c3e50]"
             >
-              Simplify Your Inventory Management
+              Run Your Shop From One Dashboard
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -23,23 +23,26 @@ function Hero1() {
               transition={{ duration: 0.5 }}
               className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-5xl text-center "
             >
-              Discover the power of our cutting-edge Inventory Management System
-              — a comprehensive solution designed to streamline your business
-              processes. From tracking stock levels and optimizing order
-              fulfillment to real-time analytics, our platform empowers you to
-              take control of your inventory with ease.
+              stockSculpt helps small shop owners manage products, stock levels
+              and orders in one place. Create your shop, add products, track
+              every order — and start free with up to 3 products.
             </motion.p>
           </div>
           <div className="flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline">
-              Jump on a call <PhoneCall className="w-4 h-4" />
+            <Button
+              size="lg"
+              className="gap-4"
+              variant="outline"
+              onClick={() => navigate("/services")}
+            >
+              See our services <Store className="w-4 h-4" />
             </Button>
             <Button
               size="lg"
               className="gap-4"
               onClick={() => navigate("/register")}
             >
-              Sign up here <MoveRight className="w-4 h-4" />
+              Create your shop — it&apos;s free <MoveRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
