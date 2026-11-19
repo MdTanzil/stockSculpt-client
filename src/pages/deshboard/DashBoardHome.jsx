@@ -191,6 +191,10 @@ const DashboardHome = () => {
                 {
                   scaleType: "band",
                   data: monthlyRevenue.map((m) => m.label),
+                  // MUI X Charts hides tick labels it thinks would overlap;
+                  // with 6 short month labels there is no overlap, so force
+                  // every label to show.
+                  tickLabelInterval: () => true,
                 },
               ]}
               series={[
