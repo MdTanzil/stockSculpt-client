@@ -27,7 +27,7 @@ const AdminDashBoard = () => {
           sx={{
             width: 256,
             flexShrink: 0,
-            backgroundColor: "grey.200",
+            backgroundColor: "background.paper",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -35,7 +35,7 @@ const AdminDashBoard = () => {
         >
           <Box
             sx={{
-              backgroundColor: "grey.300",
+              backgroundColor: "action.hover",
               m: 1,
               display: "flex",
               justifyContent: "center",

@@ -17,6 +17,32 @@
   color: #00796b !important;
 }
 
+/* Dark mode (the `dark` class is toggled on <html> by
+   ThemeModeProvider). `color-scheme` restyles native UI — scrollbars,
+   form controls, date pickers — to match the theme. */
+html.dark {
+  color-scheme: dark;
+}
+
+/* SweetAlert2 dialogs render outside the MUI theme, so they need their
+   own dark-mode rules — otherwise the delete confirmations would flash
+   a white box in dark mode. */
+html.dark .swal2-popup {
+  background: #1e1e1e;
+  color: #e0e0e0;
+}
+
+html.dark .swal2-title,
+html.dark .swal2-html-container {
+  color: #e0e0e0;
+}
+
+html.dark .swal2-input {
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
 body {
   font-family: "Poppins", serif;
   font-style: normal;

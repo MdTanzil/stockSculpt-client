@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import LinearProgress from "@mui/material/LinearProgress";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -39,20 +40,21 @@ const zebraRowSx = {
 const getStockBadge = (stock) => {
   if (stock <= 0) return <Chip label="Out of stock" size="small" color="error" />;
   if (stock <= 5) {
+    // Theme-aware warning chip (adapts to dark mode) instead of the
+    // previous hardcoded light-amber colors.
     return (
-      <Chip
-        label={`Low: ${stock}`}
-        size="small"
-        variant="outlined"
-        sx={{
-          borderColor: "#fde68a",
-          backgroundColor: "#fef3c7",
-          color: "#92400e",
-        }}
-      />
+      <Chip label={`Low: ${stock}`} size="small" color="warning" />
     );
   }
   return <span className="tabular-nums">{stock}</span>;
+};
+
+// Stock level bar: stock relative to 100, capped at 100. Same thresholds
+// as the Low badge (red at 5 or fewer, amber at 20 or fewer).
+const getStockBarColor = (stock) => {
+  if (stock <= 5) return "error";
+  if (stock <= 20) return "warning";
+  return "success";
 };
 
 const ProductTable = ({
@@ -171,7 +173,22 @@ const ProductTable = ({
                 )}
               </TableCell>
               <TableCell align="right">
-                {getStockBadge(Number(product.stock) || 0)}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                    gap: 1,
+                  }}
+                >
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min(Number(product.stock) || 0, 100)}
+                    color={getStockBarColor(Number(product.stock) || 0)}
+                    sx={{ width: 80, borderRadius: 1 }}
+                  />
+                  {getStockBadge(Number(product.stock) || 0)}
+                </Box>
               </TableCell>
               <TableCell align="right">
                 <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>

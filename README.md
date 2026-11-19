@@ -19,6 +19,13 @@ manage shops and users.
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and
   recent orders
+- Dark mode — sun/moon toggle in the navbar, remembered across visits
+- Revenue chart on the dashboard — monthly revenue from completed orders
+  for the last 6 months
+- Stock level bars in the products table, colored by stock level (red at
+  5 or fewer, amber at 20 or fewer)
+- Low-stock alert banner on the dashboard listing products that need
+  restocking, with a shortcut to the products page
 - Checkout / invoice page with professional per-order PDF invoices
   (branded header, itemized table, totals)
 - Subscriptions with Stripe checkout (test mode)

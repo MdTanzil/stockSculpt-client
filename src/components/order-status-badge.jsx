@@ -6,12 +6,10 @@ const OrderStatusBadge = ({ status }) => {
   const label = value.charAt(0).toUpperCase() + value.slice(1);
 
   if (value === "completed") {
+    // Theme-aware success chip (adapts to dark mode) instead of the
+    // previous hardcoded light-green colors.
     return (
-      <Chip
-        label={label}
-        size="small"
-        sx={{ backgroundColor: "#d1fae5", color: "#065f46", fontWeight: 500 }}
-      />
+      <Chip label={label} size="small" color="success" sx={{ fontWeight: 500 }} />
     );
   }
 

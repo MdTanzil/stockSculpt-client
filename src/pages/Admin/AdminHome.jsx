@@ -45,7 +45,12 @@ const AdminHome = () => {
               <Typography variant="body2" color="text.secondary">
                 {stat.title}
               </Typography>
-              <Typography variant="h4" component="div" sx={{ mt: 1 }}>
+              <Typography
+                variant="h5"
+                component="div"
+                fontWeight={700}
+                sx={{ mt: 1 }}
+              >
                 {stat.value}
               </Typography>
             </CardContent>

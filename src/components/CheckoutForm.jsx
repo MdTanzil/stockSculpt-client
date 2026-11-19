@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 // import useCart from "../../../hooks/useCart";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../hooks/useAxiosSecure";
@@ -16,6 +17,23 @@ const CheckoutForm = ({total }) => {
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
+  const theme = useTheme();
+  // Stripe's CardElement is an iframe on the card's paper background, so
+  // its text colors must adapt to the theme — the previous dark-slate
+  // colors would be unreadable on the dark paper in dark mode.
+  const isDark = theme.palette.mode === "dark";
+  const cardElementStyles = {
+    base: {
+      fontSize: "20px",
+      color: isDark ? "#e8eaed" : "#424770",
+      "::placeholder": {
+        color: isDark ? "#9aa0a6" : "#023047",
+      },
+    },
+    invalid: {
+      color: theme.palette.error.main,
+    },
+  };
   // const [cart, refetch] = useCart();
   const navigate = useNavigate();
   const totalPrice = total;
@@ -138,18 +156,7 @@ const CheckoutForm = ({total }) => {
           >
             <CardElement
               options={{
-                style: {
-                  base: {
-                    fontSize: "20px",
-                    color: "#424770",
-                    "::placeholder": {
-                      color: "#023047",
-                    },
-                  },
-                  invalid: {
-                    color: "#9e2146",
-                  },
-                },
+                style: cardElementStyles,
               }}
             />
           </Box>

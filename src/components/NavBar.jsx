@@ -9,8 +9,11 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Brightness4 from "@mui/icons-material/Brightness4";
+import Brightness7 from "@mui/icons-material/Brightness7";
 import useAuth from "@/hooks/useAuth";
 import useShop from "@/hooks/useShop";
+import useThemeMode from "@/hooks/useThemeMode";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -30,6 +33,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { logOut, user } = useAuth();
   const { shop } = useShop();
+  const { mode, toggleMode } = useThemeMode();
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
@@ -94,7 +98,23 @@ const Navbar = () => {
         </Box>
 
         {/* Login Button (visible on large screens) */}
-        <Box sx={{ display: { xs: "none", lg: "block" } }}>
+        <Box
+          sx={{
+            display: { xs: "none", lg: "flex" },
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label={
+              mode === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+            onClick={toggleMode}
+            sx={{ color: "white" }}
+          >
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
           {user?.email ? (
             <Button
               variant="outlined"
@@ -125,7 +145,24 @@ const Navbar = () => {
         </Box>
 
         {/* Mobile Menu Button */}
-        <Box sx={{ display: { xs: "block", lg: "none" }, ml: "auto" }}>
+        <Box
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            ml: "auto",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label={
+              mode === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+            onClick={toggleMode}
+            sx={{ color: "white" }}
+          >
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
           <IconButton
             color="inherit"
             aria-label="Open menu"

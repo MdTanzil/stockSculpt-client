@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Box, Typography } from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -15,6 +16,22 @@ export function FeatureSteps({
 }) {
   const [currentFeature, setCurrentFeature] = useState(0);
   const [progress, setProgress] = useState(0);
+  const theme = useTheme();
+
+  // Step-circle colors adapt to the theme: the active circle keeps the
+  // brand navy (dark in light mode, lighter slate in dark mode via the
+  // theme primary), the inactive ones use theme tokens instead of the
+  // previous hardcoded light greys.
+  const activeCircle = {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+  };
+  const inactiveCircle = {
+    borderColor: theme.palette.text.disabled,
+    backgroundColor: theme.palette.action.hover,
+    color: theme.palette.text.secondary,
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -58,11 +75,9 @@ export function FeatureSteps({
                   style={{
                     borderWidth: 2,
                     borderStyle: "solid",
-                    borderColor:
-                      index === currentFeature ? "#2c3e50" : "#9e9e9e",
-                    backgroundColor:
-                      index === currentFeature ? "#2c3e50" : "#f5f5f5",
-                    color: index === currentFeature ? "#ffffff" : "#757575",
+                    ...(index === currentFeature
+                      ? activeCircle
+                      : inactiveCircle),
                     transform:
                       index === currentFeature ? "scale(1.1)" : "none",
                   }}
@@ -129,8 +144,14 @@ export function FeatureSteps({
                           left: 0,
                           right: 0,
                           height: "66.666667%",
-                          background:
-                            "linear-gradient(to top, #fff 0%, rgba(255,255,255,0.5) 50%, transparent 100%)",
+                          // Fade the image into the page background —
+                          // theme-aware so dark mode fades to dark
+                          // instead of flashing a white block.
+                          background: (theme) =>
+                            `linear-gradient(to top, ${theme.palette.background.default} 0%, ${alpha(
+                              theme.palette.background.default,
+                              0.5
+                            )} 50%, transparent 100%)`,
                         }}
                       />
                     </motion.div>

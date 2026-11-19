@@ -66,7 +66,9 @@ const Services = () => {
         {services.map((service) => (
           <Card key={service.title} variant="outlined">
             <CardContent sx={{ p: 3 }}>
-              <service.icon size={32} color="#2c3e50" />
+              <Box sx={{ color: "primary.main", display: "flex" }}>
+                <service.icon size={32} />
+              </Box>
               <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
                 {service.title}
               </Typography>
