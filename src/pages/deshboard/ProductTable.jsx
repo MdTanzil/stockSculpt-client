@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Package, Pencil, Star, Trash } from "lucide-react";
+import { Package, Pencil, SearchX, Star, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
   name
@@ -38,8 +38,31 @@ const getStockBadge = (stock) => {
   return <span className="tabular-nums">{stock}</span>;
 };
 
-const ProductTable = ({ products, onEdit, onDelete }) => {
+const ProductTable = ({
+  products,
+  onEdit,
+  onDelete,
+  totalCount,
+  hasActiveFilters,
+  onClearFilters,
+}) => {
   if (!products?.length) {
+    if (hasActiveFilters) {
+      return (
+        <div className="rounded-lg border border-border bg-background py-12 text-center">
+          <SearchX className="mx-auto h-10 w-10 text-muted-foreground" />
+          <p className="mt-4 text-lg font-medium">
+            No products match your filters
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Try adjusting your search or filters.
+          </p>
+          <Button variant="outline" className="mt-4" onClick={onClearFilters}>
+            Clear filters
+          </Button>
+        </div>
+      );
+    }
     return (
       <div className="rounded-lg border border-border bg-background py-12 text-center">
         <Package className="mx-auto h-10 w-10 text-muted-foreground" />
@@ -142,7 +165,11 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                 colSpan={4}
                 className="py-2 text-muted-foreground"
               >
-                {products.length} product{products.length === 1 ? "" : "s"}
+                {totalCount != null && totalCount !== products.length
+                  ? `Showing ${products.length} of ${totalCount} products`
+                  : `${products.length} product${
+                      products.length === 1 ? "" : "s"
+                    }`}
               </TableCell>
               <TableCell colSpan={3} className="py-2 text-right font-medium">
                 Total stock value

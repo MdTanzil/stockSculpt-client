@@ -21,11 +21,12 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import imageUpload from "@/utility/imageUpload";
 import { SelectValue } from "@radix-ui/react-select";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import ProductTable from "./ProductTable";
+import { Switch } from "@/components/ui/switch";
 
 const ManageProduct = () => {
   const axiosSecure = useAxiosSecure();
@@ -33,6 +34,9 @@ const ManageProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [lowStockOnly, setLowStockOnly] = useState(false);
   const {
     register,
     handleSubmit,
@@ -50,6 +54,32 @@ const ManageProduct = () => {
   };
 
   const { products, refetch, isLoading: isProductLoading } = useShop();
+
+  const categories = useMemo(
+    () =>
+      [...new Set((products || []).map((p) => p.category).filter(Boolean))].sort(),
+    [products]
+  );
+
+  const filteredProducts = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    return (products || []).filter((product) => {
+      if (query && !product.name?.toLowerCase().includes(query)) return false;
+      if (categoryFilter !== "all" && product.category !== categoryFilter)
+        return false;
+      if (lowStockOnly && (Number(product.stock) || 0) > 5) return false;
+      return true;
+    });
+  }, [products, searchTerm, categoryFilter, lowStockOnly]);
+
+  const hasActiveFilters =
+    searchTerm.trim() !== "" || categoryFilter !== "all" || lowStockOnly;
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setCategoryFilter("all");
+    setLowStockOnly(false);
+  };
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -281,11 +311,60 @@ const ManageProduct = () => {
             Loading products...
           </p>
         ) : (
-          <ProductTable
-            products={products}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <>
+            <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-3 shadow-sm">
+              <div className="relative min-w-[200px] flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search products by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9"
+                  aria-label="Search products by name"
+                />
+              </div>
+              <Select
+                value={categoryFilter}
+                onValueChange={setCategoryFilter}
+              >
+                <SelectTrigger
+                  className="w-[180px]"
+                  aria-label="Filter by category"
+                >
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="low-stock-only"
+                  checked={lowStockOnly}
+                  onCheckedChange={setLowStockOnly}
+                />
+                <Label htmlFor="low-stock-only">Low stock only</Label>
+              </div>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              )}
+            </div>
+            <ProductTable
+              products={filteredProducts}
+              totalCount={products?.length ?? 0}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </>
         )}
       </div>
     </div>

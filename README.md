@@ -13,7 +13,7 @@ manage shops and users.
 - Shop creation and management, with subscription plans (free plan: up to
   3 products)
 - Product management — add, edit, delete, stock tracking with low-stock
-  warnings
+  warnings, plus search, category and low-stock filters
 - Order management — create orders, update status, per-shop order lists
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
