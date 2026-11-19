@@ -3,6 +3,7 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 
 // import useCart from "../../../hooks/useCart";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../hooks/useAxiosSecure";
@@ -109,35 +110,68 @@ const CheckoutForm = ({total }) => {
 }
   
   return (
-    <form onSubmit={handleSubmit} className="card-body card ">
-      <h2 className="card-title justify-center text-white mb-3 p-2 rounded-2xl bg-primary">Enter Your card </h2>
+    <Card sx={{ my: 4 }}>
+      <CardContent sx={{ p: 3 }}>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Typography
+            variant="h6"
+            component="h2"
+            align="center"
+            sx={{
+              mb: 2,
+              p: 1,
+              borderRadius: 4,
+              bgcolor: "primary.main",
+              color: "white",
+            }}
+          >
+            Enter Your card
+          </Typography>
 
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: "20px",
-              color: "#424770",
-              "::placeholder": {
-                color: "#023047",
-              },
-            },
-            invalid: {
-              color: "#9e2146",
-            },
-          },
-        }}
-        className="form-control"
-      />
-      <button
-        className="btn btn-sm btn-secondary mx-auto my-4 w-1/3  mt-4"
-        type="submit"
-        disabled={!stripe || !clientSecret}
-      >
-        Pay
-      </button>
-      <p className="text-red-400">{error}</p>
-    </form>
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "divider",
+              borderRadius: 1,
+              p: 2,
+            }}
+          >
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: "20px",
+                    color: "#424770",
+                    "::placeholder": {
+                      color: "#023047",
+                    },
+                  },
+                  invalid: {
+                    color: "#9e2146",
+                  },
+                },
+              }}
+            />
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+            <Button
+              variant="contained"
+              size="small"
+              type="submit"
+              disabled={!stripe || !clientSecret}
+              sx={{ width: "33%" }}
+            >
+              Pay
+            </Button>
+          </Box>
+          {error && (
+            <Typography color="error" variant="body2">
+              {error}
+            </Typography>
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 

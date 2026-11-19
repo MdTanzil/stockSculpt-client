@@ -1,3 +1,12 @@
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Typography,
+} from "@mui/material";
+import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Plans = () => {
@@ -37,56 +46,88 @@ const Plans = () => {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-semibold text-primary lg:text-4xl">
+    <Box component="section" sx={{ py: 10 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mx: "auto", maxWidth: "48rem", textAlign: "center" }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight={600}
+            color="primary"
+            sx={{ fontSize: { lg: "2.25rem" } }}
+          >
             Simple plans that grow with your shop
-          </h2>
-          <p className="mt-4 text-muted-foreground lg:text-lg">
+          </Typography>
+          <Typography
+            color="text.secondary"
+            sx={{ mt: 2, fontSize: { lg: "1.125rem" } }}
+          >
             Start free. Upgrade when you need room for more products.
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan) => (
-            <div
+            <Card
               key={plan.name}
-              className="flex flex-col rounded-lg border bg-white p-6 text-center shadow-sm"
+              variant="outlined"
+              sx={{ display: "flex", flexDirection: "column", textAlign: "center" }}
             >
-              <h3 className="text-2xl font-semibold">{plan.name}</h3>
-              <p className="mt-2 font-light text-gray-500">{plan.text}</p>
-              <div className="my-8 flex items-baseline justify-center">
-                <span className="text-5xl font-extrabold">{plan.price}</span>
-              </div>
-              <ul className="mb-8 space-y-4 text-left">
-                <li className="flex items-center space-x-3">
-                  <svg
-                    className="h-5 w-5 flex-shrink-0 text-green-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                  <span>{plan.limit}</span>
-                </li>
-              </ul>
-              <Link
-                to={plan.to}
-                className="mt-auto rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-white hover:opacity-90"
+              <CardContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  p: 3,
+                  height: "100%",
+                }}
               >
-                {plan.buttonText}
-              </Link>
-            </div>
+                <Typography variant="h5" component="h3" fontWeight={600}>
+                  {plan.name}
+                </Typography>
+                <Typography color="text.secondary" sx={{ mt: 1, fontWeight: 300 }}>
+                  {plan.text}
+                </Typography>
+                <Box
+                  sx={{
+                    my: 4,
+                    display: "flex",
+                    alignItems: "baseline",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography variant="h3" component="span" fontWeight="800">
+                    {plan.price}
+                  </Typography>
+                </Box>
+                <Box
+                  component="ul"
+                  sx={{
+                    mb: 4,
+                    listStyle: "none",
+                    p: 0,
+                    m: 0,
+                    textAlign: "left",
+                  }}
+                >
+                  <Box component="li" sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Check size={20} color="#22c55e" style={{ flexShrink: 0 }} />
+                    <span>{plan.limit}</span>
+                  </Box>
+                </Box>
+                <Button
+                  component={Link}
+                  to={plan.to}
+                  variant="contained"
+                  sx={{ mt: "auto" }}
+                >
+                  {plan.buttonText}
+                </Button>
+              </CardContent>
+            </Card>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Box>
   );
 };
 

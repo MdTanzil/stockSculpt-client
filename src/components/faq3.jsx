@@ -1,10 +1,14 @@
 /* eslint-disable react/prop-types */
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Container,
+  Typography,
+} from "@mui/material";
+import { useState } from "react";
 
 const demoData = {
   heading: "Frequently Asked Questions",
@@ -49,37 +53,64 @@ const Faq3 = ({
   description = demoData.description,
   items = demoData.items,
 }) => {
+  // Single-open, collapsible — same behaviour as the shadcn accordion
+  // (type="single" collapsible).
+  const [expanded, setExpanded] = useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
   return (
-    <section className="py-20 container mx-auto px-4">
-      <div className="container space-y-16">
-        <div className="mx-auto flex max-w-3xl flex-col text-left md:text-center">
-          <h2 className="mb-3 text-3xl font-semibold text-primary md:mb-4 lg:mb-6 lg:text-4xl">
-            {heading}
-          </h2>
-          <p className="text-muted-foreground lg:text-lg">{description}</p>
-        </div>
-        <Accordion
-          type="single"
-          collapsible
-          className="mx-auto w-full lg:max-w-3xl"
+    <Box component="section" sx={{ py: 10 }}>
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            mx: "auto",
+            display: "flex",
+            maxWidth: "48rem",
+            flexDirection: "column",
+            textAlign: { xs: "left", md: "center" },
+          }}
         >
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight={600}
+            color="primary"
+            sx={{ mb: { xs: 1.5, md: 2, lg: 3 }, fontSize: { lg: "2.25rem" } }}
+          >
+            {heading}
+          </Typography>
+          <Typography color="text.secondary" sx={{ fontSize: { lg: "1.125rem" } }}>
+            {description}
+          </Typography>
+        </Box>
+        <Box sx={{ mx: "auto", mt: 8, width: "100%", maxWidth: { lg: "48rem" } }}>
           {items.map((item) => (
-            <AccordionItem key={item.id} value={item.id}>
-              <AccordionTrigger className="transition-opacity duration-200 hover:no-underline hover:opacity-60">
-                <div className="font-medium sm:py-1 lg:py-2 lg:text-lg">
+            <Accordion
+              key={item.id}
+              expanded={expanded === item.id}
+              onChange={handleChange(item.id)}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography
+                  fontWeight={500}
+                  sx={{ py: { xs: 0.5, lg: 1 }, fontSize: { lg: "1.125rem" } }}
+                >
                   {item.question}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="sm:mb-1 lg:mb-2">
-                <div className="text-muted-foreground lg:text-lg">
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ mb: { xs: 0.5, lg: 1 } }}>
+                <Typography color="text.secondary" sx={{ fontSize: { lg: "1.125rem" } }}>
                   {item.answer}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
           ))}
-        </Accordion>
-      </div>
-    </section>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

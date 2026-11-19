@@ -1,5 +1,6 @@
 import { Elements } from "@stripe/react-stripe-js";
 
+import { Button, Container, Typography } from "@mui/material";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link, useLocation } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
@@ -15,27 +16,31 @@ const Payment = () => {
 
   if (!total) {
     return (
-      <div className="container mx-auto my-20 max-w-md text-center">
-        <h2 className="text-2xl font-bold text-primary">No payment selected</h2>
-        <p className="mt-2 text-muted-foreground">
+      <Container maxWidth="sm" sx={{ my: 10, textAlign: "center" }}>
+        <Typography variant="h5" component="h2" fontWeight="bold" color="primary">
+          No payment selected
+        </Typography>
+        <Typography color="text.secondary" sx={{ mt: 1 }}>
           Please choose a subscription plan first.
-        </p>
-        <Link
+        </Typography>
+        <Button
+          component={Link}
           to="/subscription"
-          className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 font-semibold text-white"
+          variant="contained"
+          sx={{ mt: 3, fontWeight: 600 }}
         >
           View Plans
-        </Link>
-      </div>
+        </Button>
+      </Container>
     );
   }
 
   return (
-    <div className="container mx-auto w-full max-w-xl px-4">
+    <Container maxWidth="sm" sx={{ px: 2 }}>
       <Elements stripe={stripePromise}>
         <CheckoutForm total={total}></CheckoutForm>
       </Elements>
-    </div>
+    </Container>
   );
 };
 

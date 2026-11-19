@@ -1,14 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
 import useShop from "@/hooks/useShop";
 import {
   AlertTriangle,
-  Box,
+  Box as BoxIcon,
   DollarSign,
   Package,
   ShoppingCart,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 const LOW_STOCK_LIMIT = 5;
 
@@ -67,9 +71,9 @@ const DashboardHome = () => {
   if (isLoading || orderLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-lg text-muted-foreground">
+        <Typography variant="h6" color="text.secondary">
           Loading dashboard data...
-        </p>
+        </Typography>
       </div>
     );
   }
@@ -77,28 +81,40 @@ const DashboardHome = () => {
   return (
     <div className="container mx-auto space-y-6 p-4">
       <div>
-        <h1 className="text-3xl font-bold text-primary">
+        <Typography variant="h4" fontWeight={700} color="primary.main">
           Welcome{shop?.name ? `, ${shop.name}` : ""}!
-        </h1>
-        <p className="mt-1 text-muted-foreground">
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
           Here is a quick overview of your shop.
-        </p>
+        </Typography>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-5 w-5 text-muted-foreground" />
-            </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography variant="body2" fontWeight={500}>
+                  {stat.title}
+                </Typography>
+                <Box sx={{ color: "text.secondary", display: "flex" }}>
+                  <stat.icon className="h-5 w-5" />
+                </Box>
+              </Box>
+              <Typography variant="h5" fontWeight={700} sx={{ mt: 1 }}>
+                {stat.value}
+              </Typography>
               <Link
+                component={RouterLink}
                 to={stat.link}
-                className="text-sm text-primary hover:underline"
+                underline="hover"
+                sx={{ fontSize: "0.875rem" }}
               >
                 {stat.linkText}
               </Link>
@@ -109,23 +125,28 @@ const DashboardHome = () => {
 
       {lowStockProducts.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Low Stock Warning
-            </CardTitle>
-          </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <Typography
+              variant="h6"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <Box sx={{ color: "#f59e0b", display: "flex" }}>
+                <AlertTriangle className="h-5 w-5" />
+              </Box>
+              Low Stock Warning
+            </Typography>
+            <ul className="mt-2 space-y-2">
               {lowStockProducts.map((product) => (
                 <li
                   key={product._id}
                   className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0"
                 >
-                  <span className="font-medium">{product.name}</span>
-                  <span className="text-sm text-amber-600">
+                  <Typography variant="body1" fontWeight={500}>
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#d97706" }}>
                     {product.stock} left
-                  </span>
+                  </Typography>
                 </li>
               ))}
             </ul>
@@ -134,40 +155,55 @@ const DashboardHome = () => {
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
-        </CardHeader>
         <CardContent>
+          <Typography variant="h6">Recent Orders</Typography>
           {recentOrders.length === 0 ? (
             <div className="py-6 text-center">
-              <Box className="mx-auto h-10 w-10 text-muted-foreground" />
-              <p className="mt-2 text-muted-foreground">
+              <Box
+                sx={{
+                  color: "text.secondary",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <BoxIcon className="h-10 w-10" />
+              </Box>
+              <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
                 No orders yet. Create your first order to see it here.
-              </p>
-              <Button asChild className="mt-4">
-                <Link to="/dashboard/orders">Create Order</Link>
+              </Typography>
+              <Button
+                component={RouterLink}
+                to="/dashboard/orders"
+                variant="contained"
+                sx={{ mt: 2 }}
+              >
+                Create Order
               </Button>
             </div>
           ) : (
-            <ul className="space-y-2">
+            <ul className="mt-2 space-y-2">
               {recentOrders.map((order) => (
                 <li
                   key={order._id}
                   className="flex flex-wrap items-center justify-between gap-2 border-b pb-2 last:border-0 last:pb-0"
                 >
-                  <span className="font-medium">
+                  <Typography variant="body1" fontWeight={500}>
                     {order.products?.length || 0} item
                     {order.products?.length === 1 ? "" : "s"}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
                     {new Date(order.createdAt).toLocaleDateString()}
-                  </span>
-                  <span className="text-sm font-medium capitalize">
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    fontWeight={500}
+                    sx={{ textTransform: "capitalize" }}
+                  >
                     {order.orderStatus}
-                  </span>
-                  <span className="font-semibold">
+                  </Typography>
+                  <Typography variant="body1" fontWeight={600}>
                     ${(Number(order.totalPrice) || 0).toFixed(2)}
-                  </span>
+                  </Typography>
                 </li>
               ))}
             </ul>

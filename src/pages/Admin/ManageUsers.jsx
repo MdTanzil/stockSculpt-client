@@ -1,14 +1,16 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import { Mail, Users } from "lucide-react";
 import Swal from "sweetalert2";
@@ -56,79 +58,88 @@ const ManageUsers = () => {
 
   return (
     <div>
-      <h2 className="mb-5 text-center text-4xl font-bold text-primary">
+      <Typography
+        variant="h4"
+        align="center"
+        color="primary"
+        sx={{ mb: 5, fontWeight: "bold" }}
+      >
         Manage Users ({userData?.length || 0})
-      </h2>
+      </Typography>
       {isLoading ? (
-        <p className="text-center text-lg text-muted-foreground">
-          Loading users...
-        </p>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress />
+        </Box>
       ) : !userData?.length ? (
-        <div className="rounded-lg border border-border bg-background py-12 text-center">
-          <Users className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No users found</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <Paper
+          variant="outlined"
+          sx={{ py: 6, textAlign: "center" }}
+        >
+          <Users style={{ margin: "0 auto", width: 40, height: 40, color: "rgba(0, 0, 0, 0.54)" }} />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            No users found
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             New users will appear here once they sign up.
-          </p>
-        </div>
+          </Typography>
+        </Paper>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
-          <Table>
-            <TableHeader>
+        <TableContainer component={Paper} variant="outlined">
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableHead className="h-10 py-2">#</TableHead>
-                <TableHead className="h-10 py-2">User</TableHead>
-                <TableHead className="h-10 py-2">Email</TableHead>
-                <TableHead className="h-10 py-2">Role</TableHead>
-                <TableHead className="h-10 py-2">Status</TableHead>
-                <TableHead className="h-10 py-2 text-right">Action</TableHead>
+                <TableCell>#</TableCell>
+                <TableCell>User</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell align="right">Action</TableCell>
               </TableRow>
-            </TableHeader>
+            </TableHead>
             <TableBody>
               {userData.map((user, idx) => (
                 <TableRow key={user?._id}>
-                  <TableCell className="py-2 tabular-nums text-muted-foreground">
+                  <TableCell sx={{ fontVariantNumeric: "tabular-nums" }} color="text.secondary">
                     {idx + 1}
                   </TableCell>
-                  <TableCell className="py-2">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={user?.avatar} alt={user?.name} />
-                        <AvatarFallback>
-                          {user?.name?.charAt(0) || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{user?.name || "—"}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-2">{user?.email}</TableCell>
-                  <TableCell className="py-2 capitalize">
-                    <Badge
-                      variant={user?.role === "admin" ? "default" : "secondary"}
-                    >
-                      {user?.role || "user"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-2">
-                    {user?.isActive ? (
-                      <Badge
-                        variant="outline"
-                        className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      <Avatar
+                        src={user?.avatar || undefined}
+                        alt={user?.name}
+                        sx={{ width: 36, height: 36 }}
                       >
-                        Active
-                      </Badge>
+                        {user?.name?.charAt(0) || "U"}
+                      </Avatar>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {user?.name || "—"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{user?.email}</TableCell>
+                  <TableCell sx={{ textTransform: "capitalize" }}>
+                    <Chip
+                      label={user?.role || "user"}
+                      size="small"
+                      color={user?.role === "admin" ? "primary" : "default"}
+                      sx={{ textTransform: "capitalize" }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {user?.isActive ? (
+                      <Chip label="Active" size="small" color="success" />
                     ) : (
-                      <Badge variant="secondary">Inactive</Badge>
+                      <Chip label="Inactive" size="small" />
                     )}
                   </TableCell>
-                  <TableCell className="py-2 text-right">
+                  <TableCell align="right">
                     {user?.role !== "admin" && (
                       <Button
-                        size="sm"
-                        variant="outline"
+                        size="small"
+                        variant="outlined"
                         onClick={() => sendPromotional(user?.email)}
+                        startIcon={<Mail size={16} />}
                       >
-                        <Mail className="mr-1 h-4 w-4" />
                         Send email
                       </Button>
                     )}
@@ -137,7 +148,7 @@ const ManageUsers = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </TableContainer>
       )}
     </div>
   );

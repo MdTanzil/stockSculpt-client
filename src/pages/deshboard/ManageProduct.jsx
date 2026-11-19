@@ -1,32 +1,27 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import Switch from "@mui/material/Switch";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import imageUpload from "@/utility/imageUpload";
-import { SelectValue } from "@radix-ui/react-select";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import ProductTable from "./ProductTable";
-import { Switch } from "@/components/ui/switch";
 
 const ManageProduct = () => {
   const axiosSecure = useAxiosSecure();
@@ -41,9 +36,35 @@ const ManageProduct = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
     reset,
   } = useForm();
+
+  // react-hook-form's register ref must target the underlying <input>, so
+  // split it off and pass it as inputRef (MUI forwards `ref` to the root).
+  const { ref: nameRef, ...nameProps } = register("name", {
+    required: "Product name is required",
+  });
+  const { ref: descriptionRef, ...descriptionProps } = register("description", {
+    required: "Description is required",
+  });
+  const { ref: priceRef, ...priceProps } = register("price", {
+    required: "Price is required",
+  });
+  const { ref: stockRef, ...stockProps } = register("stock", {
+    required: "Stock quantity is required",
+  });
+  const { ref: ratingRef, ...ratingProps } = register("rating", {
+    required: "Product rating is required",
+  });
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setEditProduct(null); // Reset editProduct when dialog is closed
+    reset(); // Reset the form fields
+    setImageUrl(""); // Clear uploaded image URL
+  };
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -145,55 +166,42 @@ const ManageProduct = () => {
 
   return (
     <div>
-      <p className="text-center font-bold text-4xl text-primary">
+      <Typography variant="h4" align="center" fontWeight={700} color="primary.main">
         Manage Your Product
-      </p>
+      </Typography>
       <div>
-        <Dialog
-          open={open}
-          onOpenChange={(isOpen) => {
-            setOpen(isOpen);
-            if (!isOpen) {
-              setEditProduct(null); // Reset editProduct when dialog is closed
-              reset(); // Reset the form fields
-              setImageUrl(""); // Clear uploaded image URL
-            }
-          }}
+        <Button
+          variant="contained"
+          onClick={() => setOpen(true)}
+          endIcon={<Plus className="h-4 w-4" />}
         >
-          <DialogTrigger asChild>
-            <Button onClick={() => setOpen(true)}>
-              {editProduct ? "Edit Product" : "Add Product"} <Plus />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <DialogHeader>
-                <DialogTitle>
-                  {editProduct ? "Edit Product" : "Add Product"}
-                </DialogTitle>
-                <DialogDescription>
-                  {editProduct
-                    ? "Edit your product details"
-                    : "Add your new product to your shop"}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
+          {editProduct ? "Edit Product" : "Add Product"}
+        </Button>
+        <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <DialogTitle>
+              {editProduct ? "Edit Product" : "Add Product"}
+            </DialogTitle>
+            <DialogContent>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {editProduct
+                  ? "Edit your product details"
+                  : "Add your new product to your shop"}
+              </Typography>
+              <Stack spacing={2} sx={{ pt: 1 }}>
+                <TextField
+                  id="name"
+                  label="Product Name"
+                  fullWidth
+                  inputRef={nameRef}
+                  {...nameProps}
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Product Name</Label>
-                  <Input
-                    id="name"
-                    {...register("name", {
-                      required: "Product name is required",
-                    })}
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">
-                      {errors.name.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="image">Upload Image</Label>
+                  <Typography variant="body2" fontWeight={500}>
+                    Upload Image
+                  </Typography>
                   <input
                     type="file"
                     id="image"
@@ -202,160 +210,145 @@ const ManageProduct = () => {
                     className="border p-2 rounded"
                   />
                   {imageUrl && (
-                    <p className="text-green-500 text-sm">
+                    <Typography variant="body2" color="success.main">
                       Image uploaded successfully!
-                    </p>
-                  )}
-                  {errors.image && (
-                    <p className="text-red-500 text-sm">
-                      {errors.image.message}
-                    </p>
+                    </Typography>
                   )}
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    {...register("description", {
-                      required: "Description is required",
-                    })}
-                  />
-                  {errors.description && (
-                    <p className="text-red-500 text-sm">
-                      {errors.description.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    {...register("price", { required: "Price is required" })}
-                  />
-                  {errors.price && (
-                    <p className="text-red-500 text-sm">
-                      {errors.price.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="stock">Stock Quantity</Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    {...register("stock", {
-                      required: "Stock quantity is required",
-                    })}
-                  />
-                  {errors.stock && (
-                    <p className="text-red-500 text-sm">
-                      {errors.stock.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category">Category</Label>
+                <TextField
+                  id="description"
+                  label="Description"
+                  fullWidth
+                  inputRef={descriptionRef}
+                  {...descriptionProps}
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                />
+                <TextField
+                  id="price"
+                  label="Price ($)"
+                  type="number"
+                  fullWidth
+                  inputRef={priceRef}
+                  {...priceProps}
+                  error={!!errors.price}
+                  helperText={errors.price?.message}
+                />
+                <TextField
+                  id="stock"
+                  label="Stock Quantity"
+                  type="number"
+                  fullWidth
+                  inputRef={stockRef}
+                  {...stockProps}
+                  error={!!errors.stock}
+                  helperText={errors.stock?.message}
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="category-label">Category</InputLabel>
                   <Select
-                    onValueChange={(value) => setValue("category", value)}
+                    labelId="category-label"
+                    id="category"
+                    label="Category"
+                    value={watch("category") || ""}
+                    onChange={(e) => setValue("category", e.target.value)}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Electronics">Electronics</SelectItem>
-                      <SelectItem value="Clothing">Clothing</SelectItem>
-                      <SelectItem value="Accessories">Accessories</SelectItem>
-                    </SelectContent>
+                    <MenuItem value="Electronics">Electronics</MenuItem>
+                    <MenuItem value="Clothing">Clothing</MenuItem>
+                    <MenuItem value="Accessories">Accessories</MenuItem>
                   </Select>
-                  {errors.category && (
-                    <p className="text-red-500 text-sm">
-                      {errors.category.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="rating">Rating</Label>
-
-                  <Input
-                    id="rating"
-                    type="number"
-                    {...register("rating", {
-                      required: "Product rating is required",
-                    })}
-                  />
-                  {errors.rating && (
-                    <p className="text-red-500 text-sm">
-                      {errors.rating.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Saving..." : "Save Product"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
+                </FormControl>
+                <TextField
+                  id="rating"
+                  label="Rating"
+                  type="number"
+                  fullWidth
+                  inputRef={ratingRef}
+                  {...ratingProps}
+                  error={!!errors.rating}
+                  helperText={errors.rating?.message}
+                />
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button type="button" variant="outlined" onClick={handleCloseDialog}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save Product"}
+              </Button>
+            </DialogActions>
+          </form>
         </Dialog>
       </div>
       <div className="p-2 mt-4">
         {isProductLoading ? (
-          <p className="text-center text-muted-foreground">
+          <Typography variant="body1" align="center" color="text.secondary">
             Loading products...
-          </p>
+          </Typography>
         ) : (
           <>
-            <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-3 shadow-sm">
-              <div className="relative min-w-[200px] flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search products by name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                  aria-label="Search products by name"
-                />
-              </div>
-              <Select
-                value={categoryFilter}
-                onValueChange={setCategoryFilter}
-              >
-                <SelectTrigger
-                  className="w-[180px]"
+            <Paper
+              variant="outlined"
+              sx={{
+                mb: 2,
+                p: 1.5,
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: 1.5,
+              }}
+            >
+              <TextField
+                placeholder="Search products by name..."
+                size="small"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search products by name"
+                sx={{ minWidth: 200, flex: 1 }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search className="h-4 w-4" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <InputLabel id="category-filter-label">Category</InputLabel>
+                <Select
+                  labelId="category-filter-label"
+                  label="Category"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
                   aria-label="Filter by category"
                 >
-                  <SelectValue placeholder="All categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All categories</SelectItem>
+                  <MenuItem value="all">All categories</MenuItem>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <MenuItem key={category} value={category}>
                       {category}
-                    </SelectItem>
+                    </MenuItem>
                   ))}
-                </SelectContent>
-              </Select>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="low-stock-only"
-                  checked={lowStockOnly}
-                  onCheckedChange={setLowStockOnly}
-                />
-                <Label htmlFor="low-stock-only">Low stock only</Label>
-              </div>
+                </Select>
+              </FormControl>
+              <FormControlLabel
+                control={
+                  <Switch
+                    id="low-stock-only"
+                    checked={lowStockOnly}
+                    onChange={(e) => setLowStockOnly(e.target.checked)}
+                  />
+                }
+                label="Low stock only"
+              />
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <Button variant="text" size="small" onClick={clearFilters}>
                   Clear filters
                 </Button>
               )}
-            </div>
+            </Paper>
             <ProductTable
               products={filteredProducts}
               totalCount={products?.length ?? 0}

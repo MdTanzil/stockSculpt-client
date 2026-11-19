@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -17,6 +21,17 @@ const CreateShop = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  // react-hook-form's ref must reach the underlying <input>, so it is
+  // passed through MUI's inputRef instead of spreading register() onto
+  // the TextField (which would attach the ref to the component root).
+  const { ref: nameRef, ...nameProps } = register("name", { required: true });
+  const { ref: photoRef, ...photoProps } = register("photo", {
+    required: true,
+  });
+  const { ref: addressRef, ...addressProps } = register("address", {
+    required: true,
+  });
 
   const axiosSecure = useAxiosSecure();
   const onSubmit = async (data) => {
@@ -56,72 +71,78 @@ const CreateShop = () => {
   };
 
   return (
-    <div className="container mx-auto mt-20 min-h-screen max-w-2xl ">
+    <Container maxWidth="md" sx={{ mt: 10, minHeight: "100vh" }}>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-primary font-semibold text-4xl tracking-wide">
-            Create shop
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="grid gap-4 min-h-full"
-            onSubmit={handleSubmit(onSubmit)}
+        <CardContent sx={{ p: 3 }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            align="center"
+            color="primary"
+            fontWeight={600}
+            sx={{ letterSpacing: "0.025em", mb: 3 }}
           >
-            <div className="">
-              <Label htmlFor="name">Shop Name</Label>
+            Create shop
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ display: "grid", gap: 2, minHeight: "100%" }}
+          >
+            <TextField
+              type="text"
+              id="name"
+              label="Shop Name"
+              placeholder="Shop Name"
+              fullWidth
+              inputRef={nameRef}
+              {...nameProps}
+              error={!!errors.name}
+              helperText={errors.name && "Shop Name is required"}
+            />
 
-              <Input
-                type="text"
-                id="name"
-                placeholder="Shop Name"
-                {...register("name", { required: true })}
-              />
-              {errors.name && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Shop Name is required
-                </p>
-              )}
-            </div>
+            <TextField
+              id="picture"
+              type="file"
+              label="Shop Logo"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              inputRef={photoRef}
+              {...photoProps}
+              error={!!errors.photo}
+              helperText={errors.photo && "Shop Logo is required"}
+            />
 
-            <div className="">
-              <Label htmlFor="picture">Shop Logo</Label>
-              <Input
-                id="picture"
-                type="file"
-                {...register("photo", { required: true })}
-              />
-              {errors.photo && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Shop Logo is required
-                </p>
-              )}
-            </div>
-            <div className="">
-              <Label htmlFor="location">Shop Address</Label>
+            <TextField
+              type="text"
+              id="location"
+              label="Shop Address"
+              placeholder="Shop Address"
+              multiline
+              rows={3}
+              fullWidth
+              inputRef={addressRef}
+              {...addressProps}
+              // NOTE: preserved from the original — the address error
+              // message is gated on errors.name, not errors.address.
+              error={!!errors.name}
+              helperText={errors.name && "Shop Address is required"}
+            />
 
-              <Textarea
-                type="text"
-                id="location"
-                placeholder="Shop Address"
-                {...register("address", { required: true })}
-              />
-              {errors.name && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Shop Address is required
-                </p>
-              )}
-            </div>
-
-            <div className="form-control mt-2">
-              <Button type="submit" className="w-full" disabled={loading}>
+            <Box sx={{ mt: 1 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+              >
                 {loading ? "Creating..." : "Create Shop"}
               </Button>
-            </div>
-          </form>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 };
 

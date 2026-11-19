@@ -1,4 +1,12 @@
 import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Typography,
+} from "@mui/material";
+import {
   Boxes,
   ClipboardList,
   FileText,
@@ -43,37 +51,39 @@ const Services = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-4xl font-bold text-primary">Our Services</h1>
-        <p className="mt-4 text-lg text-gray-600">
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Box sx={{ mx: "auto", maxWidth: "48rem", textAlign: "center" }}>
+        <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
+          Our Services
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 2, fontSize: "1.125rem" }}>
           Everything a small shop needs to run its inventory, orders and sales
           in one place.
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
-          <div
-            key={service.title}
-            className="rounded-lg border bg-white p-6 shadow-sm"
-          >
-            <service.icon className="h-8 w-8 text-primary" />
-            <h2 className="mt-4 text-lg font-semibold">{service.title}</h2>
-            <p className="mt-2 text-sm text-gray-600">{service.text}</p>
-          </div>
+          <Card key={service.title} variant="outlined">
+            <CardContent sx={{ p: 3 }}>
+              <service.icon size={32} color="#2c3e50" />
+              <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
+                {service.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {service.text}
+              </Typography>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="mt-12 text-center">
-        <Link
-          to="/subscription"
-          className="inline-block rounded-lg bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90"
-        >
+      <Box sx={{ mt: 6, textAlign: "center" }}>
+        <Button component={Link} to="/subscription" variant="contained" sx={{ fontWeight: 600 }}>
           View Subscription Plans
-        </Link>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Container>
   );
 };
 

@@ -1,4 +1,12 @@
 import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  Link as MuiLink,
+  Typography,
+} from "@mui/material";
+import {
   Boxes,
   ClipboardList,
   FileText,
@@ -43,41 +51,56 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section className="py-20">
-      <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-semibold text-primary lg:text-4xl">
+    <Box component="section" sx={{ py: 10 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mx: "auto", maxWidth: "48rem", textAlign: "center" }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight={600}
+            color="primary"
+            sx={{ fontSize: { lg: "2.25rem" } }}
+          >
             What stockSculpt does for your shop
-          </h2>
-          <p className="mt-4 text-muted-foreground lg:text-lg">
+          </Typography>
+          <Typography
+            color="text.secondary"
+            sx={{ mt: 2, fontSize: { lg: "1.125rem" } }}
+          >
             Everything a small shop needs to run its inventory, orders and
             sales in one place.
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <div
-              key={service.title}
-              className="rounded-lg border bg-white p-6 shadow-sm"
-            >
-              <service.icon className="h-8 w-8 text-primary" />
-              <h3 className="mt-4 text-lg font-semibold">{service.title}</h3>
-              <p className="mt-2 text-sm text-gray-600">{service.text}</p>
-            </div>
+            <Card key={service.title} variant="outlined">
+              <CardContent sx={{ p: 3 }}>
+                <service.icon size={32} color="#2c3e50" />
+                <Typography variant="h6" component="h3" sx={{ mt: 2 }}>
+                  {service.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  {service.text}
+                </Typography>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        <div className="mt-10 text-center">
-          <Link
+        <Box sx={{ mt: 5, textAlign: "center" }}>
+          <MuiLink
+            component={Link}
             to="/services"
-            className="font-semibold text-primary hover:underline"
+            color="primary"
+            fontWeight={600}
+            underline="hover"
           >
             View all services &rarr;
-          </Link>
-        </div>
-      </div>
-    </section>
+          </MuiLink>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

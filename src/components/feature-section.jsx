@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { cn } from "@/lib/utils";
+import { Box, Typography } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -8,6 +8,9 @@ export function FeatureSteps({
   className,
   title = "How to get Started",
   autoPlayInterval = 3000,
+  // Accepted for API compatibility; the image heights are fixed in the
+  // layout below (as in the original implementation).
+  // eslint-disable-next-line no-unused-vars
   imageHeight = "h-[400px]",
 }) {
   const [currentFeature, setCurrentFeature] = useState(0);
@@ -27,11 +30,18 @@ export function FeatureSteps({
   }, [progress, features.length, autoPlayInterval]);
 
   return (
-    <div className={cn("p-8 md:p-12", className)}>
-      <div className="max-w-7xl mx-auto w-full">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 text-center text-primary">
+    <Box className={className} sx={{ p: { xs: 4, md: 6 } }}>
+      <Box sx={{ mx: "auto", width: "100%", maxWidth: "80rem" }}>
+        <Typography
+          variant="h3"
+          component="h2"
+          fontWeight="bold"
+          align="center"
+          color="primary"
+          sx={{ mb: 5, fontSize: { xs: "1.875rem", md: "2.25rem", lg: "3rem" } }}
+        >
           {title}
-        </h2>
+        </Typography>
 
         <div className="flex flex-col md:grid md:grid-cols-2  gap-6 md:gap-10">
           <div className="order-2 md:order-1 space-y-8">
@@ -44,12 +54,18 @@ export function FeatureSteps({
                 transition={{ duration: 0.5 }}
               >
                 <motion.div
-                  className={cn(
-                    "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2",
-                    index === currentFeature
-                      ? "bg-primary border-primary text-primary-foreground scale-110"
-                      : "bg-muted border-muted-foreground"
-                  )}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0"
+                  style={{
+                    borderWidth: 2,
+                    borderStyle: "solid",
+                    borderColor:
+                      index === currentFeature ? "#2c3e50" : "#9e9e9e",
+                    backgroundColor:
+                      index === currentFeature ? "#2c3e50" : "#f5f5f5",
+                    color: index === currentFeature ? "#ffffff" : "#757575",
+                    transform:
+                      index === currentFeature ? "scale(1.1)" : "none",
+                  }}
                 >
                   {index <= currentFeature ? (
                     <span className="text-lg font-bold">✓</span>
@@ -59,21 +75,33 @@ export function FeatureSteps({
                 </motion.div>
 
                 <div className="flex-1">
-                  <h3 className="text-xl md:text-2xl font-semibold">
+                  <Typography
+                    variant="h6"
+                    component="h3"
+                    fontWeight={600}
+                    sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+                  >
                     {feature.title || feature.step}
-                  </h3>
-                  <p className="text-sm md:text-lg text-muted-foreground">
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.875rem", md: "1.125rem" } }}
+                  >
                     {feature.content}
-                  </p>
+                  </Typography>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          <div
-            className={cn(
-              "order-1 md:order-2 relative h-[200px] md:h-[300px] lg:h-[400px] overflow-hidden rounded-lg"
-            )}
+          <Box
+            sx={{
+              order: { xs: 1, md: 2 },
+              position: "relative",
+              height: { xs: 200, md: 300, lg: 400 },
+              overflow: "hidden",
+              borderRadius: 2,
+            }}
           >
             <AnimatePresence mode="wait">
               {features.map(
@@ -94,14 +122,24 @@ export function FeatureSteps({
                         width={1000}
                         height={500}
                       />
-                      <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: "66.666667%",
+                          background:
+                            "linear-gradient(to top, #fff 0%, rgba(255,255,255,0.5) 50%, transparent 100%)",
+                        }}
+                      />
                     </motion.div>
                   )
               )}
             </AnimatePresence>
-          </div>
+          </Box>
         </div>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

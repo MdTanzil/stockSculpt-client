@@ -34,9 +34,15 @@ manage shops and users.
 
 ## Tech stack
 
-React 18 · Vite 5 · React Router 6 · Tailwind CSS + shadcn/ui (Radix) +
-daisyUI · Firebase Auth · Axios · TanStack Query · Stripe · jsPDF ·
-Framer Motion
+React 18 · Vite 5 · React Router 6 · Material UI (MUI 9) + Tailwind CSS
+(layout utilities) · Firebase Auth · Axios · TanStack Query · Stripe ·
+jsPDF · Framer Motion
+
+The design system is MUI: theme in `src/theme.js` (primary `#2c3e50`,
+Poppins font, light mode), applied via `ThemeProvider` + `CssBaseline` in
+`src/main.jsx`. The old shadcn/ui primitives under `src/components/ui/` are
+no longer imported (dead files left in place — the snapshot push cannot
+delete files) and daisyUI was removed.
 
 ## Getting started
 
@@ -75,7 +81,8 @@ Pushes to `main` deploy automatically to Firebase Hosting
 
 ```
 src/
-├── components/   # Shared UI (navbar, cards, forms, shadcn/ui primitives)
+├── components/   # Shared UI (navbar, cards, forms; old shadcn/ui
+│                 # primitives under ui/ are unused since the MUI move)
 ├── firebase/     # Firebase config
 ├── hooks/        # API hooks (axios instances, shop data)
 ├── layouts/      # Main, dashboard and admin layouts

@@ -1,18 +1,16 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import SocialLogin from "../../components/SocialLogin";
 import useAuth from "../../hooks/useAuth";
+
 const Login = () => {
   const navigate = useNavigate();
   const {
@@ -42,70 +40,93 @@ const Login = () => {
         toast.error("Email or password incorrect ! ");
       });
   };
-  return (
-    <div className="min-h-screen flex justify-center items-center">
-      <div className="container mx-auto max-w-md ">
-        <Card className="shadow-2xl rounded-2xl py-8">
-          <CardHeader>
-            <CardTitle className="text-center text-primary font-semibold text-4xl tracking-wide">
-              Login
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-              <div>
-                <Label htmlFor="email ">Email</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="Email"
-                  {...register("email", { required: true })}
-                />
-                {errors.email && (
-                  <p className="text-red-500 font-light text-sm px-1 mt-1">
-                    email is required
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder="password"
-                  {...register("password", { required: true })}
-                />
-                {errors.password && (
-                  <p className="text-red-500 font-light text-sm px-1 mt-1">
-                    Password is required
-                  </p>
-                )}
-              </div>
 
-              <div>
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-              </div>
-            </form>
+  // react-hook-form's ref must target the underlying <input>, so it is
+  // passed via MUI's inputRef instead of being spread onto TextField.
+  const { ref: emailRef, ...emailProps } = register("email", {
+    required: true,
+  });
+  const { ref: passwordRef, ...passwordProps } = register("password", {
+    required: true,
+  });
+
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        px: 2,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 448, mx: "auto" }}>
+        <Card sx={{ boxShadow: 12, borderRadius: 4, py: 4 }}>
+          <CardContent>
+            <Typography
+              variant="h4"
+              align="center"
+              color="primary"
+              sx={{ fontWeight: 600, letterSpacing: "0.02em", mb: 3 }}
+            >
+              Login
+            </Typography>
+            <Box
+              component="form"
+              sx={{ display: "grid", gap: 2 }}
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <TextField
+                type="email"
+                id="email"
+                label="Email"
+                placeholder="Email"
+                fullWidth
+                inputRef={emailRef}
+                {...emailProps}
+                error={!!errors.email}
+                helperText={errors.email ? "email is required" : ""}
+              />
+              <TextField
+                type="password"
+                id="password"
+                label="Password"
+                placeholder="password"
+                fullWidth
+                inputRef={passwordRef}
+                {...passwordProps}
+                error={!!errors.password}
+                helperText={errors.password ? "Password is required" : ""}
+              />
+
+              <Button type="submit" variant="contained" fullWidth>
+                Login
+              </Button>
+            </Box>
           </CardContent>
-          <CardFooter>
-            <div className="flex w-full justify-center  items-center">
-              <div>
-                <label className="label mb-2">
+          <CardContent>
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Box>
+                <Typography variant="body2" sx={{ mb: 1 }}>
                   Do not have account?{" "}
-                  <Link to={"/register"} className="link link-primary">
-                    {" "}
-                    Register{" "}
+                  <Link component={RouterLink} to="/register" underline="hover">
+                    Register
                   </Link>
-                </label>
-                <SocialLogin></SocialLogin>
-              </div>
-            </div>
-          </CardFooter>
+                </Typography>
+                <SocialLogin />
+              </Box>
+            </Box>
+          </CardContent>
         </Card>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

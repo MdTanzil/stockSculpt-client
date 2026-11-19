@@ -1,3 +1,5 @@
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
@@ -8,17 +10,21 @@ import "./index.css";
 import AuthProvider from "./provider/AuthProvider";
 import ShopProvider from "./provider/ShopProvider";
 import router from "./router/Router";
+import theme from "./theme";
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ShopProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </ShopProvider>
-      </AuthProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ShopProvider>
+            <RouterProvider router={router} />
+            <Toaster />
+          </ShopProvider>
+        </AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

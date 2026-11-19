@@ -1,21 +1,18 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import imageUpload from "@/utility/imageUpload";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import SocialLogin from "../../components/SocialLogin";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+
 const Register = () => {
   const {
     register,
@@ -71,110 +68,130 @@ const Register = () => {
         // ..
       });
   };
+
+  // react-hook-form's ref must target the underlying <input>, so it is
+  // passed via MUI's inputRef instead of being spread onto TextField.
+  const { ref: nameRef, ...nameProps } = register("name", { required: true });
+  const { ref: emailRef, ...emailProps } = register("email", {
+    required: true,
+  });
+  const { ref: dobRef, ...dobProps } = register("dateOfBirth", {
+    required: true,
+  });
+  const { ref: photoRef, ...photoProps } = register("photo", {
+    required: true,
+  });
+  const { ref: passwordRef, ...passwordProps } = register("password", {
+    required: true,
+  });
+
   return (
-    <div className="container mx-auto min-h-screen max-w-md  my-auto mt-11">
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 448,
+        mx: "auto",
+        minHeight: "100vh",
+        my: "auto",
+        mt: 5.5,
+        px: 2,
+      }}
+    >
       <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-primary font-semibold text-4xl tracking-wide">
-            Register
-          </CardTitle>
-        </CardHeader>
         <CardContent>
-          <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-            <div className="">
-              <Label htmlFor="name">Name</Label>
+          <Typography
+            variant="h4"
+            align="center"
+            color="primary"
+            sx={{ fontWeight: 600, letterSpacing: "0.02em", mb: 3 }}
+          >
+            Register
+          </Typography>
+          <Box
+            component="form"
+            sx={{ display: "grid", gap: 2 }}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <TextField
+              type="text"
+              id="name"
+              label="Name"
+              placeholder="Enter your name"
+              fullWidth
+              inputRef={nameRef}
+              {...nameProps}
+              error={!!errors.name}
+              helperText={errors.name ? "Name is required" : ""}
+            />
 
-              <Input
-                type="text"
-                id="name"
-                placeholder="Enter your name"
-                {...register("name", { required: true })}
-              />
-              {errors.name && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Name is required
-                </p>
-              )}
-            </div>
+            <TextField
+              type="email"
+              id="email"
+              label="Email"
+              placeholder="Email"
+              fullWidth
+              inputRef={emailRef}
+              {...emailProps}
+              error={!!errors.email}
+              helperText={errors.email ? "email is required" : ""}
+            />
 
-            <div>
-              <Label htmlFor="email ">Email</Label>
-              <Input
-                type="email"
-                id="email"
-                placeholder="Email"
-                {...register("email", { required: true })}
-              />
-              {errors.email && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  email is required
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="dof">Date of Birth</Label>
-              <Input
-                id="dof"
-                type="date"
-                className=""
-                name="dateOfBirth"
-                {...register("dateOfBirth", { required: true })}
-              />
-              {errors.dateOfBirth && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  DateOfBirth is required
-                </p>
-              )}
-            </div>
-            <div className="">
-              <Label htmlFor="picture">Picture</Label>
-              <Input
-                id="picture"
-                type="file"
-                {...register("photo", { required: true })}
-              />
-              {errors.photo && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Profile Picture is required
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                placeholder="password"
-                {...register("password", { required: true })}
-              />
-              {errors.password && (
-                <p className="text-red-500 font-light text-sm px-1 mt-1">
-                  Password is required
-                </p>
-              )}
-            </div>
+            <TextField
+              id="dof"
+              type="date"
+              label="Date of Birth"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              inputRef={dobRef}
+              {...dobProps}
+              error={!!errors.dateOfBirth}
+              helperText={errors.dateOfBirth ? "DateOfBirth is required" : ""}
+            />
 
-            <div className="form-control mt-2">
-              <Button type="submit" className="w-full">
+            <TextField
+              id="picture"
+              type="file"
+              label="Picture"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              inputRef={photoRef}
+              {...photoProps}
+              error={!!errors.photo}
+              helperText={errors.photo ? "Profile Picture is required" : ""}
+            />
+
+            <TextField
+              type="password"
+              id="password"
+              label="Password"
+              placeholder="password"
+              fullWidth
+              inputRef={passwordRef}
+              {...passwordProps}
+              error={!!errors.password}
+              helperText={errors.password ? "Password is required" : ""}
+            />
+
+            <Box sx={{ mt: 1 }}>
+              <Button type="submit" variant="contained" fullWidth>
                 Register
               </Button>
-            </div>
-          </form>
+            </Box>
+          </Box>
         </CardContent>
-        <CardFooter>
-          <div className="w-full">
-            <p className="  text-sm font-light pb-2">
+        <CardContent>
+          <Box sx={{ width: "100%" }}>
+            <Typography variant="body2" sx={{ fontWeight: 300, pb: 1 }}>
               Already Have a account ?{" "}
-              <Link to={"/login"} className="link link-primary">
-                {" "}
-                Login{" "}
+              <Link component={RouterLink} to="/login" underline="hover">
+                Login
               </Link>
-            </p>
-            <SocialLogin></SocialLogin>
-          </div>
-        </CardFooter>
+            </Typography>
+            <SocialLogin />
+          </Box>
+        </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 };
 

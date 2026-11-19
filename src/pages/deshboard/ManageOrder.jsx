@@ -1,22 +1,20 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import InputLabel from "@mui/material/InputLabel";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import { Plus } from "lucide-react";
@@ -71,6 +69,12 @@ const ManageOrder = () => {
 
   // Get the selected value
   const selectedStatus = watch("orderStatus");
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    reset(); // Reset the form fields
+    setSelectedProducts([]);
+  };
 
   const onSubmit = async () => {
     if (selectedProducts.length === 0) {
@@ -144,88 +148,94 @@ const ManageOrder = () => {
   }, [selectedOrder, setValue]);
   return (
     <div>
-      <p className="text-center font-bold text-4xl text-primary">
+      <Typography variant="h4" align="center" fontWeight={700} color="primary.main">
         Manage Your Orders
-      </p>
+      </Typography>
 
-      <Dialog
-        open={open}
-        onOpenChange={(isOpen) => {
-          setOpen(isOpen);
-          if (!isOpen) {
-            // Reset editProduct when dialog is closed
-            reset(); // Reset the form fields
-            setSelectedProducts([]);
-            // Clear uploaded image URL
-          }
-        }}
+      <Button
+        variant="contained"
+        onClick={() => setOpen(true)}
+        endIcon={<Plus className="h-4 w-4" />}
       >
-        <DialogTrigger asChild>
-          <Button onClick={() => setOpen(true)}>
-            Add Order <Plus />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>
-                {selectedOrder ? "Edit Order" : "Create a New Order"}
-              </DialogTitle>
-            </DialogHeader>
-
-            <div className="grid gap-4 py-4">
+        Add Order
+      </Button>
+      <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>
+            {selectedOrder ? "Edit Order" : "Create a New Order"}
+          </DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ pt: 1 }}>
               {/* Search Product Input */}
               <div className="grid gap-2">
-                <Label htmlFor="search">Search Product</Label>
-                <Input
+                <TextField
                   id="search"
+                  label="Search Product"
                   placeholder="Search for a product..."
+                  fullWidth
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
-                  <div className="border rounded p-2 max-h-40 overflow-auto">
-                    {filteredProducts.map((product) => (
-                      <div
-                        key={product._id}
-                        className="cursor-pointer p-2 hover:bg-gray-200"
-                        onClick={() => handleSelectProduct(product)}
-                      >
-                        {product.name} - ${product.price}
-                      </div>
-                    ))}
-                  </div>
+                  <Paper
+                    variant="outlined"
+                    sx={{ maxHeight: 160, overflow: "auto" }}
+                  >
+                    <List dense disablePadding>
+                      {filteredProducts.map((product) => (
+                        <ListItemButton
+                          key={product._id}
+                          onClick={() => handleSelectProduct(product)}
+                        >
+                          <ListItemText
+                            primary={`${product.name} - $${product.price}`}
+                          />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Paper>
                 )}
               </div>
 
               {/* Selected Products List */}
               {selectedProducts.length > 0 && (
                 <div className="grid gap-2">
-                  <Label>Selected Products</Label>
+                  <Typography variant="body2" fontWeight={500}>
+                    Selected Products
+                  </Typography>
                   {selectedProducts.map((product) => (
-                    <div
+                    <Paper
                       key={product._id}
-                      className="flex justify-between items-center border p-2 rounded"
+                      variant="outlined"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 1,
+                        p: 1,
+                      }}
                     >
-                      <span>
+                      <Typography variant="body2">
                         {product.name} - ${product.price}
-                      </span>
-                      <Input
+                      </Typography>
+                      <TextField
                         type="number"
-                        min="1"
+                        size="small"
+                        inputProps={{ min: 1 }}
                         value={product.quantity}
                         onChange={(e) =>
                           handleQuantityChange(product._id, e.target.value)
                         }
-                        className="w-20"
+                        sx={{ width: 80 }}
                       />
-                      <span className="ml-2">
+                      <Typography variant="body2" sx={{ ml: 1 }}>
                         ${product.price * product.quantity}
-                      </span>
+                      </Typography>
                       <Button
                         type="button"
-                        variant="destructive"
-                        size="sm"
+                        variant="contained"
+                        color="error"
+                        size="small"
                         onClick={() =>
                           setSelectedProducts(
                             selectedProducts.filter(
@@ -236,54 +246,50 @@ const ManageOrder = () => {
                       >
                         Remove
                       </Button>
-                    </div>
+                    </Paper>
                   ))}
                 </div>
               )}
 
               {/* Total Price */}
-              <div className="grid gap-2">
-                <Label>Total Price</Label>
-                <Input readOnly value={`$${totalPrice}`} />
-              </div>
+              <TextField
+                label="Total Price"
+                fullWidth
+                InputProps={{ readOnly: true }}
+                value={`$${totalPrice}`}
+              />
 
-              <div className="grid gap-2">
-                <Label htmlFor="orderStatus">Order Status</Label>
+              <FormControl fullWidth error={!!errors.orderStatus}>
+                <InputLabel id="order-status-label">Order Status</InputLabel>
                 <Select
-                  onValueChange={(value) => setValue("orderStatus", value)}
+                  labelId="order-status-label"
+                  id="orderStatus"
+                  label="Order Status"
+                  value={selectedStatus || ""}
+                  onChange={(e) => setValue("orderStatus", e.target.value)}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">pending</SelectItem>
-                    <SelectItem value="completed">completed</SelectItem>
-                    <SelectItem value="canceled">canceled</SelectItem>
-                  </SelectContent>
+                  <MenuItem value="pending">pending</MenuItem>
+                  <MenuItem value="completed">completed</MenuItem>
+                  <MenuItem value="canceled">canceled</MenuItem>
                 </Select>
                 {errors.orderStatus && (
-                  <p className="text-red-500 text-sm">
-                    {errors.orderStatus.message}
-                  </p>
+                  <FormHelperText>{errors.orderStatus.message}</FormHelperText>
                 )}
-              </div>
-            </div>
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save Order"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+              </FormControl>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button type="button" variant="outlined" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save Order"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
       {orderLoading ? (
-        <p>Loading orders...</p>
+        <Typography variant="body1">Loading orders...</Typography>
       ) : (
         <OrderTable
           orders={orders}

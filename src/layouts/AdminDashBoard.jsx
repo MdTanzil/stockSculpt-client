@@ -1,3 +1,8 @@
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
 import { Link, Outlet } from "react-router-dom";
 
 import { Footer } from "@/components/ui/footer";
@@ -7,52 +12,90 @@ import useAuth from "../hooks/useAuth";
 const AdminDashBoard = () => {
   const { user } = useAuth();
   return (
-    <div className="flex min-h-screen flex-col">
-      <NavBar></NavBar>
-      <div className="flex flex-1 container mx-auto ">
-        <div className="w-64 bg-gray-200   justify-center ">
-          <div className="bg-slate-300 m-2 flex justify-center ">
-            <div className="">
-              <div className="avatar">
-                <div className="w-24 rounded-xl">
-                  {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || "Admin"} />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-primary text-2xl font-bold text-white">
-                      {user?.displayName?.charAt(0) || "A"}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <p className="text-lg font-bold text-primary">
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <NavBar />
+      <Box
+        sx={{
+          display: "flex",
+          flex: 1,
+          width: "100%",
+          maxWidth: "1280px",
+          mx: "auto",
+        }}
+      >
+        <Box
+          sx={{
+            width: 256,
+            flexShrink: 0,
+            backgroundColor: "grey.200",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "grey.300",
+              m: 1,
+              display: "flex",
+              justifyContent: "center",
+              alignSelf: "stretch",
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", py: 1 }}>
+              <Avatar
+                src={user?.photoURL || undefined}
+                alt={user?.displayName || "Admin"}
+                sx={{ width: 96, height: 96, borderRadius: 3, fontSize: "2rem", fontWeight: "bold" }}
+              >
+                {user?.displayName?.charAt(0) || "A"}
+              </Avatar>
+              <Typography
+                variant="h6"
+                component="p"
+                color="primary"
+                sx={{ fontWeight: "bold", mt: 1 }}
+              >
                 {user?.displayName}
-              </p>
-            </div>
-          </div>
-          <Link to={"/admin"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              Home
-            </button>
-          </Link>
-          <Link to={"/admin/manageProduct"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              Manage Shop
-            </button>
-          </Link>
-          <Link to={"/admin/users"}>
-            <button className="btn  btn-primary m-2 btn-sm  w-[80%]">
-              Manage User
-            </button>
-          </Link>
-        </div>
+              </Typography>
+            </Box>
+          </Box>
+          <Button
+            component={Link}
+            to="/admin"
+            variant="contained"
+            size="small"
+            sx={{ m: 1, width: "80%" }}
+          >
+            Home
+          </Button>
+          <Button
+            component={Link}
+            to="/admin/manageProduct"
+            variant="contained"
+            size="small"
+            sx={{ m: 1, width: "80%" }}
+          >
+            Manage Shop
+          </Button>
+          <Button
+            component={Link}
+            to="/admin/users"
+            variant="contained"
+            size="small"
+            sx={{ m: 1, width: "80%" }}
+          >
+            Manage User
+          </Button>
+        </Box>
 
-        <div className="divider divider-horizontal divider-primary m-1 p-1"></div>
-        <div className="w-full  mx-auto mt-5 p-1">
+        <Divider orientation="vertical" flexItem sx={{ m: 0.5, p: 0.5 }} />
+        <Box sx={{ width: "100%", mx: "auto", mt: 5, p: 0.5 }}>
           <Outlet />
-        </div>
-      </div>
+        </Box>
+      </Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 

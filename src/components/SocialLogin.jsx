@@ -1,10 +1,10 @@
+import Button from "@mui/material/Button";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
-import { Button } from "@/components/ui/button";
 const SocialLogin = () => {
   const { signInWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -41,8 +41,12 @@ const SocialLogin = () => {
       });
   };
   return (
-    <Button variant="outline" className="btn w-full" onClick={handleClick}>
-      <FcGoogle className="text-2xl" />
+    <Button
+      variant="outlined"
+      fullWidth
+      onClick={handleClick}
+      startIcon={<FcGoogle size={24} />}
+    >
       Sign in with Google
     </Button>
   );

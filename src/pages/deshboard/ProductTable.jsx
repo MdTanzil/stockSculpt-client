@@ -1,16 +1,18 @@
 /* eslint-disable react/prop-types */
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
 import { Package, Pencil, SearchX, Star, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
@@ -23,16 +25,31 @@ const getInitials = (name = "") =>
 
 const formatPrice = (value) => `$${(Number(value) || 0).toFixed(2)}`;
 
+const headerCellSx = {
+  textTransform: "uppercase",
+  fontSize: "0.75rem",
+  fontWeight: 600,
+  letterSpacing: "0.05em",
+};
+
+const zebraRowSx = {
+  "&:nth-of-type(odd)": { backgroundColor: "action.hover" },
+};
+
 const getStockBadge = (stock) => {
-  if (stock <= 0) return <Badge variant="destructive">Out of stock</Badge>;
+  if (stock <= 0) return <Chip label="Out of stock" size="small" color="error" />;
   if (stock <= 5) {
     return (
-      <Badge
-        variant="outline"
-        className="border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-100"
-      >
-        Low: {stock}
-      </Badge>
+      <Chip
+        label={`Low: ${stock}`}
+        size="small"
+        variant="outlined"
+        sx={{
+          borderColor: "#fde68a",
+          backgroundColor: "#fef3c7",
+          color: "#92400e",
+        }}
+      />
     );
   }
   return <span className="tabular-nums">{stock}</span>;
@@ -49,28 +66,34 @@ const ProductTable = ({
   if (!products?.length) {
     if (hasActiveFilters) {
       return (
-        <div className="rounded-lg border border-border bg-background py-12 text-center">
-          <SearchX className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">
+        <Paper variant="outlined" sx={{ py: 6, textAlign: "center" }}>
+          <Box sx={{ color: "text.secondary", display: "flex", justifyContent: "center" }}>
+            <SearchX className="h-10 w-10" />
+          </Box>
+          <Typography variant="h6" sx={{ mt: 2 }}>
             No products match your filters
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             Try adjusting your search or filters.
-          </p>
-          <Button variant="outline" className="mt-4" onClick={onClearFilters}>
+          </Typography>
+          <Button variant="outlined" sx={{ mt: 2 }} onClick={onClearFilters}>
             Clear filters
           </Button>
-        </div>
+        </Paper>
       );
     }
     return (
-      <div className="rounded-lg border border-border bg-background py-12 text-center">
-        <Package className="mx-auto h-10 w-10 text-muted-foreground" />
-        <p className="mt-4 text-lg font-medium">No products yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">
+      <Paper variant="outlined" sx={{ py: 6, textAlign: "center" }}>
+        <Box sx={{ color: "text.secondary", display: "flex", justifyContent: "center" }}>
+          <Package className="h-10 w-10" />
+        </Box>
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          No products yet
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
           Add your first product to start managing your inventory.
-        </p>
-      </div>
+        </Typography>
+      </Paper>
     );
   }
 
@@ -81,107 +104,116 @@ const ProductTable = ({
   );
 
   return (
-    <div className="bg-background">
-      <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="h-10 py-2">Image</TableHead>
-              <TableHead className="h-10 py-2">Name</TableHead>
-              <TableHead className="h-10 py-2">Description</TableHead>
-              <TableHead className="h-10 py-2">Category</TableHead>
-              <TableHead className="h-10 py-2 text-right">Price</TableHead>
-              <TableHead className="h-10 py-2 text-right">Rating</TableHead>
-              <TableHead className="h-10 py-2 text-right">Stock</TableHead>
-              <TableHead className="h-10 py-2 text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product._id}>
-                <TableCell className="py-2">
-                  <Avatar className="h-10 w-10 rounded-lg">
-                    <AvatarImage
-                      src={product.image}
-                      alt={product.name}
-                      className="rounded-lg"
-                    />
-                    <AvatarFallback className="rounded-lg">
-                      {getInitials(product.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className="py-2 font-medium">
-                  {product.name}
-                </TableCell>
-                <TableCell className="py-2 max-w-[220px] truncate text-muted-foreground">
-                  {product.description}
-                </TableCell>
-                <TableCell className="py-2">{product.category}</TableCell>
-                <TableCell className="py-2 text-right tabular-nums">
-                  {formatPrice(product.price)}
-                </TableCell>
-                <TableCell className="py-2 text-right">
-                  {product.rating != null && product.rating !== "" ? (
-                    <span className="inline-flex items-center gap-1 tabular-nums">
-                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                      {Number(product.rating).toFixed(1)}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-                <TableCell className="py-2 text-right">
-                  {getStockBadge(Number(product.stock) || 0)}
-                </TableCell>
-                <TableCell className="py-2 text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => onEdit(product)}
-                      aria-label={`Edit ${product.name}`}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => onDelete(product._id)}
-                      aria-label={`Delete ${product.name}`}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
+    <TableContainer component={Paper} variant="outlined">
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={headerCellSx}>Image</TableCell>
+            <TableCell sx={headerCellSx}>Name</TableCell>
+            <TableCell sx={headerCellSx}>Description</TableCell>
+            <TableCell sx={headerCellSx}>Category</TableCell>
+            <TableCell sx={headerCellSx} align="right">
+              Price
+            </TableCell>
+            <TableCell sx={headerCellSx} align="right">
+              Rating
+            </TableCell>
+            <TableCell sx={headerCellSx} align="right">
+              Stock
+            </TableCell>
+            <TableCell sx={headerCellSx} align="right">
+              Action
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {products.map((product) => (
+            <TableRow key={product._id} sx={zebraRowSx}>
+              <TableCell>
+                <Avatar
+                  src={product.image}
+                  alt={product.name}
+                  variant="rounded"
+                  sx={{ width: 40, height: 40 }}
+                >
+                  {getInitials(product.name)}
+                </Avatar>
+              </TableCell>
+              <TableCell sx={{ fontWeight: 500 }}>{product.name}</TableCell>
               <TableCell
-                colSpan={4}
-                className="py-2 text-muted-foreground"
+                sx={{
+                  maxWidth: 220,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  color: "text.secondary",
+                }}
               >
-                {totalCount != null && totalCount !== products.length
-                  ? `Showing ${products.length} of ${totalCount} products`
-                  : `${products.length} product${
-                      products.length === 1 ? "" : "s"
-                    }`}
+                {product.description}
               </TableCell>
-              <TableCell colSpan={3} className="py-2 text-right font-medium">
-                Total stock value
+              <TableCell>{product.category}</TableCell>
+              <TableCell align="right" className="tabular-nums">
+                {formatPrice(product.price)}
               </TableCell>
-              <TableCell className="py-2 text-right font-semibold tabular-nums">
-                {formatPrice(stockValue)}
+              <TableCell align="right">
+                {product.rating != null && product.rating !== "" ? (
+                  <span className="inline-flex items-center gap-1 tabular-nums">
+                    <Star
+                      className="h-4 w-4"
+                      style={{ color: "#fbbf24", fill: "#fbbf24" }}
+                    />
+                    {Number(product.rating).toFixed(1)}
+                  </span>
+                ) : (
+                  <Typography variant="body2" color="text.secondary" component="span">
+                    —
+                  </Typography>
+                )}
+              </TableCell>
+              <TableCell align="right">
+                {getStockBadge(Number(product.stock) || 0)}
+              </TableCell>
+              <TableCell align="right">
+                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                  <IconButton
+                    size="small"
+                    onClick={() => onEdit(product)}
+                    aria-label={`Edit ${product.name}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => onDelete(product._id)}
+                    aria-label={`Delete ${product.name}`}
+                  >
+                    <Trash className="h-4 w-4" />
+                  </IconButton>
+                </Box>
               </TableCell>
             </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
-    </div>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={4} sx={{ color: "text.secondary" }}>
+              {totalCount != null && totalCount !== products.length
+                ? `Showing ${products.length} of ${totalCount} products`
+                : `${products.length} product${
+                    products.length === 1 ? "" : "s"
+                  }`}
+            </TableCell>
+            <TableCell colSpan={3} align="right" sx={{ fontWeight: 500 }}>
+              Total stock value
+            </TableCell>
+            <TableCell align="right" sx={{ fontWeight: 600 }} className="tabular-nums">
+              {formatPrice(stockValue)}
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </TableContainer>
   );
 };
 

@@ -1,21 +1,36 @@
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import Navbar from "@/components/NavBar";
 import { Footer } from "@/components/ui/footer";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/pages/deshboard/AppSidebar";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
+
 const DashBoard = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar />
-      <SidebarProvider className="min-h-0 flex-1">
-        <AppSidebar />
-        <main className="flex-1">
-          <SidebarTrigger />
+      <Box sx={{ display: "flex", flex: 1 }}>
+        <AppSidebar
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+        <Box sx={{ flex: 1 }}>
+          <IconButton
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            sx={{ display: { xs: "flex", md: "none" } }}
+          >
+            <Menu />
+          </IconButton>
           <Outlet />
-        </main>
-      </SidebarProvider>
+        </Box>
+      </Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 

@@ -1,14 +1,16 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import { Mail, Store } from "lucide-react";
 import Swal from "sweetalert2";
@@ -56,78 +58,86 @@ const MenageShop = () => {
 
   return (
     <div>
-      <h2 className="text-center text-4xl font-bold text-primary">
+      <Typography
+        variant="h4"
+        align="center"
+        color="primary"
+        sx={{ fontWeight: "bold" }}
+      >
         Manage Shops ({shops?.length || 0})
-      </h2>
-      <div className="mt-5">
+      </Typography>
+      <Box sx={{ mt: 5 }}>
         {isLoading ? (
-          <p className="text-center text-lg text-muted-foreground">
-            Loading shops...
-          </p>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+            <CircularProgress />
+          </Box>
         ) : !shops?.length ? (
-          <div className="rounded-lg border border-border bg-background py-12 text-center">
-            <Store className="mx-auto h-10 w-10 text-muted-foreground" />
-            <p className="mt-4 text-lg font-medium">No shops found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
+          <Paper variant="outlined" sx={{ py: 6, textAlign: "center" }}>
+            <Store style={{ margin: "0 auto", width: 40, height: 40, color: "rgba(0, 0, 0, 0.54)" }} />
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              No shops found
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               Shops will appear here once owners create them.
-            </p>
-          </div>
+            </Typography>
+          </Paper>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-border bg-background shadow-sm">
-            <Table>
-              <TableHeader>
+          <TableContainer component={Paper} variant="outlined">
+            <Table size="small">
+              <TableHead>
                 <TableRow>
-                  <TableHead className="h-10 py-2">#</TableHead>
-                  <TableHead className="h-10 py-2">Shop</TableHead>
-                  <TableHead className="h-10 py-2">Owner</TableHead>
-                  <TableHead className="h-10 py-2">Plan</TableHead>
-                  <TableHead className="h-10 py-2 text-right">Action</TableHead>
+                  <TableCell>#</TableCell>
+                  <TableCell>Shop</TableCell>
+                  <TableCell>Owner</TableCell>
+                  <TableCell>Plan</TableCell>
+                  <TableCell align="right">Action</TableCell>
                 </TableRow>
-              </TableHeader>
+              </TableHead>
               <TableBody>
                 {shops.map((shop, idx) => (
                   <TableRow key={shop?._id}>
-                    <TableCell className="py-2 tabular-nums text-muted-foreground">
+                    <TableCell sx={{ fontVariantNumeric: "tabular-nums" }} color="text.secondary">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="py-2">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9 rounded-lg">
-                          <AvatarImage
-                            src={shop?.logo}
-                            alt={shop?.name}
-                            className="rounded-lg"
-                          />
-                          <AvatarFallback className="rounded-lg">
-                            {shop?.name?.charAt(0) || "S"}
-                          </AvatarFallback>
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Avatar
+                          src={shop?.logo || undefined}
+                          alt={shop?.name}
+                          variant="rounded"
+                          sx={{ width: 36, height: 36 }}
+                        >
+                          {shop?.name?.charAt(0) || "S"}
                         </Avatar>
-                        <span className="font-medium">{shop?.name}</span>
-                      </div>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {shop?.name}
+                        </Typography>
+                      </Box>
                     </TableCell>
-                    <TableCell className="py-2">
+                    <TableCell>
                       {shop?.owner?.name || shop?.owner?.email || "—"}
                     </TableCell>
-                    <TableCell className="py-2 capitalize">
-                      <Badge
-                        variant={
+                    <TableCell sx={{ textTransform: "capitalize" }}>
+                      <Chip
+                        label={shop?.subscriptionPlan || "free"}
+                        size="small"
+                        color={
                           shop?.subscriptionPlan &&
                           shop.subscriptionPlan !== "free"
-                            ? "default"
-                            : "secondary"
+                            ? "primary"
+                            : "default"
                         }
-                      >
-                        {shop?.subscriptionPlan || "free"}
-                      </Badge>
+                        sx={{ textTransform: "capitalize" }}
+                      />
                     </TableCell>
-                    <TableCell className="py-2 text-right">
+                    <TableCell align="right">
                       <Button
-                        size="sm"
-                        variant="outline"
+                        size="small"
+                        variant="outlined"
                         onClick={() => sendNotice(shop.owner?.email)}
                         disabled={!shop.owner?.email}
+                        startIcon={<Mail size={16} />}
                       >
-                        <Mail className="mr-1 h-4 w-4" />
                         Send Notice
                       </Button>
                     </TableCell>
@@ -135,9 +145,9 @@ const MenageShop = () => {
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </TableContainer>
         )}
-      </div>
+      </Box>
     </div>
   );
 };

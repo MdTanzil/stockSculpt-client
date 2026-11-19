@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Badge } from "@/components/ui/badge";
+import Chip from "@mui/material/Chip";
 
 const OrderStatusBadge = ({ status }) => {
   const value = (status || "pending").toLowerCase();
@@ -7,20 +7,19 @@ const OrderStatusBadge = ({ status }) => {
 
   if (value === "completed") {
     return (
-      <Badge
-        variant="outline"
-        className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
-      >
-        {label}
-      </Badge>
+      <Chip
+        label={label}
+        size="small"
+        sx={{ backgroundColor: "#d1fae5", color: "#065f46", fontWeight: 500 }}
+      />
     );
   }
 
   if (value === "canceled") {
-    return <Badge variant="destructive">{label}</Badge>;
+    return <Chip label={label} size="small" color="error" sx={{ fontWeight: 500 }} />;
   }
 
-  return <Badge variant="secondary">{label}</Badge>;
+  return <Chip label={label} size="small" sx={{ fontWeight: 500 }} />;
 };
 
 export default OrderStatusBadge;

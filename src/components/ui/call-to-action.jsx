@@ -1,43 +1,76 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Box, Button, Chip, Container, Typography } from "@mui/material";
 import { CreditCard, MoveRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function CTA() {
   const navigate = useNavigate();
   return (
-    <div className="w-full py-10 lg:py-40">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col text-center bg-muted rounded-md p-4 lg:p-14 gap-8 items-center">
+    <Box sx={{ width: "100%", py: { xs: 5, lg: 20 } }}>
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "center",
+            bgcolor: "grey.100",
+            borderRadius: 1,
+            p: { xs: 2, lg: 7 },
+            gap: 4,
+            alignItems: "center",
+          }}
+        >
           <div>
-            <Badge variant={"lg"}>Get started</Badge>
+            <Chip label="Get started" sx={{ fontSize: "0.875rem", px: 1 }} />
           </div>
-          <div className="flex flex-col gap-2">
-            <h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Typography
+              variant="h4"
+              component="h3"
+              sx={{
+                fontSize: { xs: "1.875rem", md: "3rem" },
+                letterSpacing: "-0.05em",
+                maxWidth: "36rem",
+                fontWeight: 400,
+              }}
+            >
               Try our platform today!
-            </h3>
-            <p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl">
+            </Typography>
+            <Typography
+              color="text.secondary"
+              sx={{
+                fontSize: "1.125rem",
+                lineHeight: 1.625,
+                letterSpacing: "-0.025em",
+                maxWidth: "36rem",
+              }}
+            >
               Managing a small business today is already tough. Avoid further
               complications by ditching outdated, tedious trade methods. Our
               goal is to streamline SMB trade, making it easier and faster than
               ever.
-            </p>
-          </div>
-          <div className="flex flex-row gap-4">
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
             <Button
-              className="gap-4"
-              variant="outline"
+              variant="outlined"
               onClick={() => navigate("/subscription")}
+              endIcon={<CreditCard size={16} />}
+              sx={{ gap: 2 }}
             >
-              View plans <CreditCard className="w-4 h-4" />
+              View plans
             </Button>
-            <Button className="gap-4" onClick={() => navigate("/register")}>
-              Sign up here <MoveRight className="w-4 h-4" />
+            <Button
+              variant="contained"
+              onClick={() => navigate("/register")}
+              endIcon={<MoveRight size={16} />}
+              sx={{ gap: 2 }}
+            >
+              Sign up here
             </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 

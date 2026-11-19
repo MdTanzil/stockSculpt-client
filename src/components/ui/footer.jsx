@@ -1,14 +1,19 @@
-/* eslint-disable react/prop-types */
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 export function Footer() {
   return (
-    <footer className="py-4 bg-[#445760] text-white z-10">
-      <p
-        className="leading-6 text-center font-thin
-      "
+    <Box
+      component="footer"
+      sx={{ py: 2, backgroundColor: "#445760", color: "white", zIndex: 10 }}
+    >
+      <Typography
+        variant="body1"
+        align="center"
+        sx={{ lineHeight: 1.5, fontWeight: 300 }}
       >
         © {new Date().getFullYear()} StockSculpt | All rights reserved.
-      </p>
-    </footer>
+      </Typography>
+    </Box>
   );
 }

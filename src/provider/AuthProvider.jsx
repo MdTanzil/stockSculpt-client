@@ -9,8 +9,9 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import { createContext, useEffect, useState } from "react";
-import { PacmanLoader } from "react-spinners";
 
 import useAxiosPublic from "@/hooks/useAxiosPublic";
 import app from "./../firebase/firebase.config";
@@ -94,7 +95,18 @@ const AuthProvider = ({ children }) => {
   }, [axiosPublic]);
 
   if (loading) {
-    return <PacmanLoader color="#36d7b7" />;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
   const authData = {
     user,

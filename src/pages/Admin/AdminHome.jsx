@@ -1,3 +1,8 @@
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
@@ -13,9 +18,9 @@ const AdminHome = () => {
 
   if (isLoading) {
     return (
-      <p className="text-center text-lg text-muted-foreground">
-        Loading admin stats...
-      </p>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
@@ -30,13 +35,21 @@ const AdminHome = () => {
 
   return (
     <div>
-      <h2 className="mb-5 text-center text-4xl text-primary">Admin Overview</h2>
+      <Typography variant="h4" align="center" color="primary" sx={{ mb: 5 }}>
+        Admin Overview
+      </Typography>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
-          <div key={stat.title} className="stat rounded-lg border bg-base-100 shadow">
-            <div className="stat-title">{stat.title}</div>
-            <div className="stat-value">{stat.value}</div>
-          </div>
+          <Card key={stat.title} variant="outlined">
+            <CardContent>
+              <Typography variant="body2" color="text.secondary">
+                {stat.title}
+              </Typography>
+              <Typography variant="h4" component="div" sx={{ mt: 1 }}>
+                {stat.value}
+              </Typography>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

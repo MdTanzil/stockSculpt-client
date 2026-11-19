@@ -1,10 +1,18 @@
-import { BarChart3, Box, ShieldCheck, ShoppingCart } from "lucide-react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Typography,
+} from "@mui/material";
+import { BarChart3, Box as BoxIcon, ShieldCheck, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const About = () => {
   const highlights = [
     {
-      icon: Box,
+      icon: BoxIcon,
       title: "Product Management",
       text: "Add, edit and organise every product in your shop with live stock levels, categories and pricing in one place.",
     },
@@ -26,43 +34,69 @@ const About = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-4xl font-bold text-primary">About StockSculpt</h1>
-        <p className="mt-4 text-lg text-gray-600">
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Box sx={{ mx: "auto", maxWidth: "48rem", textAlign: "center" }}>
+        <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
+          About StockSculpt
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 2, fontSize: "1.125rem" }}>
           StockSculpt is a simple inventory management system for small shops.
           It helps shop owners keep track of products, stock levels and orders
           without spreadsheets or paperwork.
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {highlights.map((item) => (
-          <div
-            key={item.title}
-            className="rounded-lg border bg-white p-6 shadow-sm"
-          >
-            <item.icon className="h-8 w-8 text-primary" />
-            <h2 className="mt-4 text-lg font-semibold">{item.title}</h2>
-            <p className="mt-2 text-sm text-gray-600">{item.text}</p>
-          </div>
+          <Card key={item.title} variant="outlined">
+            <CardContent sx={{ p: 3 }}>
+              <item.icon size={32} color="#2c3e50" />
+              <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
+                {item.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {item.text}
+              </Typography>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="mx-auto mt-12 max-w-3xl rounded-lg bg-primary p-8 text-center text-white">
-        <h2 className="text-2xl font-bold">Ready to organise your shop?</h2>
-        <p className="mt-2 text-white/80">
+      <Box
+        sx={{
+          mx: "auto",
+          mt: 6,
+          maxWidth: "48rem",
+          borderRadius: 2,
+          bgcolor: "primary.main",
+          p: 4,
+          textAlign: "center",
+          color: "white",
+        }}
+      >
+        <Typography variant="h5" component="h2" fontWeight="bold">
+          Ready to organise your shop?
+        </Typography>
+        <Typography sx={{ mt: 1, color: "rgba(255, 255, 255, 0.8)" }}>
           Create your store account and start managing products and orders in
           minutes.
-        </p>
-        <Link
+        </Typography>
+        <Button
+          component={Link}
           to="/create-store-account"
-          className="mt-6 inline-block rounded-lg bg-white px-6 py-3 font-semibold text-primary transition hover:bg-gray-100"
+          variant="contained"
+          sx={{
+            mt: 3,
+            bgcolor: "white",
+            color: "primary.main",
+            fontWeight: 600,
+            "&:hover": { bgcolor: "#f3f4f6" },
+          }}
         >
           Create Your Store
-        </Link>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Container>
   );
 };
 

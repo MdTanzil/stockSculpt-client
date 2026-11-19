@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
@@ -23,6 +24,15 @@ const Settings = () => {
     setValue,
     formState: { errors },
   } = useForm();
+
+  // react-hook-form's register ref must target the underlying <input>, so
+  // split it off and pass it as inputRef (MUI forwards `ref` to the root).
+  const { ref: nameRef, ...nameProps } = register("name", {
+    required: "Shop name is required",
+  });
+  const { ref: locationRef, ...locationProps } = register("location", {
+    required: "Shop address is required",
+  });
 
   useEffect(() => {
     if (shop?._id) {
@@ -66,74 +76,77 @@ const Settings = () => {
   if (!shop?._id) {
     return (
       <div className="container mx-auto p-4">
-        <p className="text-center text-lg text-muted-foreground">
+        <Typography variant="h6" align="center" color="text.secondary">
           You do not have a shop yet. Create one to manage its settings.
-        </p>
+        </Typography>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto max-w-2xl space-y-6 p-4">
-      <h1 className="text-center text-4xl font-bold text-primary">
+      <Typography variant="h4" align="center" fontWeight={700} color="primary.main">
         Shop Settings
-      </h1>
+      </Typography>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Account</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>
-            <span className="font-medium">Email:</span> {user?.email}
-          </p>
-          <p>
-            <span className="font-medium">Subscription plan:</span>{" "}
-            <span className="capitalize">
-              {shop.subscriptionPlan || "free"}
-            </span>
-          </p>
-          <p>
-            <span className="font-medium">Shop created:</span>{" "}
-            {shop.createdAt
-              ? new Date(shop.createdAt).toLocaleDateString()
-              : "—"}
-          </p>
+        <CardContent>
+          <Typography variant="h6">Account</Typography>
+          <Box sx={{ mt: 1, display: "grid", gap: 1 }}>
+            <Typography variant="body2">
+              <Box component="span" sx={{ fontWeight: 500 }}>
+                Email:
+              </Box>{" "}
+              {user?.email}
+            </Typography>
+            <Typography variant="body2">
+              <Box component="span" sx={{ fontWeight: 500 }}>
+                Subscription plan:
+              </Box>{" "}
+              <Box component="span" sx={{ textTransform: "capitalize" }}>
+                {shop.subscriptionPlan || "free"}
+              </Box>
+            </Typography>
+            <Typography variant="body2">
+              <Box component="span" sx={{ fontWeight: 500 }}>
+                Shop created:
+              </Box>{" "}
+              {shop.createdAt
+                ? new Date(shop.createdAt).toLocaleDateString()
+                : "—"}
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Shop Details</CardTitle>
-        </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+          <Typography variant="h6">Shop Details</Typography>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-4 grid gap-4">
+            <TextField
+              id="name"
+              label="Shop Name"
+              fullWidth
+              inputRef={nameRef}
+              {...nameProps}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
+            <TextField
+              id="location"
+              label="Shop Address"
+              fullWidth
+              multiline
+              rows={3}
+              inputRef={locationRef}
+              {...locationProps}
+              error={!!errors.location}
+              helperText={errors.location?.message}
+            />
             <div className="grid gap-2">
-              <Label htmlFor="name">Shop Name</Label>
-              <Input
-                id="name"
-                {...register("name", { required: "Shop name is required" })}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="location">Shop Address</Label>
-              <Textarea
-                id="location"
-                {...register("location", {
-                  required: "Shop address is required",
-                })}
-              />
-              {errors.location && (
-                <p className="text-sm text-red-500">
-                  {errors.location.message}
-                </p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="logo">Shop Logo</Label>
+              <Typography variant="body2" fontWeight={500}>
+                Shop Logo
+              </Typography>
               {imageUrl && (
                 <img
                   src={imageUrl}
@@ -149,7 +162,7 @@ const Settings = () => {
                 className="rounded border p-2"
               />
             </div>
-            <Button type="submit" disabled={isSaving}>
+            <Button type="submit" variant="contained" disabled={isSaving}>
               {isSaving ? "Saving..." : "Save Settings"}
             </Button>
           </form>
