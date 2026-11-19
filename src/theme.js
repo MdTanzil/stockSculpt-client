@@ -22,6 +22,17 @@ const createStockSculptTheme = (mode = "light") =>
     typography: {
       fontFamily: "'Poppins', sans-serif",
     },
+    components: {
+      // MUI Menu (used by Select dropdowns) locks page scroll by default
+      // and compensates with body padding, which shifts the layout.
+      // Menus are short-lived overlays, so disabling the scroll lock
+      // is safe here.
+      MuiMenu: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+    },
   });
 
 export default createStockSculptTheme;

@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
-import OrderStatusBadge from "@/components/order-status-badge";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -38,7 +40,12 @@ const zebraRowSx = {
   "&:nth-of-type(odd)": { backgroundColor: "action.hover" },
 };
 
-const OrderTable = ({ orders, onEdit, onDelete }) => {
+const STATUS_OPTIONS = ["pending", "completed", "canceled"];
+
+const capitalize = (value) =>
+  value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+
+const OrderTable = ({ orders, onEdit, onDelete, onStatusChange }) => {
   if (!orders?.length) {
     return (
       <Paper variant="outlined" sx={{ mt: 2, py: 6, textAlign: "center" }}>
@@ -113,7 +120,22 @@ const OrderTable = ({ orders, onEdit, onDelete }) => {
                   {formatPrice(order.totalPrice)}
                 </TableCell>
                 <TableCell>
-                  <OrderStatusBadge status={order.orderStatus} />
+                  <FormControl size="small" sx={{ minWidth: 130 }}>
+                    <Select
+                      value={order.orderStatus || "pending"}
+                      onChange={(e) =>
+                        onStatusChange(order._id, e.target.value)
+                      }
+                      aria-label="Change order status"
+                      sx={{ fontSize: "0.8125rem" }}
+                    >
+                      {STATUS_OPTIONS.map((status) => (
+                        <MenuItem key={status} value={status}>
+                          {capitalize(status)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </TableCell>
                 <TableCell sx={{ color: "text.secondary" }}>
                   {formatDate(order.createdAt)}

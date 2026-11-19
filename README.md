@@ -14,7 +14,8 @@ manage shops and users.
   3 products)
 - Product management — add, edit, delete, stock tracking with low-stock
   warnings, plus search, category and low-stock filters
-- Order management — create orders, update status, per-shop order lists
+- Order management — create orders, update status, per-shop order lists,
+  inline status change from the orders table
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and

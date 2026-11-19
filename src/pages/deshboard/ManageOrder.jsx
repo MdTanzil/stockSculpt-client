@@ -1,3 +1,4 @@
+import Autocomplete from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -6,9 +7,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
@@ -18,7 +16,7 @@ import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import OrderTable from "./OrderTable";
@@ -38,11 +36,6 @@ const ManageOrder = () => {
     reset,
     formState: { errors },
   } = useForm();
-
-  // Filter products based on search input
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Add selected product to the form
   const handleSelectProduct = (product) => {
@@ -74,6 +67,19 @@ const ManageOrder = () => {
     setOpen(false);
     reset(); // Reset the form fields
     setSelectedProducts([]);
+    setSelectedOrder(null);
+    setSearchTerm("");
+  };
+
+  // Change an order's status inline from the orders table
+  const handleStatusChange = async (orderId, orderStatus) => {
+    try {
+      await axiosSecure.put(`/order/${orderId}`, { orderStatus });
+      toast.success("Order status updated.");
+      orderRefetch();
+    } catch (error) {
+      toast.error("Failed to update order status.");
+    }
   };
 
   const onSubmit = async () => {
@@ -127,25 +133,26 @@ const ManageOrder = () => {
     }
   };
 
-  // Edit an order
+  // Edit an order — populate the form directly instead of relying on
+  // an effect: the old effect only re-ran when selectedOrder changed
+  // identity, so editing the same order twice did nothing, and a
+  // cancelled edit left stale state behind.
   const handleEdit = (order) => {
     setSelectedOrder(order);
-  };
-  useEffect(() => {
-    if (selectedOrder) {
-      // Populate form fields when editing
-      setSelectedProducts(
-        selectedOrder.products.map((p) => ({
+    setSelectedProducts(
+      (order.products || [])
+        .filter((p) => p.product)
+        .map((p) => ({
           _id: p.product._id,
           name: p.product.name,
           price: p.product.price,
           quantity: p.quantity,
         }))
-      );
-      setValue("orderStatus", selectedOrder.orderStatus);
-      setOpen(true); // Open modal when editing
-    }
-  }, [selectedOrder, setValue]);
+    );
+    setValue("orderStatus", order.orderStatus);
+    setSearchTerm("");
+    setOpen(true);
+  };
   return (
     <div>
       <Typography variant="h4" align="center" fontWeight={700} color="primary.main">
@@ -154,7 +161,11 @@ const ManageOrder = () => {
 
       <Button
         variant="contained"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setSelectedOrder(null);
+          setSearchTerm("");
+          setOpen(true);
+        }}
         endIcon={<Plus className="h-4 w-4" />}
       >
         Add Order
@@ -166,36 +177,32 @@ const ManageOrder = () => {
           </DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ pt: 1 }}>
-              {/* Search Product Input */}
-              <div className="grid gap-2">
-                <TextField
-                  id="search"
-                  label="Search Product"
-                  placeholder="Search for a product..."
-                  fullWidth
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <Paper
-                    variant="outlined"
-                    sx={{ maxHeight: 160, overflow: "auto" }}
-                  >
-                    <List dense disablePadding>
-                      {filteredProducts.map((product) => (
-                        <ListItemButton
-                          key={product._id}
-                          onClick={() => handleSelectProduct(product)}
-                        >
-                          <ListItemText
-                            primary={`${product.name} - $${product.price}`}
-                          />
-                        </ListItemButton>
-                      ))}
-                    </List>
-                  </Paper>
+              {/* Search Product — Autocomplete renders its dropdown in a
+                  portal, so the dialog never resizes or jumps while
+                  typing (the old in-flow results list did). */}
+              <Autocomplete
+                options={products}
+                getOptionLabel={(product) =>
+                  `${product.name} - $${product.price}`
+                }
+                isOptionEqualToValue={(option, value) =>
+                  option._id === value._id
+                }
+                value={null}
+                inputValue={searchTerm}
+                onInputChange={(event, value) => setSearchTerm(value)}
+                onChange={(event, value) => {
+                  if (value) handleSelectProduct(value);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search Product"
+                    placeholder="Search for a product..."
+                    fullWidth
+                  />
                 )}
-              </div>
+              />
 
               {/* Selected Products List */}
               {selectedProducts.length > 0 && (
@@ -295,6 +302,7 @@ const ManageOrder = () => {
           orders={orders}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onStatusChange={handleStatusChange}
         />
       )}
     </div>

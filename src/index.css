@@ -13,6 +13,13 @@
   }
 }
 
+/* Reserve the scrollbar gutter on every page so the centered layout
+   (navbar, page content) does not shift left/right when switching
+   between pages of different heights. */
+html {
+  scrollbar-gutter: stable;
+}
+
 .active {
   color: #00796b !important;
 }
