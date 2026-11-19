@@ -191,9 +191,12 @@ const DashboardHome = () => {
                 {
                   scaleType: "band",
                   data: monthlyRevenue.map((m) => m.label),
-                  // MUI X Charts hides tick labels it thinks would overlap;
-                  // with 6 short month labels there is no overlap, so force
-                  // every label to show.
+                  // Default x-axis height is 25px, leaving a 16px label
+                  // budget (25 - 6 tick - 3 gap) — too small for Poppins at
+                  // 12px, so the chart drops every label. Height 40 gives a
+                  // 31px budget. tickLabelInterval forces all 6 labels to
+                  // show (no overlap risk with short month names).
+                  height: 40,
                   tickLabelInterval: () => true,
                 },
               ]}
@@ -204,7 +207,7 @@ const DashboardHome = () => {
                 },
               ]}
               height={280}
-              margin={{ left: 60 }}
+              margin={{ left: 60, bottom: 40 }}
             />
           ) : (
             <Typography
