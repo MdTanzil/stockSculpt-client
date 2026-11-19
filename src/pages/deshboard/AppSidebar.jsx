@@ -49,7 +49,7 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
         <ListSubheader
           sx={{
             backgroundColor: "transparent",
-            color: "rgba(255, 255, 255, 0.7)",
+            color: "text.secondary",
           }}
         >
           Application
@@ -64,16 +64,17 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
             selected={pathname === item.url}
             onClick={onMobileClose}
             sx={{
-              color: "white",
+              color: "text.primary",
               gap: 2,
               "&.Mui-selected": {
-                backgroundColor: "rgba(255, 255, 255, 0.16)",
+                backgroundColor: "action.selected",
+                color: "primary.main",
               },
               "&.Mui-selected:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                backgroundColor: "action.selected",
               },
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                backgroundColor: "action.hover",
               },
             }}
           >
@@ -101,8 +102,8 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
           display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
-            backgroundColor: "primary.main",
-            color: "white",
+            backgroundColor: "background.paper",
+            color: "text.primary",
           },
         }}
       >
@@ -117,8 +118,10 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
             boxSizing: "border-box",
-            backgroundColor: "primary.main",
-            color: "white",
+            backgroundColor: "background.paper",
+            color: "text.primary",
+            borderRight: "1px solid",
+            borderColor: "divider",
             // In-flow sidebar (like the old shadcn sidebar): MUI's drawer
             // paper is position: fixed by default, which would overlay the
             // navbar and the main content. Relative keeps it inside the
