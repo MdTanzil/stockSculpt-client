@@ -1,37 +1,13 @@
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import { resetDemoData } from "../../utils/resetDemoData";
 
 const AdminHome = () => {
   const axiosSecure = useAxiosSecure();
-  const [resetting, setResetting] = useState(false);
-  const [resetDone, setResetDone] = useState(false);
-  const [resetLog, setResetLog] = useState([]);
-
-  const handleReset = async () => {
-    // No confirm dialog: the browser automation auto-dismisses native
-    // dialogs, and the owner already approved this wipe explicitly in chat.
-    setResetting(true);
-    setResetDone(false);
-    setResetLog([]);
-    const log = (line) => setResetLog((prev) => [...prev, line]);
-    try {
-      await resetDemoData(axiosSecure, log);
-    } catch (err) {
-      log(`ERROR: ${err.message}`);
-    }
-    setResetting(false);
-    setResetDone(true);
-  };
   const { data: adminData, isLoading } = useQuery({
     queryKey: ["adminState"],
     queryFn: async () => {
@@ -81,54 +57,6 @@ const AdminHome = () => {
           </Card>
         ))}
       </div>
-      {/* TEMPORARY one-off reset tool — remove after the reseed is verified live. */}
-      <Card variant="outlined" sx={{ mt: 5, borderColor: "error.main" }}>
-        <CardContent>
-          <Typography variant="h6" color="error">
-            Reset demo data (temporary)
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Deletes all users (except your admin account), shops, products,
-            orders and subscriptions, then creates fresh dummy data: shop
-            &ldquo;Birir Dokan&rdquo;, 8 products, 7 orders.
-          </Typography>
-          <Button
-            variant="contained"
-            color="error"
-            sx={{ mt: 2 }}
-            onClick={handleReset}
-            disabled={resetting}
-          >
-            {resetting ? "Resetting…" : "Reset demo data"}
-          </Button>
-          {resetLog.length > 0 && (
-            <Paper
-              variant="outlined"
-              sx={{
-                mt: 2,
-                p: 2,
-                maxHeight: 320,
-                overflow: "auto",
-                bgcolor: "action.hover",
-              }}
-            >
-              <Typography
-                component="pre"
-                variant="body2"
-                sx={{ m: 0, whiteSpace: "pre-wrap", fontFamily: "monospace" }}
-              >
-                {resetLog.join("\n")}
-              </Typography>
-            </Paper>
-          )}
-          {resetDone && !resetting && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              Reset finished — check the log above, then refresh the dashboard
-              to see the new data.
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
