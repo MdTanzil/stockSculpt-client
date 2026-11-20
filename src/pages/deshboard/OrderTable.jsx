@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,7 +16,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import formatDate from "@/utils/formatDate";
-import { ClipboardList, Pencil, Trash } from "lucide-react";
+import { ClipboardList, Pencil, SearchX, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
   name
@@ -45,8 +46,34 @@ const STATUS_OPTIONS = ["pending", "completed", "canceled"];
 const capitalize = (value) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 
-const OrderTable = ({ orders, onEdit, onDelete, onStatusChange }) => {
+const OrderTable = ({
+  orders,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  totalCount,
+  hasActiveFilters,
+  onClearFilters,
+}) => {
   if (!orders?.length) {
+    if (hasActiveFilters) {
+      return (
+        <Paper variant="outlined" sx={{ mt: 2, py: 6, textAlign: "center" }}>
+          <Box sx={{ color: "text.secondary", display: "flex", justifyContent: "center" }}>
+            <SearchX className="h-10 w-10" />
+          </Box>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            No orders match your filters
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Try adjusting your search or filters.
+          </Typography>
+          <Button variant="outlined" sx={{ mt: 2 }} onClick={onClearFilters}>
+            Clear filters
+          </Button>
+        </Paper>
+      );
+    }
     return (
       <Paper variant="outlined" sx={{ mt: 2, py: 6, textAlign: "center" }}>
         <Box sx={{ color: "text.secondary", display: "flex", justifyContent: "center" }}>
@@ -165,10 +192,14 @@ const OrderTable = ({ orders, onEdit, onDelete, onStatusChange }) => {
           <TableFooter>
             <TableRow>
               <TableCell colSpan={2} sx={{ color: "text.secondary" }}>
-                {orders.length} order{orders.length === 1 ? "" : "s"}
+                {totalCount != null && totalCount !== orders.length
+                  ? `Showing ${orders.length} of ${totalCount} orders`
+                  : `${orders.length} order${orders.length === 1 ? "" : "s"}`}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: 500 }}>
-                Total (all orders)
+                {totalCount != null && totalCount !== orders.length
+                  ? "Total (shown orders)"
+                  : "Total (all orders)"}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: 600 }} className="tabular-nums">
                 {formatPrice(totalRevenue)}

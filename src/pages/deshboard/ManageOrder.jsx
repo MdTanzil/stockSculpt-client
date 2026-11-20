@@ -6,6 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
+import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
@@ -15,8 +16,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import OrderTable from "./OrderTable";
@@ -26,6 +27,10 @@ const ManageOrder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  // Filters for the orders table — separate from the dialog's product
+  // search above, which reuses the name `searchTerm`.
+  const [orderSearchTerm, setOrderSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const axiosSecure = useAxiosSecure();
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -69,6 +74,31 @@ const ManageOrder = () => {
     setSelectedProducts([]);
     setSelectedOrder(null);
     setSearchTerm("");
+  };
+
+  // Filter the orders table by search text (order number or product
+  // name) and by status — same pattern as the product filters.
+  const filteredOrders = useMemo(() => {
+    const query = orderSearchTerm.trim().toLowerCase().replace(/^#/, "");
+    return (orders || []).filter((order) => {
+      if (statusFilter !== "all" && order.orderStatus !== statusFilter)
+        return false;
+      if (!query) return true;
+      // The displayed order number (#XXXXXX) is the last 6 chars of the
+      // Mongo _id, so matching the full _id covers both forms.
+      if (String(order._id || "").toLowerCase().includes(query)) return true;
+      return (order.products || []).some((item) =>
+        (item.product?.name || "").toLowerCase().includes(query)
+      );
+    });
+  }, [orders, orderSearchTerm, statusFilter]);
+
+  const hasActiveFilters =
+    orderSearchTerm.trim() !== "" || statusFilter !== "all";
+
+  const clearFilters = () => {
+    setOrderSearchTerm("");
+    setStatusFilter("all");
   };
 
   // Change an order's status inline from the orders table
@@ -298,12 +328,67 @@ const ManageOrder = () => {
       {orderLoading ? (
         <Typography variant="body1">Loading orders...</Typography>
       ) : (
-        <OrderTable
-          orders={orders}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onStatusChange={handleStatusChange}
-        />
+        <>
+          <Paper
+            variant="outlined"
+            sx={{
+              mt: 2,
+              mb: 2,
+              p: 1.5,
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: 1.5,
+            }}
+          >
+            <TextField
+              placeholder="Search orders by number or product..."
+              size="small"
+              value={orderSearchTerm}
+              onChange={(e) => setOrderSearchTerm(e.target.value)}
+              aria-label="Search orders by number or product"
+              sx={{ minWidth: 220, flex: 1 }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search className="h-4 w-4" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel id="status-filter-label">Status</InputLabel>
+              <Select
+                labelId="status-filter-label"
+                label="Status"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by status"
+              >
+                <MenuItem value="all">All statuses</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="canceled">Canceled</MenuItem>
+              </Select>
+            </FormControl>
+            {hasActiveFilters && (
+              <Button variant="text" size="small" onClick={clearFilters}>
+                Clear filters
+              </Button>
+            )}
+          </Paper>
+          <OrderTable
+            orders={filteredOrders}
+            totalCount={orders?.length ?? 0}
+            hasActiveFilters={hasActiveFilters}
+            onClearFilters={clearFilters}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onStatusChange={handleStatusChange}
+          />
+        </>
       )}
     </div>
   );
