@@ -13,6 +13,12 @@ const useShop = () => {
     orderRefetch,
     orderLoading,
     orderError,
+    suppliers,
+    supplierRefetch,
+    suppliersLoading,
+    purchaseOrders,
+    purchaseOrderRefetch,
+    purchaseOrdersLoading,
     user,
   } = useContext(ShopContext);
 
@@ -27,6 +33,12 @@ const useShop = () => {
     orderRefetch,
     orderLoading,
     orderError,
+    suppliers,
+    supplierRefetch,
+    suppliersLoading,
+    purchaseOrders,
+    purchaseOrderRefetch,
+    purchaseOrdersLoading,
     user,
   };
 };

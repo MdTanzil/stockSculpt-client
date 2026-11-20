@@ -6,7 +6,15 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
-import { Box, File, Home, ReceiptText, Settings } from "lucide-react";
+import {
+  Box,
+  ClipboardList,
+  File,
+  Home,
+  ReceiptText,
+  Settings,
+  Truck,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const DRAWER_WIDTH = 240;
@@ -30,6 +38,16 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       title: "Order",
       url: "/dashboard/orders",
       icon: File,
+    },
+    {
+      title: "Suppliers",
+      url: "/dashboard/suppliers",
+      icon: Truck,
+    },
+    {
+      title: "Purchase Orders",
+      url: "/dashboard/purchase-orders",
+      icon: ClipboardList,
     },
     {
       title: "Checkout",

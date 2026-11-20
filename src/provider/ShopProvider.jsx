@@ -57,6 +57,38 @@ const ShopProvider = ({ children }) => {
     enabled: !!shop?._id, // Runs query only when shop._id exists
   });
 
+  // Fetch suppliers only when shop._id is available (the server scopes
+  // the list to the caller's shop)
+  const {
+    data: suppliers = [],
+    refetch: supplierRefetch,
+    isLoading: suppliersLoading,
+  } = useQuery({
+    queryKey: ["suppliers", shop?._id],
+    queryFn: async () => {
+      if (!shop?._id) return [];
+      const res = await axiosSecure.get(`/suppliers`);
+      return res.data;
+    },
+    enabled: !!shop?._id,
+  });
+
+  // Fetch purchase orders only when shop._id is available (the server
+  // scopes the list to the caller's shop)
+  const {
+    data: purchaseOrders = [],
+    refetch: purchaseOrderRefetch,
+    isLoading: purchaseOrdersLoading,
+  } = useQuery({
+    queryKey: ["purchaseOrders", shop?._id],
+    queryFn: async () => {
+      if (!shop?._id) return [];
+      const res = await axiosSecure.get(`/purchase-orders`);
+      return res.data;
+    },
+    enabled: !!shop?._id,
+  });
+
   const shopAllData = {
     shop,
     setShop,
@@ -68,6 +100,12 @@ const ShopProvider = ({ children }) => {
     orderRefetch,
     orderLoading,
     orderError,
+    suppliers,
+    supplierRefetch,
+    suppliersLoading,
+    purchaseOrders,
+    purchaseOrderRefetch,
+    purchaseOrdersLoading,
     user,
   };
 

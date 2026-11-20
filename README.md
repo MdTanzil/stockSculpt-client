@@ -17,6 +17,10 @@ manage shops and users.
 - Order management — create orders, update status, per-shop order lists,
   inline status change from the orders table, plus search by order number
   or product name and a status filter
+- Supplier management — supplier records with contact details
+- Purchase orders — order stock from suppliers (draft → ordered →
+  received / canceled); receiving a purchase order adds its quantities
+  to product stock automatically
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and
