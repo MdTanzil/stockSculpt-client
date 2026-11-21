@@ -7,6 +7,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import {
+  BarChart3,
   Box,
   ClipboardList,
   File,
@@ -48,6 +49,11 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       title: "Purchase Orders",
       url: "/dashboard/purchase-orders",
       icon: ClipboardList,
+    },
+    {
+      title: "Reports",
+      url: "/dashboard/reports",
+      icon: BarChart3,
     },
     {
       title: "Checkout",

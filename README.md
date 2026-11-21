@@ -21,6 +21,9 @@ manage shops and users.
 - Purchase orders — order stock from suppliers (draft → ordered →
   received / canceled); receiving a purchase order adds its quantities
   to product stock automatically
+- Reports — KPI summary, sales by product / category / month, best
+  sellers and slow movers, and inventory valuation, with a date-range
+  filter and CSV + PDF export for every table
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and

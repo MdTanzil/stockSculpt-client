@@ -13,6 +13,7 @@ import DashboardHome from "../pages/deshboard/DashBoardHome";
 import ManageOrder from "../pages/deshboard/ManageOrder";
 import ManageProduct from "../pages/deshboard/ManageProduct";
 import ManagePurchaseOrders from "../pages/deshboard/ManagePurchaseOrders";
+import Reports from "../pages/deshboard/Reports";
 import ManageSuppliers from "../pages/deshboard/ManageSuppliers";
 import Settings from "../pages/deshboard/Settings";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
@@ -116,6 +117,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRouter>
             <ManagePurchaseOrders />
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "reports",
+        element: (
+          <PrivateRouter>
+            <Reports />
           </PrivateRouter>
         ),
       },
