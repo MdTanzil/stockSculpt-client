@@ -23,7 +23,14 @@ import toast from "react-hot-toast";
 import OrderTable from "./OrderTable";
 
 const ManageOrder = () => {
-  const { products, orderRefetch, orders, orderLoading } = useShop();
+  const {
+    products,
+    orderRefetch,
+    orders,
+    orderLoading,
+    canEdit,
+    canDelete,
+  } = useShop();
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -189,17 +196,19 @@ const ManageOrder = () => {
         Manage Your Orders
       </Typography>
 
-      <Button
-        variant="contained"
-        onClick={() => {
-          setSelectedOrder(null);
-          setSearchTerm("");
-          setOpen(true);
-        }}
-        endIcon={<Plus className="h-4 w-4" />}
-      >
-        Add Order
-      </Button>
+      {canEdit ? (
+        <Button
+          variant="contained"
+          onClick={() => {
+            setSelectedOrder(null);
+            setSearchTerm("");
+            setOpen(true);
+          }}
+          endIcon={<Plus className="h-4 w-4" />}
+        >
+          Add Order
+        </Button>
+      ) : null}
       <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>
@@ -387,6 +396,8 @@ const ManageOrder = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onStatusChange={handleStatusChange}
+            canEdit={canEdit}
+            canDelete={canDelete}
           />
         </>
       )}

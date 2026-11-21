@@ -61,6 +61,8 @@ const ProductTable = ({
   products,
   onEdit,
   onDelete,
+  canEdit,
+  canDelete,
   totalCount,
   hasActiveFilters,
   onClearFilters,
@@ -191,23 +193,33 @@ const ProductTable = ({
                 </Box>
               </TableCell>
               <TableCell align="right">
-                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => onEdit(product)}
-                    aria-label={`Edit ${product.name}`}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => onDelete(product._id)}
-                    aria-label={`Delete ${product.name}`}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </IconButton>
-                </Box>
+                {!canEdit && !canDelete ? (
+                  <Typography variant="body2" color="text.secondary">
+                    —
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                    {canEdit ? (
+                      <IconButton
+                        size="small"
+                        onClick={() => onEdit(product)}
+                        aria-label={`Edit ${product.name}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </IconButton>
+                    ) : null}
+                    {canDelete ? (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => onDelete(product._id)}
+                        aria-label={`Delete ${product.name}`}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </IconButton>
+                    ) : null}
+                  </Box>
+                )}
               </TableCell>
             </TableRow>
           ))}

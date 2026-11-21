@@ -44,7 +44,13 @@ const emptyForm = {
 
 const ManageSuppliers = () => {
   const axiosSecure = useAxiosSecure();
-  const { suppliers, supplierRefetch, suppliersLoading } = useShop();
+  const {
+    suppliers,
+    supplierRefetch,
+    suppliersLoading,
+    canEdit,
+    canDelete,
+  } = useShop();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editSupplier, setEditSupplier] = useState(null);
@@ -140,14 +146,16 @@ const ManageSuppliers = () => {
         Manage Your Suppliers
       </Typography>
 
-      <Button
-        variant="contained"
-        onClick={handleOpenAdd}
-        endIcon={<Plus className="h-4 w-4" />}
-        sx={{ mt: 2 }}
-      >
-        Add Supplier
-      </Button>
+      {canEdit ? (
+        <Button
+          variant="contained"
+          onClick={handleOpenAdd}
+          endIcon={<Plus className="h-4 w-4" />}
+          sx={{ mt: 2 }}
+        >
+          Add Supplier
+        </Button>
+      ) : null}
 
       <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>
@@ -272,21 +280,33 @@ const ManageSuppliers = () => {
                   <TableCell>{supplier.phone || "—"}</TableCell>
                   <TableCell>{supplier.address || "—"}</TableCell>
                   <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEdit(supplier)}
-                      aria-label={`Edit ${supplier.name}`}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => setDeleteTarget(supplier)}
-                      aria-label={`Delete ${supplier.name}`}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </IconButton>
+                    {!canEdit && !canDelete ? (
+                      <Typography variant="body2" color="text.secondary">
+                        —
+                      </Typography>
+                    ) : (
+                      <>
+                        {canEdit ? (
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEdit(supplier)}
+                            aria-label={`Edit ${supplier.name}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </IconButton>
+                        ) : null}
+                        {canDelete ? (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeleteTarget(supplier)}
+                            aria-label={`Delete ${supplier.name}`}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </IconButton>
+                        ) : null}
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

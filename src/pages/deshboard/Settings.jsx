@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 const Settings = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const { shop, setShop } = useShop();
+  const { shop, setShop, shopRole, isShopOwner } = useShop();
   const [imageUrl, setImageUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const {
@@ -64,7 +64,9 @@ const Settings = () => {
         location: data.location,
         logo: imageUrl,
       });
-      setShop(res.data);
+      // PUT /shop/:id returns the plain shop document — keep the role
+      // from GET /api/shop/user so role-gated UI stays correct.
+      setShop({ ...res.data, role: shop.role });
       toast.success("Shop settings saved successfully!");
     } catch (error) {
       toast.error("Failed to save settings. Please try again.");
@@ -115,14 +117,52 @@ const Settings = () => {
                 ? new Date(shop.createdAt).toLocaleDateString()
                 : "—"}
             </Typography>
+            {shopRole ? (
+              <Typography variant="body2">
+                <Box component="span" sx={{ fontWeight: 500 }}>
+                  Your role:
+                </Box>{" "}
+                <Box component="span" sx={{ textTransform: "capitalize" }}>
+                  {shopRole}
+                </Box>
+              </Typography>
+            ) : null}
           </Box>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent>
-          <Typography variant="h6">Shop Details</Typography>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4 grid gap-4">
+      {!isShopOwner ? (
+        <Card>
+          <CardContent>
+            <Typography variant="h6">Shop Details</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Only the shop owner can change shop settings. Your role is{" "}
+              <Box component="span" sx={{ textTransform: "capitalize" }}>
+                {shopRole || "viewer"}
+              </Box>
+              .
+            </Typography>
+            <Box sx={{ mt: 2, display: "grid", gap: 1 }}>
+              <Typography variant="body2">
+                <Box component="span" sx={{ fontWeight: 500 }}>
+                  Shop name:
+                </Box>{" "}
+                {shop.name}
+              </Typography>
+              <Typography variant="body2">
+                <Box component="span" sx={{ fontWeight: 500 }}>
+                  Address:
+                </Box>{" "}
+                {shop.location}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent>
+            <Typography variant="h6">Shop Details</Typography>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-4 grid gap-4">
             <TextField
               id="name"
               label="Shop Name"
@@ -162,12 +202,13 @@ const Settings = () => {
                 className="rounded border p-2"
               />
             </div>
-            <Button type="submit" variant="contained" disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Settings"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button type="submit" variant="contained" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save Settings"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

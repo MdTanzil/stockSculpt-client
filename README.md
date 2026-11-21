@@ -24,6 +24,11 @@ manage shops and users.
 - Reports — KPI summary, sales by product / category / month, best
   sellers and slow movers, and inventory valuation, with a date-range
   filter and CSV + PDF export for every table
+- Per-shop staff roles — the owner invites staff by email from the Staff
+  page (Manager / Staff / Viewer); the dashboard hides create, edit and
+  delete actions a role is not allowed to use (viewers are read-only,
+  staff cannot delete, only the owner manages staff and shop settings).
+  Staff members need an account first — no invitation email is sent yet
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and

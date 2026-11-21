@@ -64,6 +64,8 @@ const ManagePurchaseOrders = () => {
     purchaseOrders,
     purchaseOrderRefetch,
     purchaseOrdersLoading,
+    canEdit,
+    canDelete,
   } = useShop();
 
   const [open, setOpen] = useState(false);
@@ -280,14 +282,16 @@ const ManagePurchaseOrders = () => {
         Manage Purchase Orders
       </Typography>
 
-      <Button
-        variant="contained"
-        onClick={handleOpenAdd}
-        endIcon={<Plus className="h-4 w-4" />}
-        sx={{ mt: 2 }}
-      >
-        New Purchase Order
-      </Button>
+      {canEdit ? (
+        <Button
+          variant="contained"
+          onClick={handleOpenAdd}
+          endIcon={<Plus className="h-4 w-4" />}
+          sx={{ mt: 2 }}
+        >
+          New Purchase Order
+        </Button>
+      ) : null}
 
       <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>
@@ -611,69 +615,76 @@ const ManagePurchaseOrders = () => {
                     {formatDate(order.createdAt)}
                   </TableCell>
                   <TableCell align="right">
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "flex-end",
-                        alignItems: "center",
-                        gap: 0.5,
-                      }}
-                    >
-                      {order.status === "draft" && (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          onClick={() => handleMarkOrdered(order)}
-                        >
-                          Mark ordered
-                        </Button>
-                      )}
-                      {order.status === "ordered" && (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="success"
-                          onClick={() =>
-                            setConfirm({ action: "receive", order })
-                          }
-                        >
-                          Receive
-                        </Button>
-                      )}
-                      {(order.status === "draft" ||
-                        order.status === "ordered") && (
-                        <>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleEdit(order)}
-                            aria-label={`Edit purchase order ${shortId(order._id)}`}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </IconButton>
+                    {!canEdit && !canDelete ? (
+                      <Typography variant="body2" color="text.secondary">
+                        —
+                      </Typography>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                          gap: 0.5,
+                        }}
+                      >
+                        {canEdit && order.status === "draft" && (
                           <Button
                             size="small"
+                            variant="contained"
+                            onClick={() => handleMarkOrdered(order)}
+                          >
+                            Mark ordered
+                          </Button>
+                        )}
+                        {canEdit && order.status === "ordered" && (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
                             onClick={() =>
-                              setConfirm({ action: "cancel", order })
+                              setConfirm({ action: "receive", order })
                             }
                           >
-                            Cancel
+                            Receive
                           </Button>
-                        </>
-                      )}
-                      {order.status !== "received" && (
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() =>
-                            setConfirm({ action: "delete", order })
-                          }
-                          aria-label={`Delete purchase order ${shortId(order._id)}`}
-                        >
-                          <Trash className="h-4 w-4" />
-                        </IconButton>
-                      )}
-                    </Box>
+                        )}
+                        {canEdit &&
+                          (order.status === "draft" ||
+                            order.status === "ordered") && (
+                            <>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleEdit(order)}
+                                aria-label={`Edit purchase order ${shortId(order._id)}`}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </IconButton>
+                              <Button
+                                size="small"
+                                onClick={() =>
+                                  setConfirm({ action: "cancel", order })
+                                }
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          )}
+                        {canDelete && order.status !== "received" && (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() =>
+                              setConfirm({ action: "delete", order })
+                            }
+                            aria-label={`Delete purchase order ${shortId(order._id)}`}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </IconButton>
+                        )}
+                      </Box>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

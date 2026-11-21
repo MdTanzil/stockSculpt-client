@@ -16,6 +16,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import formatDate from "@/utils/formatDate";
+import OrderStatusBadge from "@/components/order-status-badge";
 import { ClipboardList, Pencil, SearchX, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
@@ -51,6 +52,8 @@ const OrderTable = ({
   onEdit,
   onDelete,
   onStatusChange,
+  canEdit,
+  canDelete,
   totalCount,
   hasActiveFilters,
   onClearFilters,
@@ -147,44 +150,58 @@ const OrderTable = ({
                   {formatPrice(order.totalPrice)}
                 </TableCell>
                 <TableCell>
-                  <FormControl size="small" sx={{ minWidth: 130 }}>
-                    <Select
-                      value={order.orderStatus || "pending"}
-                      onChange={(e) =>
-                        onStatusChange(order._id, e.target.value)
-                      }
-                      aria-label="Change order status"
-                      sx={{ fontSize: "0.8125rem" }}
-                    >
-                      {STATUS_OPTIONS.map((status) => (
-                        <MenuItem key={status} value={status}>
-                          {capitalize(status)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  {canEdit ? (
+                    <FormControl size="small" sx={{ minWidth: 130 }}>
+                      <Select
+                        value={order.orderStatus || "pending"}
+                        onChange={(e) =>
+                          onStatusChange(order._id, e.target.value)
+                        }
+                        aria-label="Change order status"
+                        sx={{ fontSize: "0.8125rem" }}
+                      >
+                        {STATUS_OPTIONS.map((status) => (
+                          <MenuItem key={status} value={status}>
+                            {capitalize(status)}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : (
+                    <OrderStatusBadge status={order.orderStatus} />
+                  )}
                 </TableCell>
                 <TableCell sx={{ color: "text.secondary" }}>
                   {formatDate(order.createdAt)}
                 </TableCell>
                 <TableCell align="right">
-                  <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => onEdit(order)}
-                      aria-label="Edit order"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => onDelete(order._id)}
-                      aria-label="Delete order"
-                    >
-                      <Trash className="h-4 w-4" />
-                    </IconButton>
-                  </Box>
+                  {!canEdit && !canDelete ? (
+                    <Typography variant="body2" color="text.secondary">
+                      —
+                    </Typography>
+                  ) : (
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                      {canEdit ? (
+                        <IconButton
+                          size="small"
+                          onClick={() => onEdit(order)}
+                          aria-label="Edit order"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </IconButton>
+                      ) : null}
+                      {canDelete ? (
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => onDelete(order._id)}
+                          aria-label="Delete order"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </IconButton>
+                      ) : null}
+                    </Box>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

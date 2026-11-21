@@ -74,7 +74,13 @@ const ManageProduct = () => {
     }
   };
 
-  const { products, refetch, isLoading: isProductLoading } = useShop();
+  const {
+    products,
+    refetch,
+    isLoading: isProductLoading,
+    canEdit,
+    canDelete,
+  } = useShop();
 
   const categories = useMemo(
     () =>
@@ -170,13 +176,15 @@ const ManageProduct = () => {
         Manage Your Product
       </Typography>
       <div>
-        <Button
-          variant="contained"
-          onClick={() => setOpen(true)}
-          endIcon={<Plus className="h-4 w-4" />}
-        >
-          {editProduct ? "Edit Product" : "Add Product"}
-        </Button>
+        {canEdit ? (
+          <Button
+            variant="contained"
+            onClick={() => setOpen(true)}
+            endIcon={<Plus className="h-4 w-4" />}
+          >
+            {editProduct ? "Edit Product" : "Add Product"}
+          </Button>
+        ) : null}
         <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogTitle>
@@ -356,6 +364,8 @@ const ManageProduct = () => {
               onClearFilters={clearFilters}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              canEdit={canEdit}
+              canDelete={canDelete}
             />
           </>
         )}

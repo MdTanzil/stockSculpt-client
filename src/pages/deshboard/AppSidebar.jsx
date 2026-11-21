@@ -15,15 +15,19 @@ import {
   ReceiptText,
   Settings,
   Truck,
+  Users,
 } from "lucide-react";
+import useShop from "@/hooks/useShop";
 import { Link, useLocation } from "react-router-dom";
 
 const DRAWER_WIDTH = 240;
 
 const AppSidebar = ({ mobileOpen, onMobileClose }) => {
   const { pathname } = useLocation();
+  const { isShopOwner } = useShop();
 
-  // Menu items.
+  // Menu items. ownerOnly items (staff management, checkout, settings)
+  // only show for the shop owner; staff and viewers never see them.
   const items = [
     {
       title: "Home",
@@ -56,16 +60,28 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       icon: BarChart3,
     },
     {
+      title: "Staff",
+      url: "/dashboard/staff",
+      icon: Users,
+      ownerOnly: true,
+    },
+    {
       title: "Checkout",
       url: "/dashboard/checkout",
       icon: ReceiptText,
+      ownerOnly: true,
     },
     {
       title: "Settings",
       url: "/dashboard/settings",
       icon: Settings,
+      ownerOnly: true,
     },
   ];
+
+  const visibleItems = items.filter(
+    (item) => !item.ownerOnly || isShopOwner
+  );
 
   const navList = (
     <List
@@ -80,7 +96,7 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
         </ListSubheader>
       }
     >
-      {items.map((item) => (
+      {visibleItems.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ my: 0.5 }}>
           <ListItemButton
             component={Link}
