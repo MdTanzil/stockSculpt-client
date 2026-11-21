@@ -16,6 +16,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
+import { effectivePrice, hasDiscount } from "@/utils/productPrice";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -66,9 +67,9 @@ const ManageOrder = () => {
     );
   };
 
-  // Calculate total price
+  // Calculate total price (discounted products sell at the discount price)
   const totalPrice = selectedProducts.reduce(
-    (sum, product) => sum + product.price * product.quantity,
+    (sum, product) => sum + effectivePrice(product) * product.quantity,
     0
   );
 
@@ -183,6 +184,7 @@ const ManageOrder = () => {
           _id: p.product._id,
           name: p.product.name,
           price: p.product.price,
+          discountPrice: p.product.discountPrice,
           quantity: p.quantity,
         }))
     );
@@ -222,7 +224,11 @@ const ManageOrder = () => {
               <Autocomplete
                 options={products}
                 getOptionLabel={(product) =>
-                  `${product.name} - $${product.price}`
+                  hasDiscount(product)
+                    ? `${product.name} - $${effectivePrice(product)} (was $${
+                        product.price
+                      })`
+                    : `${product.name} - $${product.price}`
                 }
                 isOptionEqualToValue={(option, value) =>
                   option._id === value._id
@@ -262,7 +268,7 @@ const ManageOrder = () => {
                       }}
                     >
                       <Typography variant="body2">
-                        {product.name} - ${product.price}
+                        {product.name} - ${effectivePrice(product)}
                       </Typography>
                       <TextField
                         type="number"
@@ -275,7 +281,7 @@ const ManageOrder = () => {
                         sx={{ width: 80 }}
                       />
                       <Typography variant="body2" sx={{ ml: 1 }}>
-                        ${product.price * product.quantity}
+                        ${effectivePrice(product) * product.quantity}
                       </Typography>
                       <Button
                         type="button"

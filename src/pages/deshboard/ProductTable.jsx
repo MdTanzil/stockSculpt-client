@@ -14,6 +14,10 @@ import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import {
+  effectivePrice,
+  hasDiscount,
+} from "@/utils/productPrice";
 import { Package, Pencil, SearchX, Star, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
@@ -103,7 +107,7 @@ const ProductTable = ({
 
   const stockValue = products.reduce(
     (sum, product) =>
-      sum + (Number(product.price) || 0) * (Number(product.stock) || 0),
+      sum + effectivePrice(product) * (Number(product.stock) || 0),
     0
   );
 
@@ -169,7 +173,21 @@ const ProductTable = ({
               </TableCell>
               <TableCell>{product.category}</TableCell>
               <TableCell align="right" className="tabular-nums">
-                {formatPrice(product.price)}
+                {hasDiscount(product) ? (
+                  <>
+                    {formatPrice(effectivePrice(product))}{" "}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ textDecoration: "line-through" }}
+                    >
+                      {formatPrice(product.price)}
+                    </Typography>
+                  </>
+                ) : (
+                  formatPrice(product.price)
+                )}
               </TableCell>
               <TableCell align="right">
                 {product.rating != null && product.rating !== "" ? (

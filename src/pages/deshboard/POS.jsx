@@ -16,6 +16,11 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import formatDate from "@/utils/formatDate";
 import generateInvoicePDF from "@/utils/generateInvoicePDF";
+import {
+  effectivePrice,
+  hasDiscount,
+  orderSavings,
+} from "@/utils/productPrice";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import {
   Banknote,
@@ -284,7 +289,7 @@ const POS = () => {
   };
 
   const total = cart.reduce(
-    (sum, line) => sum + (Number(line.product.price) || 0) * line.quantity,
+    (sum, line) => sum + effectivePrice(line.product) * line.quantity,
     0
   );
 
@@ -346,7 +351,7 @@ const POS = () => {
                   </Typography>
                   <Typography variant="body2" className="tabular-nums">
                     {formatPrice(
-                      (Number(item.product?.price) || 0) * item.quantity
+                      effectivePrice(item.product) * item.quantity
                     )}
                   </Typography>
                 </Box>
@@ -369,6 +374,31 @@ const POS = () => {
                   {formatPrice(sale.totalPrice)}
                 </Typography>
               </Box>
+              {orderSavings(sale.products) > 0 && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    pt: 0.5,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="success.main"
+                    fontWeight={600}
+                  >
+                    You saved
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="success.main"
+                    fontWeight={700}
+                    className="tabular-nums"
+                  >
+                    {formatPrice(orderSavings(sale.products))}
+                  </Typography>
+                </Box>
+              )}
             </Box>
             <Typography
               variant="body2"
@@ -569,7 +599,15 @@ const POS = () => {
                           {product.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {formatPrice(product.price)} · {stock} in stock
+                          {formatPrice(effectivePrice(product))}{" "}
+                          {hasDiscount(product) && (
+                            <span
+                              style={{ textDecoration: "line-through" }}
+                            >
+                              {formatPrice(product.price)}
+                            </span>
+                          )}{" "}
+                          · {stock} in stock
                         </Typography>
                       </Box>
                       {outOfStock ? (
@@ -626,7 +664,14 @@ const POS = () => {
                           {line.product.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {formatPrice(line.product.price)} each
+                          {formatPrice(effectivePrice(line.product))} each{" "}
+                          {hasDiscount(line.product) && (
+                            <span
+                              style={{ textDecoration: "line-through" }}
+                            >
+                              {formatPrice(line.product.price)}
+                            </span>
+                          )}
                         </Typography>
                       </Box>
                       <IconButton
@@ -681,7 +726,7 @@ const POS = () => {
                         className="tabular-nums"
                       >
                         {formatPrice(
-                          (Number(line.product.price) || 0) * line.quantity
+                          effectivePrice(line.product) * line.quantity
                         )}
                       </Typography>
                       <IconButton

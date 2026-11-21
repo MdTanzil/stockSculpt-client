@@ -14,6 +14,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
+import { effectivePrice, hasDiscount } from "@/utils/productPrice";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import {
   Barcode,
@@ -291,7 +292,15 @@ const Scan = () => {
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                   <Typography variant="h6">{product.name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {formatPrice(product.price)}
+                    {formatPrice(effectivePrice(product))}
+                    {hasDiscount(product) && (
+                      <>
+                        {" "}
+                        <span style={{ textDecoration: "line-through" }}>
+                          {formatPrice(product.price)}
+                        </span>
+                      </>
+                    )}
                     {product.category ? ` · ${product.category}` : ""}
                   </Typography>
                   <Typography

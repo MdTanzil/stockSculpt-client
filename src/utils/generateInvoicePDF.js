@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import formatDate from "./formatDate";
+import { effectivePrice, orderSavings } from "./productPrice";
 
 const BRAND = [44, 62, 80]; // #2c3e50
 const BODY_TEXT = [51, 65, 85];
@@ -101,9 +102,9 @@ const buildInvoiceDoc = (order, shop) => {
       ? items.map((item) => [
           item.product?.name || "Unknown product",
           item.quantity,
-          formatMoney(item.product?.price),
+          formatMoney(effectivePrice(item.product)),
           formatMoney(
-            (Number(item.product?.price) || 0) * (Number(item.quantity) || 0)
+            effectivePrice(item.product) * (Number(item.quantity) || 0)
           ),
         ])
       : [["No items in this order", "", "", ""]];
@@ -152,6 +153,20 @@ const buildInvoiceDoc = (order, shop) => {
     finalY + 14,
     { align: "right" }
   );
+  // What the customer saved on discounted items (line prices are the
+  // sale prices, so the total already reflects the discount).
+  const savings = orderSavings(items);
+  if (savings > 0) {
+    pdf.setTextColor(22, 163, 74);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    pdf.text(
+      `You saved: ${formatMoney(savings)}`,
+      pageWidth - margin,
+      finalY + 22,
+      { align: "right" }
+    );
+  }
 
   // --- Footer on every page ---
   const pageCount = pdf.internal.getNumberOfPages();

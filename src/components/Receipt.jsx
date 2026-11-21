@@ -6,6 +6,7 @@
 // Inline styles only, so the receipt looks the same on screen, in
 // print, and in dark mode.
 import formatDate from "@/utils/formatDate";
+import { effectivePrice, orderSavings } from "@/utils/productPrice";
 
 const formatMoney = (value) => `$${(Number(value) || 0).toFixed(2)}`;
 
@@ -21,6 +22,10 @@ const divider = { borderTop: "1px dashed #000", margin: "8px 0" };
 const Receipt = ({ order, shop }) => {
   const items = order?.products || [];
   const preparedBy = order?.createdBy?.name;
+  // What the customer saved on discounted items (0 when nothing was
+  // on sale). Computed from the products' current prices, like the
+  // line amounts.
+  const savings = orderSavings(items);
 
   return (
     <div
@@ -56,12 +61,11 @@ const Receipt = ({ order, shop }) => {
           <div>{item.product?.name || "Unknown product"}</div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>
-              {item.quantity} x {formatMoney(item.product?.price)}
+              {item.quantity} x {formatMoney(effectivePrice(item.product))}
             </span>
             <span>
               {formatMoney(
-                (Number(item.product?.price) || 0) *
-                  (Number(item.quantity) || 0)
+                effectivePrice(item.product) * (Number(item.quantity) || 0)
               )}
             </span>
           </div>
@@ -79,6 +83,18 @@ const Receipt = ({ order, shop }) => {
         <span>TOTAL</span>
         <span>{formatMoney(order?.totalPrice)}</span>
       </div>
+      {savings > 0 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontWeight: 700,
+          }}
+        >
+          <span>You saved</span>
+          <span>{formatMoney(savings)}</span>
+        </div>
+      )}
       {order?.paymentMethod && (
         <div>Payment: {capitalize(order.paymentMethod)}</div>
       )}

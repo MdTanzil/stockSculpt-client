@@ -52,6 +52,24 @@ const ManageProduct = () => {
   const { ref: priceRef, ...priceProps } = register("price", {
     required: "Price is required",
   });
+  // Optional sale price — must be below the regular price when set.
+  const { ref: discountPriceRef, ...discountPriceProps } = register(
+    "discountPrice",
+    {
+      validate: (value) => {
+        if (value === "" || value == null) return true;
+        const d = Number(value);
+        const p = Number(watch("price"));
+        if (!Number.isFinite(d) || d < 0) {
+          return "Discount price must be 0 or more.";
+        }
+        if (Number.isFinite(p) && d >= p) {
+          return "Discount price must be below the regular price.";
+        }
+        return true;
+      },
+    }
+  );
   const { ref: stockRef, ...stockProps } = register("stock", {
     required: "Stock quantity is required",
   });
@@ -116,6 +134,12 @@ const ManageProduct = () => {
       const payload = {
         ...data,
         price: Number(data.price),
+        // An empty discount price clears the discount (the server
+        // $unsets it on update and omits it on create).
+        discountPrice:
+          data.discountPrice === "" || data.discountPrice == null
+            ? ""
+            : Number(data.discountPrice),
         stock: Number(data.stock),
         image: imageUrl,
         rating: Number(data.rating),
@@ -156,6 +180,7 @@ const ManageProduct = () => {
     setValue("name", product.name);
     setValue("description", product.description);
     setValue("price", product.price);
+    setValue("discountPrice", product.discountPrice ?? "");
     setValue("stock", product.stock);
     setValue("category", product.category);
     setValue("rating", product.rating);
@@ -247,6 +272,19 @@ const ManageProduct = () => {
                   {...priceProps}
                   error={!!errors.price}
                   helperText={errors.price?.message}
+                />
+                <TextField
+                  id="discountPrice"
+                  label="Discount price ($) (optional)"
+                  type="number"
+                  fullWidth
+                  inputRef={discountPriceRef}
+                  {...discountPriceProps}
+                  error={!!errors.discountPrice}
+                  helperText={
+                    errors.discountPrice?.message ||
+                    "Lower than the regular price to put this product on sale. Leave empty for no discount."
+                  }
                 />
                 <TextField
                   id="stock"
