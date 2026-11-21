@@ -1,9 +1,10 @@
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,17 +15,35 @@ import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import { Mail, Store } from "lucide-react";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const MenageShop = () => {
   const axiosSecure = useAxiosSecure();
-  const { data: shops, isLoading } = useQuery({
+  const { data: shops, isLoading, refetch } = useQuery({
     queryKey: ["all-shops"],
     queryFn: async () => {
       const res = await axiosSecure.get("/shop");
       return res.data;
     },
   });
+
+  // Admin-only: change a shop's subscription plan in place, same inline
+  // pattern as the order status select. The select is controlled by the
+  // server value, so a failed update leaves the displayed plan unchanged.
+  const handlePlanChange = async (shopId, plan) => {
+    try {
+      await axiosSecure.put(`/shop/${shopId}/plan`, {
+        subscriptionPlan: plan,
+      });
+      toast.success("Subscription plan updated.");
+      refetch();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error || "Could not update the plan."
+      );
+    }
+  };
 
   const sendNotice = async (email) => {
     const { value: text } = await Swal.fire({
@@ -117,18 +136,19 @@ const MenageShop = () => {
                     <TableCell>
                       {shop?.owner?.name || shop?.owner?.email || "—"}
                     </TableCell>
-                    <TableCell sx={{ textTransform: "capitalize" }}>
-                      <Chip
-                        label={shop?.subscriptionPlan || "free"}
+                    <TableCell>
+                      <Select
                         size="small"
-                        color={
-                          shop?.subscriptionPlan &&
-                          shop.subscriptionPlan !== "free"
-                            ? "primary"
-                            : "default"
+                        value={shop?.subscriptionPlan || "free"}
+                        onChange={(event) =>
+                          handlePlanChange(shop._id, event.target.value)
                         }
-                        sx={{ textTransform: "capitalize" }}
-                      />
+                        aria-label={`Change subscription plan for ${shop?.name}`}
+                        sx={{ minWidth: 130, textTransform: "capitalize" }}
+                      >
+                        <MenuItem value="free">Free</MenuItem>
+                        <MenuItem value="premium">Premium</MenuItem>
+                      </Select>
                     </TableCell>
                     <TableCell align="right">
                       <Button

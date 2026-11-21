@@ -40,7 +40,8 @@ manage shops and users.
 - Subscriptions with Stripe checkout (test mode)
 - Shop settings page (name, address, logo)
 - Admin panel — platform stats, manage shops and users (admin role
-  required; other users are redirected to their dashboard)
+  required; other users are redirected to their dashboard); admins can
+  change any shop's subscription plan (Free / Premium) from Manage Shops
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 
