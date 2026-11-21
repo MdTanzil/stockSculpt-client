@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
+import formatDate from "@/utils/formatDate";
 import imageUpload from "@/utility/imageUpload";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -108,6 +109,8 @@ const Settings = () => {
               <Box component="span" sx={{ textTransform: "capitalize" }}>
                 {shop.planName || shop.subscriptionPlan || "free"}
               </Box>
+              {shop.subscriptionEndDate &&
+                ` — active until ${formatDate(shop.subscriptionEndDate)}`}
             </Typography>
             <Typography variant="body2">
               <Box component="span" sx={{ fontWeight: 500 }}>

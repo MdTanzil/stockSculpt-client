@@ -18,6 +18,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import useShop from "../hooks/useShop";
+import formatDate from "../utils/formatDate";
 
 // Whole dollars print without cents ($10); fractional prices with cents.
 const formatPrice = (price) =>
@@ -107,7 +108,10 @@ const Subscription = () => {
 
           {isPremium && (
             <Alert severity="success" sx={{ mt: 3, textAlign: "left" }}>
-              You&apos;re on the {shop?.planName || "Premium"} plan.
+              You&apos;re on the {shop?.planName || "Premium"} plan
+              {shop?.subscriptionEndDate
+                ? ` — active until ${formatDate(shop.subscriptionEndDate)}.`
+                : "."}
             </Alert>
           )}
 

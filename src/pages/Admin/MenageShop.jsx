@@ -2,6 +2,11 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
@@ -11,12 +16,25 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Mail, Store } from "lucide-react";
+import { Mail, Pencil, Store } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import formatDate from "../../utils/formatDate";
+
+// Same month math as the server (setMonth), so the end date previewed
+// in the dialog is exactly the date that gets stored.
+const addMonths = (date, months) => {
+  const next = new Date(date);
+  next.setMonth(next.getMonth() + months);
+  return next;
+};
 
 const MenageShop = () => {
   const axiosSecure = useAxiosSecure();
@@ -44,18 +62,67 @@ const MenageShop = () => {
     shop?.planName ||
     (shop?.subscriptionPlan === "premium" ? "Premium" : "Free");
 
-  // Admin-only: change a shop's subscription plan in place, same inline
-  // pattern as the order status select. The select is controlled by the
-  // server value, so a failed update leaves the displayed plan unchanged.
-  const handlePlanChange = async (shopId, plan) => {
+  // Plan-change dialog state. A subscription is a plan AND a period,
+  // so changing a plan goes through a dialog where the admin picks the
+  // plan and the billing period (or an exact end date) instead of the
+  // old bare dropdown that set no dates at all.
+  const [planDialogShop, setPlanDialogShop] = useState(null);
+  const [dialogPlan, setDialogPlan] = useState("");
+  const [dialogPeriod, setDialogPeriod] = useState("monthly");
+  const [dialogEndDate, setDialogEndDate] = useState("");
+  const [savingPlan, setSavingPlan] = useState(false);
+
+  const openPlanDialog = (shop) => {
+    setPlanDialogShop(shop);
+    setDialogPlan(currentPlanName(shop));
+    setDialogPeriod("monthly");
+    setDialogEndDate("");
+  };
+
+  const closePlanDialog = () => {
+    setPlanDialogShop(null);
+    setSavingPlan(false);
+  };
+
+  const dialogPlanDoc = plans.find((plan) => plan.name === dialogPlan);
+  const dialogPlanIsFree = (dialogPlanDoc?.price ?? 0) === 0;
+
+  // The end date the save would store, previewed live in the dialog.
+  const dialogPreviewEnd = () => {
+    if (dialogPlanIsFree) return null;
+    if (dialogPeriod === "custom") {
+      const date = new Date(dialogEndDate);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+    return addMonths(new Date(), dialogPeriod === "yearly" ? 12 : 1);
+  };
+
+  const handleSavePlan = async () => {
+    if (!planDialogShop) return;
+    const body = { plan: dialogPlan };
+    if (!dialogPlanIsFree) {
+      if (dialogPeriod === "custom") {
+        const endDate = new Date(dialogEndDate);
+        if (Number.isNaN(endDate.getTime()) || endDate <= new Date()) {
+          toast.error("Pick an end date in the future.");
+          return;
+        }
+        body.endDate = dialogEndDate;
+      } else {
+        body.interval = dialogPeriod;
+      }
+    }
+    setSavingPlan(true);
     try {
-      await axiosSecure.put(`/shop/${shopId}/plan`, { plan });
+      await axiosSecure.put(`/shop/${planDialogShop._id}/plan`, body);
       toast.success("Subscription plan updated.");
+      closePlanDialog();
       refetch();
     } catch (error) {
       toast.error(
         error.response?.data?.error || "Could not update the plan."
       );
+      setSavingPlan(false);
     }
   };
 
@@ -151,31 +218,27 @@ const MenageShop = () => {
                       {shop?.owner?.name || shop?.owner?.email || "—"}
                     </TableCell>
                     <TableCell>
-                      <Select
-                        size="small"
-                        value={currentPlanName(shop)}
-                        onChange={(event) =>
-                          handlePlanChange(shop._id, event.target.value)
-                        }
-                        aria-label={`Change subscription plan for ${shop?.name}`}
-                        sx={{ minWidth: 170 }}
-                      >
-                        {plans.map((plan) => (
-                          <MenuItem key={plan._id || plan.name} value={plan.name}>
-                            {plan.name} (${plan.price}/mo)
-                          </MenuItem>
-                        ))}
-                        {/* A shop on a plan that no longer exists (renamed
-                        or deleted) still shows its current plan instead
-                        of a blank select. */}
-                        {!plans.some(
-                          (plan) => plan.name === currentPlanName(shop)
-                        ) && (
-                          <MenuItem value={currentPlanName(shop)} disabled>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
                             {currentPlanName(shop)}
-                          </MenuItem>
-                        )}
-                      </Select>
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {shop?.subscriptionEndDate
+                              ? `until ${formatDate(shop.subscriptionEndDate)}`
+                              : shop?.subscriptionPlan === "premium"
+                                ? "No end date set"
+                                : "No expiry"}
+                          </Typography>
+                        </Box>
+                        <IconButton
+                          size="small"
+                          onClick={() => openPlanDialog(shop)}
+                          aria-label={`Change subscription plan for ${shop?.name}`}
+                        >
+                          <Pencil size={16} />
+                        </IconButton>
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
                       <Button
@@ -195,6 +258,100 @@ const MenageShop = () => {
           </TableContainer>
         )}
       </Box>
+
+      {/* Change a shop's plan: pick the plan, then the period it runs
+      for. The Free plan never expires; a paid plan runs Monthly or
+      Yearly from today, or until an exact end date. */}
+      <Dialog
+        open={Boolean(planDialogShop)}
+        onClose={closePlanDialog}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          Change plan{planDialogShop ? ` — ${planDialogShop.name}` : ""}
+        </DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+          <Select
+            size="small"
+            fullWidth
+            value={dialogPlan}
+            onChange={(event) => setDialogPlan(event.target.value)}
+            aria-label="Subscription plan"
+          >
+            {plans.map((plan) => (
+              <MenuItem key={plan._id || plan.name} value={plan.name}>
+                {plan.name} (${plan.price}/mo)
+              </MenuItem>
+            ))}
+            {/* A shop on a plan that no longer exists (renamed or
+            deleted) still shows its current plan instead of a blank
+            select. */}
+            {planDialogShop &&
+              !plans.some(
+                (plan) => plan.name === currentPlanName(planDialogShop)
+              ) && (
+                <MenuItem
+                  value={currentPlanName(planDialogShop)}
+                  disabled
+                >
+                  {currentPlanName(planDialogShop)}
+                </MenuItem>
+              )}
+          </Select>
+          {!dialogPlanIsFree && (
+            <>
+              <ToggleButtonGroup
+                value={dialogPeriod}
+                exclusive
+                fullWidth
+                size="small"
+                onChange={(_, value) => value && setDialogPeriod(value)}
+                aria-label="Billing period"
+              >
+                <ToggleButton value="monthly">Monthly</ToggleButton>
+                <ToggleButton value="yearly">Yearly</ToggleButton>
+                <ToggleButton value="custom">Custom end date</ToggleButton>
+              </ToggleButtonGroup>
+              {dialogPeriod === "custom" && (
+                <TextField
+                  type="date"
+                  size="small"
+                  fullWidth
+                  label="End date"
+                  value={dialogEndDate}
+                  onChange={(event) => setDialogEndDate(event.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+              <Typography variant="body2" color="text.secondary">
+                {dialogPreviewEnd()
+                  ? `Active from ${formatDate(new Date())} until ${formatDate(dialogPreviewEnd())}.`
+                  : "Pick an end date in the future."}
+              </Typography>
+            </>
+          )}
+          {dialogPlanIsFree && (
+            <Typography variant="body2" color="text.secondary">
+              The Free plan never expires.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closePlanDialog}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleSavePlan}
+            disabled={
+              savingPlan ||
+              !dialogPlan ||
+              (!dialogPlanIsFree && !dialogPreviewEnd())
+            }
+          >
+            {savingPlan ? "Saving…" : "Save plan"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
