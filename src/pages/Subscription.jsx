@@ -19,6 +19,10 @@ import { Link } from "react-router-dom";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import useShop from "../hooks/useShop";
 import formatDate from "../utils/formatDate";
+import {
+  graceEndDate,
+  isInGrace,
+} from "../utils/subscriptionDates";
 
 // Whole dollars print without cents ($10); fractional prices with cents.
 const formatPrice = (price) =>
@@ -29,6 +33,9 @@ const Subscription = () => {
   const { shop, shopLoading } = useShop();
   const [interval, setInterval] = useState("monthly");
   const isPremium = shop?.subscriptionPlan === "premium";
+  // Past the end date but inside the 5-day grace period: the plan
+  // still works, but the owner must renew or it cancels itself.
+  const inGrace = isInGrace(shop);
 
   // Plans come from the server (the admin manages them), so a price
   // change takes effect here without a code change.
@@ -77,7 +84,10 @@ const Subscription = () => {
         ? { label: "Your plan is Premium", disabled: true }
         : { label: "Current plan", disabled: true };
     }
-    if (isPremium) return { label: "Current plan", disabled: true };
+    if (isPremium && !inGrace)
+      return { label: "Current plan", disabled: true };
+    if (inGrace && plan.name === shop?.planName)
+      return { label: "Renew now", disabled: false };
     return { label: "Get started", disabled: false };
   };
 
@@ -106,12 +116,20 @@ const Subscription = () => {
             changes. Start free, upgrade when your shop outgrows its limit.
           </Typography>
 
-          {isPremium && (
+          {isPremium && !inGrace && (
             <Alert severity="success" sx={{ mt: 3, textAlign: "left" }}>
               You&apos;re on the {shop?.planName || "Premium"} plan
               {shop?.subscriptionEndDate
                 ? ` — active until ${formatDate(shop.subscriptionEndDate)}.`
                 : "."}
+            </Alert>
+          )}
+          {inGrace && (
+            <Alert severity="warning" sx={{ mt: 3, textAlign: "left" }}>
+              Your {shop?.planName || "Premium"} plan expired on{" "}
+              {formatDate(shop.subscriptionEndDate)}. Renew by{" "}
+              {formatDate(graceEndDate(shop.subscriptionEndDate))} to keep
+              it — after that your shop returns to the Free plan.
             </Alert>
           )}
 

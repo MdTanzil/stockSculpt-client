@@ -98,7 +98,10 @@ manage shops and users.
   Company / Enterprise), picking the period it runs for (Monthly,
   Yearly, or an exact end date — the plan's expiry shows in Manage
   Shops, Settings, and on the subscription page), and create/edit/
-  deactivate plans from Manage Plans
+  deactivate plans from Manage Plans. A paid plan that reaches its end
+  date gets a 5-day grace period with a renewal notice on the dashboard
+  and subscription page; if the shop still hasn't paid, the subscription
+  cancels itself and the shop drops to the Free plan.
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 

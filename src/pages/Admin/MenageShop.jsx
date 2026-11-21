@@ -27,14 +27,11 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import formatDate from "../../utils/formatDate";
-
-// Same month math as the server (setMonth), so the end date previewed
-// in the dialog is exactly the date that gets stored.
-const addMonths = (date, months) => {
-  const next = new Date(date);
-  next.setMonth(next.getMonth() + months);
-  return next;
-};
+import {
+  addMonths,
+  graceEndDate,
+  isInGrace,
+} from "../../utils/subscriptionDates";
 
 const MenageShop = () => {
   const axiosSecure = useAxiosSecure();
@@ -225,7 +222,9 @@ const MenageShop = () => {
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {shop?.subscriptionEndDate
-                              ? `until ${formatDate(shop.subscriptionEndDate)}`
+                              ? isInGrace(shop)
+                                ? `Expired ${formatDate(shop.subscriptionEndDate)} — grace until ${formatDate(graceEndDate(shop.subscriptionEndDate))}`
+                                : `until ${formatDate(shop.subscriptionEndDate)}`
                               : shop?.subscriptionPlan === "premium"
                                 ? "No end date set"
                                 : "No expiry"}

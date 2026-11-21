@@ -9,6 +9,11 @@ import Typography from "@mui/material/Typography";
 import { BarChart } from "@mui/x-charts/BarChart";
 import useShop from "@/hooks/useShop";
 import OrderStatusBadge from "@/components/order-status-badge";
+import formatDate from "@/utils/formatDate";
+import {
+  graceEndDate,
+  isInGrace,
+} from "@/utils/subscriptionDates";
 import {
   AlertTriangle,
   Box as BoxIcon,
@@ -121,6 +126,26 @@ const DashboardHome = () => {
           Here is a quick overview of your shop.
         </Typography>
       </div>
+
+      {isInGrace(shop) && (
+        <Alert
+          severity="warning"
+          action={
+            <Button
+              component={RouterLink}
+              to="/subscription"
+              color="inherit"
+              size="small"
+            >
+              Renew plan
+            </Button>
+          }
+        >
+          <AlertTitle>Your {shop.planName} plan has expired</AlertTitle>
+          Renew by {formatDate(graceEndDate(shop.subscriptionEndDate))} to
+          keep your plan — after that your shop returns to the Free plan.
+        </Alert>
+      )}
 
       {lowStockProducts.length > 0 && (
         <Alert

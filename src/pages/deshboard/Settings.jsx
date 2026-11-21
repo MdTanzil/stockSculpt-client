@@ -8,6 +8,10 @@ import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import formatDate from "@/utils/formatDate";
+import {
+  graceEndDate,
+  isInGrace,
+} from "@/utils/subscriptionDates";
 import imageUpload from "@/utility/imageUpload";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -110,7 +114,9 @@ const Settings = () => {
                 {shop.planName || shop.subscriptionPlan || "free"}
               </Box>
               {shop.subscriptionEndDate &&
-                ` — active until ${formatDate(shop.subscriptionEndDate)}`}
+                (isInGrace(shop)
+                  ? ` — expired ${formatDate(shop.subscriptionEndDate)}, renew by ${formatDate(graceEndDate(shop.subscriptionEndDate))}`
+                  : ` — active until ${formatDate(shop.subscriptionEndDate)}`)}
             </Typography>
             <Typography variant="body2">
               <Box component="span" sx={{ fontWeight: 500 }}>
