@@ -29,14 +29,18 @@ manage shops and users.
   delete actions a role is not allowed to use (viewers are read-only,
   staff cannot delete, only the owner manages staff and shop settings).
   Staff members need an account first — no invitation email is sent yet
-- Point of sale — a register screen: search products, tap to add them to
-  a sale, choose cash or card (recorded only, no payment is processed),
-  complete the sale to decrement stock and create a completed order,
-  then print a supershop-style thermal receipt (narrow, 80mm — the
-  success screen shows a preview and a Print receipt button that prints
-  only the receipt) or download the full receipt as a PDF. POS orders
-  are marked with a POS chip in the orders table. Staff and above can
-  sell; viewers cannot
+- Point of sale — a register screen: search products by name or barcode,
+  tap to add them to a sale, or scan a barcode (type it, use a USB
+  scanner, or the camera — the camera keeps running so items can be
+  scanned one after another) to add the product straight to the cart;
+  cart quantities can be typed in as well as stepped. Choose cash or
+  card (recorded only, no payment is processed), complete the sale to
+  decrement stock and create a completed order, then print a
+  supershop-style thermal receipt (narrow, 80mm — the success screen
+  shows a preview and a Print receipt button that prints only the
+  receipt) or download the full receipt as a PDF. POS orders are marked
+  with a POS chip in the orders table. Staff and above can sell;
+  viewers cannot
 - Invoices — the Checkout page lists orders with a PDF download and a
   Print button (opens the invoice in a new tab for printing from the
   browser's PDF viewer). Invoices and POS receipts show who prepared

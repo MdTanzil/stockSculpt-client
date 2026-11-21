@@ -8,21 +8,28 @@ export const ShopContext = createContext(null);
 const ShopProvider = ({ children }) => {
   const axiosSecure = useAxiosSecure();
   const [shop, setShop] = useState({});
+  // True until the shop fetch settles — pages must show a loading state
+  // while this is true instead of treating "no shop yet" as "no shop".
+  const [shopLoading, setShopLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
+    if (!user) {
+      setShopLoading(false);
+      return;
+    }
     const fetchShop = async () => {
       try {
         const response = await axiosSecure.get(`/shop/user`);
         setShop(response.data);
       } catch (error) {
         console.error("Error fetching shop:", error);
+      } finally {
+        setShopLoading(false);
       }
     };
 
-    if (user) {
-      fetchShop();
-    }
+    fetchShop();
   }, [axiosSecure, user]);
 
   // Fetch products only when shop._id is available
@@ -92,6 +99,7 @@ const ShopProvider = ({ children }) => {
   const shopAllData = {
     shop,
     setShop,
+    shopLoading,
     products,
     refetch,
     isLoading,

@@ -5,6 +5,7 @@ const useShop = () => {
   const {
     shop,
     setShop,
+    shopLoading,
     products,
     refetch,
     isLoading,
@@ -36,6 +37,7 @@ const useShop = () => {
   return {
     shop,
     setShop,
+    shopLoading,
     shopRole,
     isShopOwner,
     canEdit,

@@ -16,8 +16,11 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import formatDate from "@/utils/formatDate";
 import generateInvoicePDF from "@/utils/generateInvoicePDF";
+import { Html5QrcodeScanner } from "html5-qrcode";
 import {
   Banknote,
+  Barcode,
+  Camera,
   CheckCircle2,
   CreditCard,
   Minus,
@@ -28,7 +31,7 @@ import {
   ShoppingCart,
   Trash,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 const formatPrice = (value) => `$${(Number(value) || 0).toFixed(2)}`;
@@ -39,6 +42,7 @@ const POS = () => {
   const axiosSecure = useAxiosSecure();
   const {
     shop,
+    shopLoading,
     products,
     refetch,
     orderRefetch,
@@ -53,6 +57,44 @@ const POS = () => {
   const [isCompleting, setIsCompleting] = useState(false);
   // The completed sale, once the server confirms it.
   const [sale, setSale] = useState(null);
+  // Barcode scanning into the cart: a typed/pasted code, a USB wedge
+  // scanner (it types the code + Enter), or the camera.
+  const [barcode, setBarcode] = useState("");
+  const [cameraOn, setCameraOn] = useState(false);
+  const scannerRef = useRef(null);
+  const barcodeRef = useRef(null);
+  // The same code scanned twice within 2s is one scan — the camera
+  // keeps seeing the same barcode while it stays in view.
+  const lastScanRef = useRef(null);
+  // The camera callback outlives renders, so it calls the latest
+  // addScannedCode through this ref instead of a stale closure.
+  const addScannedCodeRef = useRef(null);
+  // Draft text for the quantity field on each cart line, keyed by
+  // product id. Typing updates the draft; blur or Enter commits it.
+  const [qtyDrafts, setQtyDrafts] = useState({});
+
+  // Stop the camera when leaving the page.
+  useEffect(
+    () => () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(() => {});
+        scannerRef.current = null;
+      }
+    },
+    []
+  );
+
+  // While the shop is still loading, show placeholders — not the
+  // "no shop yet" message (that flashed wrongly on first load).
+  if (shopLoading) {
+    return (
+      <Box sx={{ mt: 2, display: "grid", gap: 1 }}>
+        <Skeleton variant="rounded" height={64} />
+        <Skeleton variant="rounded" height={64} />
+        <Skeleton variant="rounded" height={64} />
+      </Box>
+    );
+  }
 
   if (!shop?._id) {
     return (
@@ -70,13 +112,32 @@ const POS = () => {
     );
   }
 
-  const filteredProducts = (products || []).filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
-  );
+  // Search matches the product name or its barcode, so staff can find
+  // a product either way.
+  const filteredProducts = (products || []).filter((product) => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      product.name.toLowerCase().includes(q) ||
+      (product.barcode || "").toLowerCase().includes(q)
+    );
+  });
 
   const cartQuantity = (productId) =>
     cart.find((line) => line.product._id === productId)?.quantity || 0;
 
+  // Drop the typed-quantity draft for a line whose quantity just
+  // changed another way (tap, scan, stepper) so the draft cannot mask
+  // the new quantity.
+  const clearQtyDraft = (productId) =>
+    setQtyDrafts((prev) => {
+      if (!(productId in prev)) return prev;
+      const next = { ...prev };
+      delete next[productId];
+      return next;
+    });
+
+  // Adds one unit. Returns false when the stock cap blocks the add.
   const addToCart = (product) => {
     const stock = Number(product.stock) || 0;
     const inCart = cartQuantity(product._id);
@@ -86,8 +147,9 @@ const POS = () => {
           ? `${product.name} is out of stock.`
           : `Only ${stock} ${product.name} in stock.`
       );
-      return;
+      return false;
     }
+    clearQtyDraft(product._id);
     setCart((prev) => {
       const existing = prev.find((line) => line.product._id === product._id);
       if (existing) {
@@ -99,9 +161,11 @@ const POS = () => {
       }
       return [...prev, { product, quantity: 1 }];
     });
+    return true;
   };
 
   const changeQuantity = (productId, delta) => {
+    clearQtyDraft(productId);
     setCart((prev) =>
       prev
         .map((line) => {
@@ -118,8 +182,106 @@ const POS = () => {
     );
   };
 
-  const removeFromCart = (productId) =>
+  // Commit a typed quantity (blur or Enter): whole numbers only,
+  // clamped to stock. An empty or invalid value leaves the line as is.
+  const commitQuantity = (productId) => {
+    const raw = qtyDrafts[productId];
+    if (raw === undefined) return;
+    const value = Math.floor(Number(raw));
+    setCart((prev) =>
+      prev.map((line) => {
+        if (line.product._id !== productId) return line;
+        const stock = Number(line.product.stock) || 0;
+        if (!Number.isFinite(value) || value < 1) return line;
+        if (value > stock) {
+          toast.error(`Only ${stock} ${line.product.name} in stock.`);
+          return { ...line, quantity: stock };
+        }
+        return { ...line, quantity: value };
+      })
+    );
+    clearQtyDraft(productId);
+  };
+
+  const removeFromCart = (productId) => {
+    clearQtyDraft(productId);
     setCart((prev) => prev.filter((line) => line.product._id !== productId));
+  };
+
+  // Look a barcode up and add the product to the sale (one more unit
+  // if it is already in the cart).
+  const addScannedCode = async (rawCode) => {
+    const code = String(rawCode || "").trim();
+    if (!code) return;
+    try {
+      const res = await axiosSecure.get(
+        `/products/barcode/${encodeURIComponent(code)}`
+      );
+      if (addToCart(res.data)) {
+        toast.success(`${res.data.name} added to sale.`);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        toast.error(`No product with barcode ${code}.`);
+      } else {
+        toast.error(error.response?.data?.error || "Barcode lookup failed.");
+      }
+    }
+  };
+  // Keep the camera callback on the latest handler (it outlives renders).
+  addScannedCodeRef.current = addScannedCode;
+
+  const stopCamera = async () => {
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.clear();
+      } catch {
+        // Already stopped.
+      }
+      scannerRef.current = null;
+    }
+    setCameraOn(false);
+  };
+
+  // The camera keeps running after a successful scan so staff can scan
+  // item after item; the 2s same-code guard stops one barcode from
+  // adding itself over and over while it stays in view.
+  const startCamera = () => {
+    setCameraOn(true);
+    // Create the scanner after React has rendered the reader div.
+    setTimeout(() => {
+      if (scannerRef.current) return;
+      const scanner = new Html5QrcodeScanner(
+        "pos-barcode-reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose */ false
+      );
+      scannerRef.current = scanner;
+      scanner.render(
+        (decodedText) => {
+          const now = Date.now();
+          const last = lastScanRef.current;
+          if (last && last.code === decodedText && now - last.at < 2000) {
+            return;
+          }
+          lastScanRef.current = { code: decodedText, at: now };
+          addScannedCodeRef.current?.(decodedText);
+        },
+        // Called for every frame without a readable code — ignore.
+        () => {}
+      );
+    }, 0);
+  };
+
+  // Manual barcode entry (also how a USB wedge scanner submits: it
+  // types the code and presses Enter). The field clears and keeps
+  // focus so the next code can be scanned straight away.
+  const handleBarcodeSubmit = (event) => {
+    event.preventDefault();
+    addScannedCode(barcode);
+    setBarcode("");
+    barcodeRef.current?.focus();
+  };
 
   const total = cart.reduce(
     (sum, line) => sum + (Number(line.product.price) || 0) * line.quantity,
@@ -266,15 +428,77 @@ const POS = () => {
         align="center"
         sx={{ mt: 1 }}
       >
-        Tap a product to add it to the sale. Stock is decremented when the
-        sale completes.
+        Tap a product, or scan its barcode, to add it to the sale. Stock
+        is decremented when the sale completes.
       </Typography>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_360px]">
         <div>
+          <Card variant="outlined" sx={{ mb: 2 }}>
+            <CardContent sx={{ "&:last-child": { pb: 2 } }}>
+              <form
+                onSubmit={handleBarcodeSubmit}
+                className="flex flex-wrap items-end gap-2"
+              >
+                <TextField
+                  label="Scan or type a barcode"
+                  inputRef={barcodeRef}
+                  value={barcode}
+                  onChange={(e) => setBarcode(e.target.value)}
+                  placeholder="Scan a barcode to add it to the sale"
+                  sx={{ flexGrow: 1, minWidth: 200 }}
+                  slotProps={{
+                    input: {
+                      startAdornment: <Barcode className="mr-2 h-5 w-5" />,
+                    },
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={!barcode.trim()}
+                  endIcon={<Plus className="h-4 w-4" />}
+                >
+                  Add
+                </Button>
+              </form>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1, display: "block" }}
+              >
+                A USB barcode scanner types the code for you — press Enter
+                to add. Scanning a product already in the sale adds one
+                more.
+              </Typography>
+              {cameraOn ? (
+                <Box sx={{ mt: 2 }}>
+                  <div id="pos-barcode-reader" />
+                  <Button
+                    variant="outlined"
+                    onClick={stopCamera}
+                    sx={{ mt: 2 }}
+                    fullWidth
+                  >
+                    Stop camera
+                  </Button>
+                </Box>
+              ) : (
+                <Button
+                  variant="outlined"
+                  onClick={startCamera}
+                  endIcon={<Camera className="h-4 w-4" />}
+                  sx={{ mt: 2 }}
+                  fullWidth
+                >
+                  Scan with camera
+                </Button>
+              )}
+            </CardContent>
+          </Card>
           <TextField
             fullWidth
-            label="Search products"
+            label="Search by name or barcode"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
@@ -412,13 +636,37 @@ const POS = () => {
                       >
                         <Minus className="h-4 w-4" />
                       </IconButton>
-                      <Typography
-                        variant="body2"
-                        sx={{ minWidth: 20, textAlign: "center" }}
-                        className="tabular-nums"
-                      >
-                        {line.quantity}
-                      </Typography>
+                      <TextField
+                        type="number"
+                        size="small"
+                        value={
+                          qtyDrafts[line.product._id] ?? line.quantity
+                        }
+                        onChange={(e) =>
+                          setQtyDrafts((prev) => ({
+                            ...prev,
+                            [line.product._id]: e.target.value,
+                          }))
+                        }
+                        onBlur={() => commitQuantity(line.product._id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            commitQuantity(line.product._id);
+                            e.currentTarget.blur();
+                          }
+                        }}
+                        sx={{ width: 72 }}
+                        slotProps={{
+                          input: {
+                            inputProps: {
+                              min: 1,
+                              max: Number(line.product.stock) || 1,
+                              "aria-label": `Quantity of ${line.product.name}`,
+                            },
+                          },
+                        }}
+                      />
                       <IconButton
                         size="small"
                         onClick={() => changeQuantity(line.product._id, 1)}
