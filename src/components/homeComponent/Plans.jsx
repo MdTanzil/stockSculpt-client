@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Container,
   Skeleton,
   Typography,
@@ -59,9 +60,11 @@ const Plans = () => {
       return res.data;
     },
     // The home page must never break on a plans failure — fall back to
-    // the built-in list instead of retrying loudly.
+    // the built-in list instead of retrying loudly. No stale time: a
+    // price or feature change the admin just saved shows up on the
+    // next visit instead of lingering for minutes.
     retry: 1,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 
   const plans =
@@ -71,6 +74,8 @@ const Plans = () => {
           price: plan.price,
           limit: `Up to ${plan.productLimit.toLocaleString()} products`,
           text: plan.description,
+          features: plan.features?.length > 0 ? plan.features : null,
+          popular: plan.popular,
           buttonText: plan.price === 0 ? "Start free" : "Get started",
           to: plan.price === 0 ? "/register" : "/subscription",
         }))
@@ -106,8 +111,32 @@ const Plans = () => {
             <Card
               key={plan.name}
               variant="outlined"
-              sx={{ display: "flex", flexDirection: "column", textAlign: "center" }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                position: "relative",
+                ...(plan.popular && {
+                  borderColor: "primary.main",
+                  borderWidth: 2,
+                  boxShadow: 3,
+                }),
+              }}
             >
+              {plan.popular && (
+                <Chip
+                  label="Most popular"
+                  color="primary"
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontWeight: 600,
+                  }}
+                />
+              )}
               <CardContent
                 sx={{
                   display: "flex",
@@ -142,12 +171,21 @@ const Plans = () => {
                     p: 0,
                     m: 0,
                     textAlign: "left",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
                   }}
                 >
-                  <Box component="li" sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Check size={20} color="#22c55e" style={{ flexShrink: 0 }} />
-                    <span>{plan.limit}</span>
-                  </Box>
+                  {(plan.features || [plan.limit]).map((feature) => (
+                    <Box
+                      component="li"
+                      key={feature}
+                      sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                    >
+                      <Check size={20} color="#22c55e" style={{ flexShrink: 0 }} />
+                      <span>{feature}</span>
+                    </Box>
+                  ))}
                 </Box>
                 <Button
                   component={Link}

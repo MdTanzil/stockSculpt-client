@@ -19,7 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -38,11 +38,21 @@ const emptyForm = {
 
 const ManagePlans = () => {
   const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  // After any plan change, the public plan lists must update too — the
+  // subscription page (["plans"]) and the home page (["plans-public"])
+  // read the same plans from their own caches.
+  const refreshPlanLists = () => {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ["plans"] });
+    queryClient.invalidateQueries({ queryKey: ["plans-public"] });
+  };
 
   const {
     data: plans = [],
@@ -114,7 +124,7 @@ const ManagePlans = () => {
         toast.success("Plan created.");
       }
       setDialogOpen(false);
-      refetch();
+      refreshPlanLists();
     } catch (err) {
       toast.error(err.response?.data?.error || "Couldn't save the plan.");
     } finally {
@@ -131,7 +141,7 @@ const ManagePlans = () => {
       toast.success(
         plan.active ? "Plan hidden from customers." : "Plan is live again."
       );
-      refetch();
+      refreshPlanLists();
     } catch (err) {
       toast.error(err.response?.data?.error || "Couldn't update the plan.");
     }
@@ -143,7 +153,7 @@ const ManagePlans = () => {
       await axiosSecure.delete(`/plans/${deleteTarget._id}`);
       toast.success("Plan deleted.");
       setDeleteTarget(null);
-      refetch();
+      refreshPlanLists();
     } catch (err) {
       toast.error(err.response?.data?.error || "Couldn't delete the plan.");
     }

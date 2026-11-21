@@ -26,7 +26,11 @@ const useAxiosSecure = () => {
       (response) => response,
       async (error) => {
         const status = error.response?.status;
-        if (status === 401 || status === 403) {
+        // 401 means the session is gone — sign out. 403 means the
+        // signed-in user is simply not allowed (a free plan hitting a
+        // paid feature, or the product limit) — that must NOT sign
+        // them out, or every limit message would log them out.
+        if (status === 401) {
           await logOut();
         }
         return Promise.reject(error);

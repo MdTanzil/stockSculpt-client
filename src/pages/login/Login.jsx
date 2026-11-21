@@ -37,7 +37,10 @@ const Login = () => {
         setUser(user);
 
         toast.success(user?.email + " Log in success");
-        navigate(location?.state ? location.state : "/");
+        // PrivateRouter sends interrupted visits here as
+        // state { from: location } — go back to that page (with its
+        // state, e.g. the plan being bought), not to the state object.
+        navigate(location?.state?.from || "/");
 
         // ...
       })

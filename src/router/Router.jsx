@@ -60,11 +60,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/subscription",
-        element: (
-          <PrivateRouter>
-            <Subscription></Subscription>
-          </PrivateRouter>
-        ),
+        // Public: anyone can view the plans. Signing in is only forced
+        // when buying — /payment stays behind PrivateRouter, which
+        // sends logged-out buyers to /login and back afterwards.
+        element: <Subscription></Subscription>,
       },
       {
         path: "/payment",

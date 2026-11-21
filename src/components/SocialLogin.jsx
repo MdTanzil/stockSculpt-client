@@ -26,7 +26,10 @@ const SocialLogin = () => {
           console.log(res.data);
         });
         toast.success(result.user?.displayName + " Log in successfully");
-        navigate(location?.state ? location.state : "/");
+        // PrivateRouter sends interrupted visits here as
+        // state { from: location } — go back to that page (with its
+        // state, e.g. the plan being bought), not to the state object.
+        navigate(location?.state?.from || "/");
       })
       .catch((error) => {
         // Handle Errors here.

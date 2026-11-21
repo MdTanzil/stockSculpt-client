@@ -16,7 +16,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import useAxiosSecure from "../hooks/useAxiosSecure";
+import useAuth from "../hooks/useAuth";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 import useShop from "../hooks/useShop";
 import formatDate from "../utils/formatDate";
 import {
@@ -29,16 +30,19 @@ const formatPrice = (price) =>
   Number.isInteger(price) ? `$${price}` : `$${price.toFixed(2)}`;
 
 const Subscription = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
+  const { user } = useAuth();
   const { shop, shopLoading } = useShop();
   const [interval, setInterval] = useState("monthly");
   const isPremium = shop?.subscriptionPlan === "premium";
+  const hasShop = Boolean(shop?._id);
   // Past the end date but inside the 5-day grace period: the plan
   // still works, but the owner must renew or it cancels itself.
   const inGrace = isInGrace(shop);
 
   // Plans come from the server (the admin manages them), so a price
-  // change takes effect here without a code change.
+  // change takes effect here without a code change. The endpoint is
+  // public — this page is viewable without signing in.
   const {
     data: plans = [],
     isPending,
@@ -47,7 +51,7 @@ const Subscription = () => {
   } = useQuery({
     queryKey: ["plans"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/plans");
+      const res = await axiosPublic.get("/plans");
       return res.data;
     },
   });
@@ -77,20 +81,28 @@ const Subscription = () => {
       ? Math.round((1 - plan.yearlyPrice / (plan.price * 12)) * 100)
       : 0;
 
+  // What each plan's button does. The page is public, so logged-out
+  // visitors get working buttons too: a paid plan sends them to
+  // /payment, which forces the sign-in there (and back afterwards);
+  // the Free plan sends them to register, or to create their shop
+  // when they already have an account.
   const ctaFor = (plan) => {
     if (shopLoading) return { label: "Loading…", disabled: true };
     if (plan.price === 0) {
       if (inGrace)
         return { label: "Your plan is expiring", disabled: true };
-      return isPremium
-        ? { label: "Your plan is Premium", disabled: true }
-        : { label: "Current plan", disabled: true };
+      if (isPremium)
+        return { label: "Your plan is Premium", disabled: true };
+      if (!user) return { label: "Start free", to: "/register" };
+      if (!hasShop)
+        return { label: "Start free", to: "/create-store-account" };
+      return { label: "Current plan", disabled: true };
     }
     if (isPremium && !inGrace)
       return { label: "Current plan", disabled: true };
     if (inGrace && plan.name === shop?.planName)
-      return { label: "Renew now", disabled: false };
-    return { label: "Get started", disabled: false };
+      return { label: "Renew now", to: "/payment" };
+    return { label: "Get started", to: "/payment" };
   };
 
   return (
@@ -114,8 +126,9 @@ const Subscription = () => {
             Choose a plan that fits your shop
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 2 }}>
-            Every plan includes all features — only the product limit
-            changes. Start free, upgrade when your shop outgrows its limit.
+            Start free with the core features. Paid plans unlock point
+            of sale, barcode scanning, reports, suppliers, purchase
+            orders and staff roles — and room for more products.
           </Typography>
 
           {isPremium && !inGrace && (
@@ -314,9 +327,9 @@ const Subscription = () => {
                       </Box>
                       <Button
                         component={cta.disabled ? "button" : Link}
-                        to={cta.disabled ? undefined : "/payment"}
+                        to={cta.disabled ? undefined : cta.to}
                         state={
-                          cta.disabled
+                          cta.disabled || cta.to !== "/payment"
                             ? undefined
                             : {
                                 total: billing.price,
