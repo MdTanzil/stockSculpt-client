@@ -31,7 +31,7 @@ const navLinkSx = {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { logOut, user } = useAuth();
+  const { logOut, user, role } = useAuth();
   const { shop } = useShop();
   const { mode, toggleMode } = useThemeMode();
   const navigate = useNavigate();
@@ -93,6 +93,13 @@ const Navbar = () => {
           {user && !shop && (
             <Button component={NavLink} to="/create-store-account" sx={navLinkSx}>
               Create Store
+            </Button>
+          )}
+          {/* Admins need a way into the admin panel from the UI — without
+          this link /admin was only reachable by typing the URL. */}
+          {user && role === "admin" && (
+            <Button component={NavLink} to="/admin" sx={navLinkSx}>
+              Admin Panel
             </Button>
           )}
         </Box>
@@ -229,6 +236,18 @@ const Navbar = () => {
                     sx={navLinkSx}
                   >
                     <ListItemText primary="Orders" />
+                  </ListItemButton>
+                </ListItem>
+              )}
+              {user && role === "admin" && (
+                <ListItem disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    to="/admin"
+                    onClick={() => setIsOpen(false)}
+                    sx={navLinkSx}
+                  >
+                    <ListItemText primary="Admin Panel" />
                   </ListItemButton>
                 </ListItem>
               )}
