@@ -99,7 +99,11 @@ const Receipt = ({ order, shop }) => {
         <div>Payment: {capitalize(order.paymentMethod)}</div>
       )}
       <div style={divider} />
-      <div style={{ textAlign: "center" }}>
+      <div style={{ fontSize: 11 }}>
+        Note: Goods once sold cannot be returned or exchanged. Please
+        check your items before leaving the shop.
+      </div>
+      <div style={{ textAlign: "center", marginTop: 8 }}>
         Thank you for shopping with us!
       </div>
     </div>

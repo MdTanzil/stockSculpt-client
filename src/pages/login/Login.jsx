@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -10,6 +11,13 @@ import toast from "react-hot-toast";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import SocialLogin from "../../components/SocialLogin";
 import useAuth from "../../hooks/useAuth";
+
+// Public demo account for visitors who want to try the site without
+// signing up. It owns a separate "Demo Shop" with sample products,
+// orders, suppliers and purchase orders — visitors can explore every
+// feature, but the demo data is shared, so anyone can change it.
+const DEMO_EMAIL = "demo@stocksculpt.app";
+const DEMO_PASSWORD = "Demo1234";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -40,6 +48,10 @@ const Login = () => {
         toast.error("Email or password incorrect ! ");
       });
   };
+
+  // One click signs in with the public demo account.
+  const handleDemoLogin = () =>
+    onSubmit({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
 
   // react-hook-form's ref must target the underlying <input>, so it is
   // passed via MUI's inputRef instead of being spread onto TextField.
@@ -105,6 +117,39 @@ const Login = () => {
             </Box>
           </CardContent>
           <CardContent>
+            <Divider sx={{ mb: 2 }}>or try the demo</Divider>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ mb: 1.5 }}
+            >
+              Explore stockSculpt with a sample shop — no sign-up needed.
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: "action.hover",
+                borderRadius: 2,
+                px: 2,
+                py: 1.5,
+                mb: 2,
+                fontFamily: "monospace",
+                fontSize: "0.85rem",
+                display: "grid",
+                gap: 0.5,
+              }}
+            >
+              <span>Email: {DEMO_EMAIL}</span>
+              <span>Password: {DEMO_PASSWORD}</span>
+            </Box>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={handleDemoLogin}
+              sx={{ mb: 2 }}
+            >
+              Login as Demo User
+            </Button>
             <Box
               sx={{
                 display: "flex",

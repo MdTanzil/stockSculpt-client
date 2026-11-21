@@ -7,6 +7,12 @@ manage shops and users.
 - **Live site:** https://stocksculpt.web.app/
 - **API:** https://stock-sculpt-server.vercel.app/api/
   ([stockSculpt-server](https://github.com/MdTanzil/stockSculpt-server))
+- **Demo account** (shown on the login page, with a one-click
+  "Login as Demo User" button): `demo@stocksculpt.app` / `Demo1234`.
+  It owns a separate "Demo Shop" with sample products, orders,
+  suppliers and purchase orders, so visitors can try every feature.
+  The demo data is shared — anyone signed in as the demo user can
+  change it.
 
 ## Features
 
@@ -48,7 +54,9 @@ manage shops and users.
   Print button (opens the invoice in a new tab for printing from the
   browser's PDF viewer). Invoices and POS receipts show who prepared
   the order ("Prepared by") when the server recorded it — orders made
-  before that field existed show no name
+  before that field existed show no name. Both carry a shop-style
+  note ("Goods once sold cannot be returned or exchanged. Please
+  check your items before leaving the shop.")
 - Dashboard layout — the dashboard is an app shell: the navbar, sidebar
   and footer stay fixed while only the content area scrolls, so long
   pages never slide underneath the navbar

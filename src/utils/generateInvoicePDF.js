@@ -168,6 +168,16 @@ const buildInvoiceDoc = (order, shop) => {
     );
   }
 
+  // A shop-style note, like real shop invoices carry.
+  const noteY = finalY + (savings > 0 ? 32 : 24);
+  pdf.setTextColor(...MUTED_TEXT);
+  pdf.setFont("helvetica", "italic");
+  pdf.setFontSize(9);
+  const note =
+    "Note: Goods once sold cannot be returned or exchanged. Please check your items before leaving the shop.";
+  const noteLines = pdf.splitTextToSize(note, pageWidth - margin * 2);
+  pdf.text(noteLines, margin, noteY);
+
   // --- Footer on every page ---
   const pageCount = pdf.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
