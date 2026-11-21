@@ -2,6 +2,7 @@
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
@@ -123,6 +124,14 @@ const OrderTable = ({
                   sx={{ fontFamily: "monospace", fontSize: "0.75rem", fontWeight: 500 }}
                 >
                   {shortId(order._id)}
+                  {order.source === "pos" ? (
+                    <Chip
+                      label="POS"
+                      color="info"
+                      size="small"
+                      sx={{ ml: 1, height: 20, fontSize: "0.625rem" }}
+                    />
+                  ) : null}
                 </TableCell>
                 <TableCell sx={{ fontWeight: 500 }}>
                   {order.shop?.name || "Unknown Shop"}
@@ -148,6 +157,15 @@ const OrderTable = ({
                 </TableCell>
                 <TableCell align="right" sx={{ fontWeight: 500 }} className="tabular-nums">
                   {formatPrice(order.totalPrice)}
+                  {order.paymentMethod ? (
+                    <Typography
+                      variant="caption"
+                      display="block"
+                      color="text.secondary"
+                    >
+                      {capitalize(order.paymentMethod)}
+                    </Typography>
+                  ) : null}
                 </TableCell>
                 <TableCell>
                   {canEdit ? (

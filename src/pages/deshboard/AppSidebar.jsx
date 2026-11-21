@@ -14,6 +14,7 @@ import {
   Home,
   ReceiptText,
   Settings,
+  ShoppingCart,
   Truck,
   Users,
 } from "lucide-react";
@@ -24,10 +25,11 @@ const DRAWER_WIDTH = 240;
 
 const AppSidebar = ({ mobileOpen, onMobileClose }) => {
   const { pathname } = useLocation();
-  const { isShopOwner } = useShop();
+  const { isShopOwner, canEdit } = useShop();
 
   // Menu items. ownerOnly items (staff management, checkout, settings)
-  // only show for the shop owner; staff and viewers never see them.
+  // only show for the shop owner; hideForViewer items (point of sale)
+  // show for everyone who can sell (owner, manager, staff).
   const items = [
     {
       title: "Home",
@@ -60,6 +62,12 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       icon: BarChart3,
     },
     {
+      title: "Point of Sale",
+      url: "/dashboard/pos",
+      icon: ShoppingCart,
+      hideForViewer: true,
+    },
+    {
       title: "Staff",
       url: "/dashboard/staff",
       icon: Users,
@@ -80,7 +88,9 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
   ];
 
   const visibleItems = items.filter(
-    (item) => !item.ownerOnly || isShopOwner
+    (item) =>
+      (!item.ownerOnly || isShopOwner) &&
+      (!item.hideForViewer || canEdit)
   );
 
   const navList = (

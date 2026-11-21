@@ -29,6 +29,11 @@ manage shops and users.
   delete actions a role is not allowed to use (viewers are read-only,
   staff cannot delete, only the owner manages staff and shop settings).
   Staff members need an account first — no invitation email is sent yet
+- Point of sale — a register screen: search products, tap to add them to
+  a sale, choose cash or card (recorded only, no payment is processed),
+  complete the sale to decrement stock and create a completed order,
+  then download the receipt as a PDF. POS orders are marked with a POS
+  chip in the orders table. Staff and above can sell; viewers cannot
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and
