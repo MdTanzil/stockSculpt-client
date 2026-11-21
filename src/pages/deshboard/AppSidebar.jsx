@@ -178,6 +178,10 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
             color: "text.primary",
             borderRight: "1px solid",
             borderColor: "divider",
+            // The dashboard is an app shell (see DashBoard.jsx): the
+            // sidebar fills the row height, so on a short viewport the
+            // menu scrolls inside the drawer instead of clipping.
+            overflowY: "auto",
             // In-flow sidebar (like the old shadcn sidebar): MUI's drawer
             // paper is position: fixed by default, which would overlay the
             // navbar and the main content. Relative keeps it inside the

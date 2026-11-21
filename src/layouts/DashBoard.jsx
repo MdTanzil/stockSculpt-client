@@ -10,15 +10,32 @@ import { Outlet } from "react-router-dom";
 const DashBoard = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // App shell: the page itself never scrolls — only the content area
+  // does. Before this, the whole window scrolled and long pages (like
+  // Reports) slid up underneath the sticky navbar, hiding section
+  // headings and table rows behind it. minHeight: 0 on the row lets the
+  // content box shrink and scroll inside the 100vh shell. The
+  // classNames are hooks for the receipt print CSS (index.css).
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box
+      className="dashboard-shell"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       <Navbar />
-      <Box sx={{ display: "flex", flex: 1 }}>
+      <Box sx={{ display: "flex", flex: 1, minHeight: 0 }}>
         <AppSidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
         />
-        <Box sx={{ flex: 1 }}>
+        <Box
+          className="dashboard-content"
+          sx={{ flex: 1, overflowY: "auto", minWidth: 0 }}
+        >
           <IconButton
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"

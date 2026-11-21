@@ -12,8 +12,10 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import useShop from "@/hooks/useShop";
 import formatDate from "@/utils/formatDate";
-import generateInvoicePDF from "@/utils/generateInvoicePDF";
-import { Download, FileText } from "lucide-react";
+import generateInvoicePDF, {
+  openInvoicePDF,
+} from "@/utils/generateInvoicePDF";
+import { Download, FileText, Printer } from "lucide-react";
 
 const formatPrice = (value) => `$${(Number(value) || 0).toFixed(2)}`;
 
@@ -113,6 +115,16 @@ const CheckOut = () => {
                       startIcon={<Download className="h-4 w-4" />}
                     >
                       PDF
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      sx={{ ml: 1 }}
+                      onClick={() => openInvoicePDF(order, shop)}
+                      aria-label={`Print invoice for order ${idx + 1}`}
+                      startIcon={<Printer className="h-4 w-4" />}
+                    >
+                      Print
                     </Button>
                   </TableCell>
                 </TableRow>

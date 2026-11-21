@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
+import Receipt from "@/components/Receipt";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import formatDate from "@/utils/formatDate";
@@ -21,6 +22,7 @@ import {
   CreditCard,
   Minus,
   Plus,
+  Printer,
   ReceiptText,
   Search,
   ShoppingCart,
@@ -206,6 +208,16 @@ const POS = () => {
                 </Typography>
               </Box>
             </Box>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 3 }}
+            >
+              Receipt preview — prints like a shop receipt (80mm)
+            </Typography>
+            <Box sx={{ mt: 1, display: "flex", justifyContent: "center" }}>
+              <Receipt order={sale} shop={shop} />
+            </Box>
             <Box
               sx={{
                 mt: 3,
@@ -215,6 +227,13 @@ const POS = () => {
                 justifyContent: "center",
               }}
             >
+              <Button
+                variant="outlined"
+                onClick={() => window.print()}
+                endIcon={<Printer className="h-4 w-4" />}
+              >
+                Print receipt
+              </Button>
               <Button
                 variant="outlined"
                 onClick={() => generateInvoicePDF(sale, shop)}

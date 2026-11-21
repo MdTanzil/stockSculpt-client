@@ -17,7 +17,8 @@ const capitalize = (value) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
-const generateInvoicePDF = (order, shop) => {
+// Builds the invoice document (shared by the download and print flows).
+const buildInvoiceDoc = (order, shop) => {
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
   const margin = 14;
@@ -81,6 +82,17 @@ const generateInvoicePDF = (order, shop) => {
     leftY + 13,
     { align: "right" }
   );
+  // Who prepared the order — only shown when the server recorded it
+  // (orders created before the createdBy field existed have none).
+  const preparedBy = order.createdBy?.name;
+  if (preparedBy) {
+    pdf.text(
+      `Prepared by: ${preparedBy}`,
+      pageWidth - margin,
+      leftY + 19,
+      { align: "right" }
+    );
+  }
 
   // --- Items table ---
   const items = order.products || [];
@@ -96,7 +108,7 @@ const generateInvoicePDF = (order, shop) => {
         ])
       : [["No items in this order", "", "", ""]];
 
-  const tableY = shop?.location ? 66 : 60;
+  const tableY = preparedBy ? 72 : shop?.location ? 66 : 60;
   pdf.autoTable({
     startY: tableY,
     head: [["Item", "Qty", "Unit Price", "Amount"]],
@@ -162,7 +174,21 @@ const generateInvoicePDF = (order, shop) => {
     );
   }
 
+  return pdf;
+};
+
+// Download the invoice as a PDF file.
+const generateInvoicePDF = (order, shop) => {
+  const pdf = buildInvoiceDoc(order, shop);
   pdf.save(`invoice-${shortId(order._id)}.pdf`);
+};
+
+// Open the invoice in a new tab so it can be printed from the browser's
+// built-in PDF viewer (jsPDF cannot send a document to the printer
+// directly).
+export const openInvoicePDF = (order, shop) => {
+  const pdf = buildInvoiceDoc(order, shop);
+  window.open(pdf.output("bloburl"), "_blank");
 };
 
 export default generateInvoicePDF;

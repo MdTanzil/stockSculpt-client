@@ -54,3 +54,31 @@ body {
   font-family: "Poppins", serif;
   font-style: normal;
 }
+
+/* Printing a POS receipt: only the receipt prints — the navbar, sidebar
+   and the rest of the page are hidden. The dashboard shell's scroll
+   containers are opened up so the absolutely positioned receipt is not
+   clipped. The receipt's own width (300px, about 80mm) comes from its
+   inline styles, so it prints at thermal-receipt width. */
+@media print {
+  @page {
+    margin: 0;
+  }
+  .dashboard-shell,
+  .dashboard-content {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .receipt-print-area,
+  .receipt-print-area * {
+    visibility: visible;
+  }
+  .receipt-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

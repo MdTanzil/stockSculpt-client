@@ -32,8 +32,19 @@ manage shops and users.
 - Point of sale — a register screen: search products, tap to add them to
   a sale, choose cash or card (recorded only, no payment is processed),
   complete the sale to decrement stock and create a completed order,
-  then download the receipt as a PDF. POS orders are marked with a POS
-  chip in the orders table. Staff and above can sell; viewers cannot
+  then print a supershop-style thermal receipt (narrow, 80mm — the
+  success screen shows a preview and a Print receipt button that prints
+  only the receipt) or download the full receipt as a PDF. POS orders
+  are marked with a POS chip in the orders table. Staff and above can
+  sell; viewers cannot
+- Invoices — the Checkout page lists orders with a PDF download and a
+  Print button (opens the invoice in a new tab for printing from the
+  browser's PDF viewer). Invoices and POS receipts show who prepared
+  the order ("Prepared by") when the server recorded it — orders made
+  before that field existed show no name
+- Dashboard layout — the dashboard is an app shell: the navbar, sidebar
+  and footer stay fixed while only the content area scrolls, so long
+  pages never slide underneath the navbar
 - Barcode scanning — the Scan page finds a product by barcode: use the
   phone/laptop camera (html5-qrcode), type or paste the code, or use a
   USB barcode scanner (it types the code). Found products show price and
