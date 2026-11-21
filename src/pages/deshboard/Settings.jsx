@@ -106,7 +106,7 @@ const Settings = () => {
                 Subscription plan:
               </Box>{" "}
               <Box component="span" sx={{ textTransform: "capitalize" }}>
-                {shop.subscriptionPlan || "free"}
+                {shop.planName || shop.subscriptionPlan || "free"}
               </Box>
             </Typography>
             <Typography variant="body2">

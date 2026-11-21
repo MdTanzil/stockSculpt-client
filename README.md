@@ -94,8 +94,8 @@ manage shops and users.
 - Shop settings page (name, address, logo)
 - Admin panel — platform stats, manage shops, users and plans (admin
   role required; other users are redirected to their dashboard); admins
-  can change any shop's subscription plan (Free / Premium) from Manage
-  Shops, and create/edit/deactivate plans from Manage Plans
+  can set any shop to any plan from Manage Shops (Free / Starter /
+  Company / Enterprise), and create/edit/deactivate plans from Manage Plans
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 

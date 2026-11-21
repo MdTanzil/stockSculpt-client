@@ -107,7 +107,7 @@ const Subscription = () => {
 
           {isPremium && (
             <Alert severity="success" sx={{ mt: 3, textAlign: "left" }}>
-              You&apos;re on the Premium plan.
+              You&apos;re on the {shop?.planName || "Premium"} plan.
             </Alert>
           )}
 

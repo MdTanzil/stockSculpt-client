@@ -28,14 +28,28 @@ const MenageShop = () => {
     },
   });
 
+  // The plan options come from the plans collection (the admin manages
+  // them), so a new plan appears here without a code change.
+  const { data: plans = [] } = useQuery({
+    queryKey: ["plans"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/plans");
+      return res.data;
+    },
+  });
+
+  // The plan a shop is on. Older shops have no planName stored, so fall
+  // back to the free/paid flag for them.
+  const currentPlanName = (shop) =>
+    shop?.planName ||
+    (shop?.subscriptionPlan === "premium" ? "Premium" : "Free");
+
   // Admin-only: change a shop's subscription plan in place, same inline
   // pattern as the order status select. The select is controlled by the
   // server value, so a failed update leaves the displayed plan unchanged.
   const handlePlanChange = async (shopId, plan) => {
     try {
-      await axiosSecure.put(`/shop/${shopId}/plan`, {
-        subscriptionPlan: plan,
-      });
+      await axiosSecure.put(`/shop/${shopId}/plan`, { plan });
       toast.success("Subscription plan updated.");
       refetch();
     } catch (error) {
@@ -139,15 +153,28 @@ const MenageShop = () => {
                     <TableCell>
                       <Select
                         size="small"
-                        value={shop?.subscriptionPlan || "free"}
+                        value={currentPlanName(shop)}
                         onChange={(event) =>
                           handlePlanChange(shop._id, event.target.value)
                         }
                         aria-label={`Change subscription plan for ${shop?.name}`}
-                        sx={{ minWidth: 130, textTransform: "capitalize" }}
+                        sx={{ minWidth: 170 }}
                       >
-                        <MenuItem value="free">Free</MenuItem>
-                        <MenuItem value="premium">Premium</MenuItem>
+                        {plans.map((plan) => (
+                          <MenuItem key={plan._id || plan.name} value={plan.name}>
+                            {plan.name} (${plan.price}/mo)
+                          </MenuItem>
+                        ))}
+                        {/* A shop on a plan that no longer exists (renamed
+                        or deleted) still shows its current plan instead
+                        of a blank select. */}
+                        {!plans.some(
+                          (plan) => plan.name === currentPlanName(shop)
+                        ) && (
+                          <MenuItem value={currentPlanName(shop)} disabled>
+                            {currentPlanName(shop)}
+                          </MenuItem>
+                        )}
                       </Select>
                     </TableCell>
                     <TableCell align="right">
