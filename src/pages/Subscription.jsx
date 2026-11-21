@@ -13,9 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import PlanFeatures from "../components/PlanFeatures";
 import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import useShop from "../hooks/useShop";
@@ -289,42 +289,13 @@ const Subscription = () => {
                           />
                         </Box>
                       )}
-                      <Box
-                        component="ul"
-                        role="list"
-                        sx={{
-                          mb: 4,
-                          listStyle: "none",
-                          p: 0,
-                          m: 0,
-                          textAlign: "left",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 1,
-                        }}
-                      >
-                        {(plan.features?.length > 0
-                          ? plan.features
-                          : [`Up to ${plan.productLimit} products`]
-                        ).map((feature) => (
-                          <Box
-                            component="li"
-                            key={feature}
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <Check
-                              size={20}
-                              color="#22c55e"
-                              style={{ flexShrink: 0 }}
-                            />
-                            <span>{feature}</span>
-                          </Box>
-                        ))}
-                      </Box>
+                      <PlanFeatures
+                        features={
+                          plan.features?.length > 0
+                            ? plan.features
+                            : [`Up to ${plan.productLimit} products`]
+                        }
+                      />
                       <Button
                         component={cta.disabled ? "button" : Link}
                         to={cta.disabled ? undefined : cta.to}

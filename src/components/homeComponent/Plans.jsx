@@ -9,19 +9,38 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import PlanFeatures from "../PlanFeatures";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 // Shown while the plans load, and if the server can't be reached — the
 // live prices come from the same plans API the subscription page uses
-// (the admin manages them), so a price change shows up here too.
+// (the admin manages them), so a price change shows up here too. The
+// fallback mirrors the seeded plans, Free with the core features only.
+const FALLBACK_FEATURES_FREE = [
+  "Up to 3 products",
+  "Inventory & stock tracking",
+  "Orders & invoicing",
+  "Dashboard",
+];
+const FALLBACK_FEATURES_PAID = (limit) => [
+  `Up to ${limit} products`,
+  "Inventory & stock tracking",
+  "Orders & invoicing",
+  "Dashboard",
+  "Point of sale (POS)",
+  "Barcode scanning",
+  "Reports & export",
+  "Suppliers & purchase orders",
+  "Staff roles",
+];
 const FALLBACK_PLANS = [
   {
     name: "Free",
     price: 0,
     limit: "Up to 3 products",
     text: "Try stockSculpt with your first products, no card needed.",
+    features: FALLBACK_FEATURES_FREE,
     buttonText: "Start free",
     to: "/register",
   },
@@ -30,6 +49,7 @@ const FALLBACK_PLANS = [
     price: 10,
     limit: "Up to 200 products",
     text: "For small shops getting organised.",
+    features: FALLBACK_FEATURES_PAID("200"),
     buttonText: "Get started",
     to: "/subscription",
   },
@@ -38,6 +58,7 @@ const FALLBACK_PLANS = [
     price: 20,
     limit: "Up to 450 products",
     text: "For growing shops with a bigger catalogue.",
+    features: FALLBACK_FEATURES_PAID("450"),
     buttonText: "Get started",
     to: "/subscription",
   },
@@ -46,6 +67,7 @@ const FALLBACK_PLANS = [
     price: 50,
     limit: "Up to 1,500 products",
     text: "For large shops with a wide range.",
+    features: FALLBACK_FEATURES_PAID("1,500"),
     buttonText: "Get started",
     to: "/subscription",
   },
@@ -98,7 +120,8 @@ const Plans = () => {
             color="text.secondary"
             sx={{ mt: 2, fontSize: { lg: "1.125rem" } }}
           >
-            Start free. Upgrade when you need room for more products.
+            Start free with the core features. Upgrade for more products
+            and the paid features.
           </Typography>
         </Box>
 
@@ -163,30 +186,7 @@ const Plans = () => {
                     ${Number.isInteger(plan.price) ? plan.price : plan.price.toFixed(2)}
                   </Typography>
                 </Box>
-                <Box
-                  component="ul"
-                  sx={{
-                    mb: 4,
-                    listStyle: "none",
-                    p: 0,
-                    m: 0,
-                    textAlign: "left",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                  }}
-                >
-                  {(plan.features || [plan.limit]).map((feature) => (
-                    <Box
-                      component="li"
-                      key={feature}
-                      sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
-                    >
-                      <Check size={20} color="#22c55e" style={{ flexShrink: 0 }} />
-                      <span>{feature}</span>
-                    </Box>
-                  ))}
-                </Box>
+                <PlanFeatures features={plan.features || [plan.limit]} />
                 <Button
                   component={Link}
                   to={plan.to}
