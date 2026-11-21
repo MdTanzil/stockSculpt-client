@@ -143,7 +143,19 @@ const ProductTable = ({
                   {getInitials(product.name)}
                 </Avatar>
               </TableCell>
-              <TableCell sx={{ fontWeight: 500 }}>{product.name}</TableCell>
+              <TableCell sx={{ fontWeight: 500 }}>
+                {product.name}
+                {product.barcode ? (
+                  <Typography
+                    variant="caption"
+                    display="block"
+                    color="text.secondary"
+                    sx={{ fontFamily: "monospace" }}
+                  >
+                    {product.barcode}
+                  </Typography>
+                ) : null}
+              </TableCell>
               <TableCell
                 sx={{
                   maxWidth: 220,

@@ -13,6 +13,7 @@ import {
   File,
   Home,
   ReceiptText,
+  ScanBarcode,
   Settings,
   ShoppingCart,
   Truck,
@@ -66,6 +67,11 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       url: "/dashboard/pos",
       icon: ShoppingCart,
       hideForViewer: true,
+    },
+    {
+      title: "Scan",
+      url: "/dashboard/scan",
+      icon: ScanBarcode,
     },
     {
       title: "Staff",

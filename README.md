@@ -34,6 +34,14 @@ manage shops and users.
   complete the sale to decrement stock and create a completed order,
   then download the receipt as a PDF. POS orders are marked with a POS
   chip in the orders table. Staff and above can sell; viewers cannot
+- Barcode scanning — the Scan page finds a product by barcode: use the
+  phone/laptop camera (html5-qrcode), type or paste the code, or use a
+  USB barcode scanner (it types the code). Found products show price and
+  stock with a quick stock adjuster; an unknown code offers a quick-add
+  form that creates the product with that barcode. Products have an
+  optional barcode field (unique per shop, set in the product form).
+  Any team member can look up; only staff and above can adjust stock
+  or add products
 - Professional data tables across the dashboard and admin panel —
   status badges, right-aligned totals, and summary footers
 - Dashboard with stats (products, orders, revenue, low-stock alerts) and

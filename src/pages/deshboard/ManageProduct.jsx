@@ -58,6 +58,8 @@ const ManageProduct = () => {
   const { ref: ratingRef, ...ratingProps } = register("rating", {
     required: "Product rating is required",
   });
+  // Optional: a barcode lets the Scan page find this product.
+  const { ref: barcodeRef, ...barcodeProps } = register("barcode");
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -140,7 +142,10 @@ const ManageProduct = () => {
         setEditProduct(null);
       }
     } catch (error) {
-      toast.error("Failed to save product. Please try again.");
+      toast.error(
+        error.response?.data?.error ||
+          "Failed to save product. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -154,6 +159,7 @@ const ManageProduct = () => {
     setValue("stock", product.stock);
     setValue("category", product.category);
     setValue("rating", product.rating);
+    setValue("barcode", product.barcode || "");
     setImageUrl(product.image);
     setOpen(true);
   };
@@ -275,6 +281,14 @@ const ManageProduct = () => {
                   {...ratingProps}
                   error={!!errors.rating}
                   helperText={errors.rating?.message}
+                />
+                <TextField
+                  id="barcode"
+                  label="Barcode (optional)"
+                  fullWidth
+                  inputRef={barcodeRef}
+                  {...barcodeProps}
+                  helperText="Scan this code on the Scan page to find the product. Each barcode can be used once per shop."
                 />
               </Stack>
             </DialogContent>

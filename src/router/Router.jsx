@@ -16,6 +16,7 @@ import ManagePurchaseOrders from "../pages/deshboard/ManagePurchaseOrders";
 import Reports from "../pages/deshboard/Reports";
 import ManageStaff from "../pages/deshboard/ManageStaff";
 import POS from "../pages/deshboard/POS";
+import Scan from "../pages/deshboard/Scan";
 import ManageSuppliers from "../pages/deshboard/ManageSuppliers";
 import Settings from "../pages/deshboard/Settings";
 import UpdateProduct from "../pages/deshboard/UpdateProduct";
@@ -143,6 +144,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRouter>
             <POS />
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "scan",
+        element: (
+          <PrivateRouter>
+            <Scan />
           </PrivateRouter>
         ),
       },
