@@ -4,6 +4,7 @@ import DashBoard from "../layouts/DashBoard";
 import Main from "../layouts/Main";
 import AdminHome from "../pages/Admin/AdminHome";
 import ManageUsers from "../pages/Admin/ManageUsers";
+import ManagePlans from "../pages/Admin/ManagePlans";
 import MenageShop from "../pages/Admin/MenageShop";
 import About from "../pages/About";
 import Services from "../pages/Services";
@@ -202,6 +203,10 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: <ManageUsers></ManageUsers>,
+      },
+      {
+        path: "plans",
+        element: <ManagePlans></ManagePlans>,
       },
     ],
   },

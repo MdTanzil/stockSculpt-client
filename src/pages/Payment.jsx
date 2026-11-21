@@ -13,6 +13,9 @@ const stripePromise = loadStripe(
 const Payment = () => {
   const { state } = useLocation();
   const total = state?.total;
+  const plan = state?.plan;
+  const interval = state?.interval || "monthly";
+  const limit = state?.limit;
 
   if (!total) {
     return (
@@ -36,9 +39,14 @@ const Payment = () => {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ px: 2 }}>
+    <Container maxWidth="md" sx={{ px: 2 }}>
       <Elements stripe={stripePromise}>
-        <CheckoutForm total={total}></CheckoutForm>
+        <CheckoutForm
+          total={total}
+          plan={plan}
+          interval={interval}
+          limit={limit}
+        />
       </Elements>
     </Container>
   );

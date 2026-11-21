@@ -87,6 +87,15 @@ const AdminDashBoard = () => {
           >
             Manage User
           </Button>
+          <Button
+            component={Link}
+            to="/admin/plans"
+            variant="contained"
+            size="small"
+            sx={{ m: 1, width: "80%" }}
+          >
+            Manage Plans
+          </Button>
         </Box>
 
         <Divider orientation="vertical" flexItem sx={{ m: 0.5, p: 0.5 }} />

@@ -81,17 +81,30 @@ manage shops and users.
   restocking, with a shortcut to the products page
 - Checkout / invoice page with professional per-order PDF invoices
   (branded header, itemized table, totals)
-- Subscriptions with Stripe checkout (test mode)
+- Subscriptions — plans live in the database and are managed by the
+  admin (Manage Plans page), so prices change without a code deploy.
+  The subscription page shows monthly/yearly billing (yearly is 2 months
+  free) and the current plan; checkout is a real Stripe payment page
+  (test mode) with an order summary, separate card number / expiry / CVC
+  fields and Stripe's official test cards with copy buttons
+  (4242… succeeds, 4000…9995 declines, 4000…3155 asks for 3D Secure).
+  A successful payment activates the premium plan on the shop.
+  Payments need `STRIPE_SECRET_KEY` on the server — without it the
+  payment page shows a "not set up yet" notice.
 - Shop settings page (name, address, logo)
-- Admin panel — platform stats, manage shops and users (admin role
-  required; other users are redirected to their dashboard); admins can
-  change any shop's subscription plan (Free / Premium) from Manage Shops
+- Admin panel — platform stats, manage shops, users and plans (admin
+  role required; other users are redirected to their dashboard); admins
+  can change any shop's subscription plan (Free / Premium) from Manage
+  Shops, and create/edit/deactivate plans from Manage Plans
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 
 ## Demo account
 
-- **Admin:** admin@admin.com / T123456t@
+- **Demo user:** `demo@stocksculpt.app` / `Demo1234` — shown on the login
+  page with a one-click "Login as Demo User" button. It owns a separate
+  "Demo Shop" with sample products, orders, suppliers and purchase
+  orders, so visitors can explore every feature without signing up.
 
 ## Tech stack
 
