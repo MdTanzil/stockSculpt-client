@@ -101,7 +101,15 @@ manage shops and users.
   deactivate plans from Manage Plans. A paid plan that reaches its end
   date gets a 5-day grace period with a renewal notice on the dashboard
   and subscription page; if the shop still hasn't paid, the subscription
-  cancels itself and the shop drops to the Free plan.
+  cancels itself and the shop drops to the Free plan. The Free plan
+  covers the core (products up to its limit, orders, dashboard,
+  invoices); point of sale, barcode scanning, reports, suppliers,
+  purchase orders and staff roles are paid features — free shops see
+  them with a lock in the sidebar and land on an upgrade wall when they
+  open one, and the server rejects the calls. A shop over its product
+  limit (e.g. after a downgrade) keeps all its products and can still
+  sell them; it just cannot add new ones until it is back under the
+  limit or upgrades.
 - About and Services pages
 - Firebase Authentication (email/password + Google sign-in)
 

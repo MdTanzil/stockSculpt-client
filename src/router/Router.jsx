@@ -29,6 +29,7 @@ import Register from "../pages/register/Register";
 import Subscription from "../pages/Subscription";
 import Watch from "../pages/Watch";
 import AdminRouter from "./AdminRouter";
+import PremiumRouter from "./PremiumRouter";
 import PrivateRouter from "./PrivateRouter";
 
 const router = createBrowserRouter([
@@ -112,7 +113,9 @@ const router = createBrowserRouter([
         path: "suppliers",
         element: (
           <PrivateRouter>
-            <ManageSuppliers />
+            <PremiumRouter feature="Suppliers">
+              <ManageSuppliers />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },
@@ -120,7 +123,9 @@ const router = createBrowserRouter([
         path: "purchase-orders",
         element: (
           <PrivateRouter>
-            <ManagePurchaseOrders />
+            <PremiumRouter feature="Purchase orders">
+              <ManagePurchaseOrders />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },
@@ -128,7 +133,9 @@ const router = createBrowserRouter([
         path: "reports",
         element: (
           <PrivateRouter>
-            <Reports />
+            <PremiumRouter feature="Reports">
+              <Reports />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },
@@ -136,7 +143,9 @@ const router = createBrowserRouter([
         path: "staff",
         element: (
           <PrivateRouter>
-            <ManageStaff />
+            <PremiumRouter feature="Staff roles">
+              <ManageStaff />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },
@@ -144,7 +153,9 @@ const router = createBrowserRouter([
         path: "pos",
         element: (
           <PrivateRouter>
-            <POS />
+            <PremiumRouter feature="Point of Sale">
+              <POS />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },
@@ -152,7 +163,9 @@ const router = createBrowserRouter([
         path: "scan",
         element: (
           <PrivateRouter>
-            <Scan />
+            <PremiumRouter feature="Barcode scanning">
+              <Scan />
+            </PremiumRouter>
           </PrivateRouter>
         ),
       },

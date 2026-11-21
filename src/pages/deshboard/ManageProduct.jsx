@@ -1,3 +1,4 @@
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -20,7 +21,9 @@ import imageUpload from "@/utility/imageUpload";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import ProductTable from "./ProductTable";
 
 const ManageProduct = () => {
@@ -95,12 +98,29 @@ const ManageProduct = () => {
   };
 
   const {
+    shop,
     products,
     refetch,
     isLoading: isProductLoading,
     canEdit,
     canDelete,
   } = useShop();
+
+  // The shop's plan limit, from the plans collection (same lookup the
+  // server does when it enforces the limit on product creation).
+  const { data: plans = [] } = useQuery({
+    queryKey: ["plans"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/plans");
+      return res.data;
+    },
+  });
+  const planLimit =
+    plans.find((plan) => plan.name === shop?.planName)?.productLimit ??
+    plans.find((plan) => plan.price === 0)?.productLimit ??
+    3;
+  const productCount = products?.length ?? 0;
+  const atLimit = productCount >= planLimit;
 
   const categories = useMemo(
     () =>
@@ -206,11 +226,33 @@ const ManageProduct = () => {
       <Typography variant="h4" align="center" fontWeight={700} color="primary.main">
         Manage Your Product
       </Typography>
+      {plans.length > 0 && (
+        <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 0.5 }}>
+          {productCount} of {planLimit} products used
+          {shop?.planName ? ` — ${shop.planName} plan` : ""}
+        </Typography>
+      )}
+      {atLimit && (
+        <Alert
+          severity="warning"
+          sx={{ mt: 2, mx: "auto", maxWidth: 640 }}
+          action={
+            <Button component={Link} to="/subscription" color="inherit" size="small">
+              View plans
+            </Button>
+          }
+        >
+          Your {shop?.planName || "Free"} plan allows up to {planLimit}{" "}
+          products. Remove some products or upgrade to add more — your
+          existing products stay exactly as they are.
+        </Alert>
+      )}
       <div>
         {canEdit ? (
           <Button
             variant="contained"
             onClick={() => setOpen(true)}
+            disabled={atLimit}
             endIcon={<Plus className="h-4 w-4" />}
           >
             {editProduct ? "Edit Product" : "Add Product"}

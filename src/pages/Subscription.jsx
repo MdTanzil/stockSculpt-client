@@ -80,6 +80,8 @@ const Subscription = () => {
   const ctaFor = (plan) => {
     if (shopLoading) return { label: "Loading…", disabled: true };
     if (plan.price === 0) {
+      if (inGrace)
+        return { label: "Your plan is expiring", disabled: true };
       return isPremium
         ? { label: "Your plan is Premium", disabled: true }
         : { label: "Current plan", disabled: true };

@@ -10,8 +10,10 @@ import {
   BarChart3,
   Box,
   ClipboardList,
+  CreditCard,
   File,
   Home,
+  Lock,
   ReceiptText,
   ScanBarcode,
   Settings,
@@ -20,17 +22,21 @@ import {
   Users,
 } from "lucide-react";
 import useShop from "@/hooks/useShop";
+import { isPremium } from "@/utils/subscriptionDates";
 import { Link, useLocation } from "react-router-dom";
 
 const DRAWER_WIDTH = 240;
 
 const AppSidebar = ({ mobileOpen, onMobileClose }) => {
   const { pathname } = useLocation();
-  const { isShopOwner, canEdit } = useShop();
+  const { shop, isShopOwner, canEdit } = useShop();
+  const premium = isPremium(shop);
 
   // Menu items. ownerOnly items (staff management, checkout, settings)
   // only show for the shop owner; hideForViewer items (point of sale)
-  // show for everyone who can sell (owner, manager, staff).
+  // show for everyone who can sell (owner, manager, staff). premium
+  // items are paid features — free shops see them with a lock and land
+  // on an upgrade wall (PremiumRouter) when they open one.
   const items = [
     {
       title: "Home",
@@ -51,33 +57,39 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       title: "Suppliers",
       url: "/dashboard/suppliers",
       icon: Truck,
+      premium: true,
     },
     {
       title: "Purchase Orders",
       url: "/dashboard/purchase-orders",
       icon: ClipboardList,
+      premium: true,
     },
     {
       title: "Reports",
       url: "/dashboard/reports",
       icon: BarChart3,
+      premium: true,
     },
     {
       title: "Point of Sale",
       url: "/dashboard/pos",
       icon: ShoppingCart,
       hideForViewer: true,
+      premium: true,
     },
     {
       title: "Scan",
       url: "/dashboard/scan",
       icon: ScanBarcode,
+      premium: true,
     },
     {
       title: "Staff",
       url: "/dashboard/staff",
       icon: Users,
       ownerOnly: true,
+      premium: true,
     },
     {
       title: "Checkout",
@@ -89,6 +101,12 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       title: "Settings",
       url: "/dashboard/settings",
       icon: Settings,
+      ownerOnly: true,
+    },
+    {
+      title: "Subscription",
+      url: "/subscription",
+      icon: CreditCard,
       ownerOnly: true,
     },
   ];
@@ -141,6 +159,9 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
               primary={item.title}
               primaryTypographyProps={{ fontSize: "1.125rem" }}
             />
+            {item.premium && !premium && (
+              <Lock className="h-4 w-4 opacity-60" style={{ flexShrink: 0 }} />
+            )}
           </ListItemButton>
         </ListItem>
       ))}

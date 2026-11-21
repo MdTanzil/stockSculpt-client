@@ -31,3 +31,8 @@ export const isInGrace = (shop, now = new Date()) => {
   if (Number.isNaN(end.getTime())) return false;
   return now > end && now <= graceEndDate(end);
 };
+
+// True when the shop is on any paid plan — the gate for the paid
+// features (POS, scanning, reports, suppliers, purchase orders, staff).
+export const isPremium = (shop) =>
+  Boolean(shop) && shop.subscriptionPlan === "premium";
