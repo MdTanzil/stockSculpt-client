@@ -26,6 +26,7 @@ import OrderTable from "./OrderTable";
 const ManageOrder = () => {
   const {
     products,
+    refetch,
     orderRefetch,
     orders,
     orderLoading,
@@ -109,14 +110,20 @@ const ManageOrder = () => {
     setStatusFilter("all");
   };
 
-  // Change an order's status inline from the orders table
+  // Change an order's status inline from the orders table. Cancelling
+  // restores the stock and un-cancelling takes it again, so the stock
+  // list is refetched too — and a failed change (e.g. not enough stock
+  // left to un-cancel) shows the server's reason, not a generic error.
   const handleStatusChange = async (orderId, orderStatus) => {
     try {
       await axiosSecure.put(`/order/${orderId}`, { orderStatus });
       toast.success("Order status updated.");
       orderRefetch();
+      refetch();
     } catch (error) {
-      toast.error("Failed to update order status.");
+      toast.error(
+        error.response?.data?.error || "Failed to update order status."
+      );
     }
   };
 
@@ -151,9 +158,14 @@ const ManageOrder = () => {
       setSelectedOrder(null);
       setOpen(false);
       orderRefetch();
+      // Saving an order moves stock — refresh the product list so the
+      // picker shows the new quantities.
+      refetch();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save order.");
+      // The server explains stock failures ("Not enough stock for X
+      // (only N left)") — show that instead of a generic message.
+      toast.error(error.response?.data?.error || "Failed to save order.");
     } finally {
       setIsLoading(false);
     }
@@ -165,6 +177,8 @@ const ManageOrder = () => {
     try {
       await axiosSecure.delete(`/order/${orderId}`);
       orderRefetch();
+      // Deleting an order gives its stock back — refresh the list.
+      refetch();
       toast.success("Order deleted successfully.");
     } catch (error) {
       toast.error("Failed to delete order.");
@@ -185,6 +199,7 @@ const ManageOrder = () => {
           name: p.product.name,
           price: p.product.price,
           discountPrice: p.product.discountPrice,
+          stock: p.product.stock,
           quantity: p.quantity,
         }))
     );
@@ -223,13 +238,15 @@ const ManageOrder = () => {
                   typing (the old in-flow results list did). */}
               <Autocomplete
                 options={products}
-                getOptionLabel={(product) =>
-                  hasDiscount(product)
-                    ? `${product.name} - $${effectivePrice(product)} (was $${
-                        product.price
-                      })`
-                    : `${product.name} - $${product.price}`
-                }
+                getOptionLabel={(product) => {
+                  const price = hasDiscount(product)
+                    ? `$${effectivePrice(product)} (was $${product.price})`
+                    : `$${product.price}`;
+                  // Show what is on hand — the server refuses an order
+                  // for more than the stock, so the picker should not
+                  // invite one.
+                  return `${product.name} - ${price} (${product.stock} in stock)`;
+                }}
                 isOptionEqualToValue={(option, value) =>
                   option._id === value._id
                 }
@@ -269,6 +286,14 @@ const ManageOrder = () => {
                     >
                       <Typography variant="body2">
                         {product.name} - ${effectivePrice(product)}
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {" "}
+                          ({product.stock ?? 0} in stock)
+                        </Typography>
                       </Typography>
                       <TextField
                         type="number"

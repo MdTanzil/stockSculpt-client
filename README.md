@@ -25,7 +25,9 @@ manage shops and users.
   the customer "You saved" total
 - Order management — create orders, update status, per-shop order lists,
   inline status change from the orders table, plus search by order number
-  or product name and a status filter
+  or product name and a status filter. Creating an order checks stock
+  and decrements it (the picker shows what is on hand); cancelling an
+  order gives the stock back, and deleting one does too
 - Supplier management — supplier records with contact details
 - Purchase orders — order stock from suppliers (draft → ordered →
   received / canceled); receiving a purchase order adds its quantities
