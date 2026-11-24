@@ -28,6 +28,10 @@ manage shops and users.
   or product name and a status filter. Creating an order checks stock
   and decrements it (the picker shows what is on hand); cancelling an
   order gives the stock back, and deleting one does too
+- Activity log — an append-only record of who changed what in the shop
+  (products, orders, POS sales, suppliers, purchase orders, staff, shop
+  settings and plan changes), with before → after details, on the
+  Activity page with area, action and date filters
 - Supplier management — supplier records with contact details
 - Purchase orders — order stock from suppliers (draft → ordered →
   received / canceled); receiving a purchase order adds its quantities

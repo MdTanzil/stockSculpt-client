@@ -9,6 +9,7 @@ import MenageShop from "../pages/Admin/MenageShop";
 import About from "../pages/About";
 import Services from "../pages/Services";
 import CreateShop from "../pages/createShop/CreateShop";
+import Activity from "../pages/deshboard/Activity";
 import CheckOut from "../pages/deshboard/CheckOut";
 import DashboardHome from "../pages/deshboard/DashBoardHome";
 import ManageOrder from "../pages/deshboard/ManageOrder";
@@ -105,6 +106,17 @@ const router = createBrowserRouter([
         element: (
           <PrivateRouter>
             <ManageOrder />
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: "activity",
+        // The audit log is open to every shop (free included) and every
+        // team member — it is read-only, and the server enforces
+        // viewer+ access per shop.
+        element: (
+          <PrivateRouter>
+            <Activity />
           </PrivateRouter>
         ),
       },

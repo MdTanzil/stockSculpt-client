@@ -12,6 +12,7 @@ import {
   ClipboardList,
   CreditCard,
   File,
+  History,
   Home,
   Lock,
   ReceiptText,
@@ -52,6 +53,11 @@ const AppSidebar = ({ mobileOpen, onMobileClose }) => {
       title: "Order",
       url: "/dashboard/orders",
       icon: File,
+    },
+    {
+      title: "Activity",
+      url: "/dashboard/activity",
+      icon: History,
     },
     {
       title: "Suppliers",
