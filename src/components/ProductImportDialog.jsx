@@ -202,6 +202,13 @@ const ProductImportDialog = ({ open, onClose, onImported, remaining }) => {
           </Alert>
         )}
 
+        {result && !result.batchError && result.created > 0 && (
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {result.created} product{result.created === 1 ? "" : "s"}{" "}
+            imported.
+          </Alert>
+        )}
+
         {result && result.errors.length > 0 && (
           <>
             <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
@@ -231,10 +238,9 @@ const ProductImportDialog = ({ open, onClose, onImported, remaining }) => {
           </>
         )}
 
-        {result && !result.batchError && result.errors.length === 0 && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            All {result.created} product{result.created === 1 ? "" : "s"}{" "}
-            imported.
+        {result && !result.batchError && result.created === 0 && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            No products were imported.
           </Alert>
         )}
       </DialogContent>
