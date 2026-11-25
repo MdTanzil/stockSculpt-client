@@ -22,7 +22,10 @@ manage shops and users.
   warnings, plus search, category and low-stock filters. A product can
   have a discount price (below the regular price) — POS, orders and
   reports then use the discount price, and receipts and invoices show
-  the customer "You saved" total
+  the customer "You saved" total. Many products at once: the Import CSV
+  button downloads a template and imports a filled-in file, validating
+  each row (bad rows are listed with their line number, good rows are
+  still imported) and respecting the plan's product limit
 - Order management — create orders, update status, per-shop order lists,
   inline status change from the orders table, plus search by order number
   or product name and a status filter. Creating an order checks stock

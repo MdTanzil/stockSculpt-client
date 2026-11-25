@@ -42,6 +42,7 @@ const ACTIONS = {
     "product.created": "Product added",
     "product.updated": "Product updated",
     "product.deleted": "Product deleted",
+    "product.imported": "Products imported",
   },
   order: {
     "order.created": "Order created",

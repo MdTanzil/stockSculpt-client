@@ -18,7 +18,8 @@ import Typography from "@mui/material/Typography";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import imageUpload from "@/utility/imageUpload";
-import { Plus, Search } from "lucide-react";
+import ProductImportDialog from "@/components/ProductImportDialog";
+import { Plus, Search, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +32,7 @@ const ManageProduct = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -249,15 +251,31 @@ const ManageProduct = () => {
       )}
       <div>
         {canEdit ? (
-          <Button
-            variant="contained"
-            onClick={() => setOpen(true)}
-            disabled={atLimit}
-            endIcon={<Plus className="h-4 w-4" />}
-          >
-            {editProduct ? "Edit Product" : "Add Product"}
-          </Button>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="contained"
+              onClick={() => setOpen(true)}
+              disabled={atLimit}
+              endIcon={<Plus className="h-4 w-4" />}
+            >
+              {editProduct ? "Edit Product" : "Add Product"}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setImportOpen(true)}
+              disabled={atLimit}
+              startIcon={<Upload className="h-4 w-4" />}
+            >
+              Import CSV
+            </Button>
+          </Stack>
         ) : null}
+        <ProductImportDialog
+          open={importOpen}
+          onClose={() => setImportOpen(false)}
+          onImported={refetch}
+          remaining={Math.max(0, planLimit - productCount)}
+        />
         <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogTitle>
