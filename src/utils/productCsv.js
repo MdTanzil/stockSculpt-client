@@ -7,6 +7,7 @@ export const PRODUCT_CSV_HEADERS = [
   "price",
   "discountPrice",
   "stock",
+  "lowStockThreshold",
   "category",
   "barcode",
   "description",
@@ -86,9 +87,12 @@ export const parseCsv = (text) => {
   }
 
   // Headers match case-insensitively, but known columns keep their
-  // canonical spelling — the server reads `discountPrice`, not
-  // `discountprice`.
-  const CANONICAL_HEADERS = { discountprice: "discountPrice" };
+  // canonical spelling — the server reads `discountPrice` and
+  // `lowStockThreshold`, not their lowercased forms.
+  const CANONICAL_HEADERS = {
+    discountprice: "discountPrice",
+    lowstockthreshold: "lowStockThreshold",
+  };
   const headers = records[0].cells.map((h) => {
     const key = h.trim().toLowerCase();
     return CANONICAL_HEADERS[key] || key;
@@ -113,6 +117,7 @@ export const downloadProductCsvTemplate = () => {
       "89",
       "",
       "32",
+      "10",
       "Electronics",
       "WH-001",
       "Over-ear Bluetooth headphones",
@@ -122,6 +127,7 @@ export const downloadProductCsvTemplate = () => {
       "19",
       "15",
       "120",
+      "",
       "Clothing",
       "",
       "Soft cotton tee",

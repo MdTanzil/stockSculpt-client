@@ -19,6 +19,7 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useShop from "@/hooks/useShop";
 import imageUpload from "@/utility/imageUpload";
 import ProductImportDialog from "@/components/ProductImportDialog";
+import { isLowStock } from "@/utils/lowStock";
 import { Plus, Search, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -78,6 +79,21 @@ const ManageProduct = () => {
   const { ref: stockRef, ...stockProps } = register("stock", {
     required: "Stock quantity is required",
   });
+  // Optional per-product low-stock threshold — warn when stock falls
+  // to this number. Empty means the default (5).
+  const { ref: thresholdRef, ...thresholdProps } = register(
+    "lowStockThreshold",
+    {
+      validate: (value) => {
+        if (value === "" || value == null) return true;
+        const t = Number(value);
+        if (!Number.isInteger(t) || t < 0) {
+          return "Threshold must be a whole number of 0 or more.";
+        }
+        return true;
+      },
+    }
+  );
   const { ref: ratingRef, ...ratingProps } = register("rating", {
     required: "Product rating is required",
   });
@@ -136,7 +152,7 @@ const ManageProduct = () => {
       if (query && !product.name?.toLowerCase().includes(query)) return false;
       if (categoryFilter !== "all" && product.category !== categoryFilter)
         return false;
-      if (lowStockOnly && (Number(product.stock) || 0) > 5) return false;
+      if (lowStockOnly && !isLowStock(product)) return false;
       return true;
     });
   }, [products, searchTerm, categoryFilter, lowStockOnly]);
@@ -163,6 +179,12 @@ const ManageProduct = () => {
             ? ""
             : Number(data.discountPrice),
         stock: Number(data.stock),
+        // An empty threshold goes back to the default (5) — same
+        // empty-means-clear rule as the discount price.
+        lowStockThreshold:
+          data.lowStockThreshold === "" || data.lowStockThreshold == null
+            ? ""
+            : Number(data.lowStockThreshold),
         image: imageUrl,
         rating: Number(data.rating),
       };
@@ -204,6 +226,7 @@ const ManageProduct = () => {
     setValue("price", product.price);
     setValue("discountPrice", product.discountPrice ?? "");
     setValue("stock", product.stock);
+    setValue("lowStockThreshold", product.lowStockThreshold ?? "");
     setValue("category", product.category);
     setValue("rating", product.rating);
     setValue("barcode", product.barcode || "");
@@ -355,6 +378,19 @@ const ManageProduct = () => {
                   {...stockProps}
                   error={!!errors.stock}
                   helperText={errors.stock?.message}
+                />
+                <TextField
+                  id="lowStockThreshold"
+                  label="Low stock threshold (optional)"
+                  type="number"
+                  fullWidth
+                  inputRef={thresholdRef}
+                  {...thresholdProps}
+                  error={!!errors.lowStockThreshold}
+                  helperText={
+                    errors.lowStockThreshold?.message ||
+                    "Warn when stock falls to this number. Leave empty for the default (5)."
+                  }
                 />
                 <FormControl fullWidth>
                   <InputLabel id="category-label">Category</InputLabel>

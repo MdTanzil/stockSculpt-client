@@ -14,6 +14,7 @@ import {
   graceEndDate,
   isInGrace,
 } from "@/utils/subscriptionDates";
+import { isLowStock } from "@/utils/lowStock";
 import {
   AlertTriangle,
   Box as BoxIcon,
@@ -23,8 +24,6 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-
-const LOW_STOCK_LIMIT = 5;
 
 const DashboardHome = () => {
   const {
@@ -40,8 +39,8 @@ const DashboardHome = () => {
   const revenue = orders
     .filter((order) => order.orderStatus === "completed")
     .reduce((sum, order) => sum + (Number(order.totalPrice) || 0), 0);
-  const lowStockProducts = products.filter(
-    (product) => Number(product.stock) <= LOW_STOCK_LIMIT
+  const lowStockProducts = products.filter((product) =>
+    isLowStock(product)
   );
   const recentOrders = [...orders]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))

@@ -18,6 +18,7 @@ import {
   effectivePrice,
   hasDiscount,
 } from "@/utils/productPrice";
+import { isLowStock } from "@/utils/lowStock";
 import { Package, Pencil, SearchX, Star, Trash } from "lucide-react";
 
 const getInitials = (name = "") =>
@@ -41,9 +42,10 @@ const zebraRowSx = {
   "&:nth-of-type(odd)": { backgroundColor: "action.hover" },
 };
 
-const getStockBadge = (stock) => {
+const getStockBadge = (product) => {
+  const stock = Number(product.stock) || 0;
   if (stock <= 0) return <Chip label="Out of stock" size="small" color="error" />;
-  if (stock <= 5) {
+  if (isLowStock(product)) {
     // Theme-aware warning chip (adapts to dark mode) instead of the
     // previous hardcoded light-amber colors.
     return (
@@ -53,10 +55,11 @@ const getStockBadge = (stock) => {
   return <span className="tabular-nums">{stock}</span>;
 };
 
-// Stock level bar: stock relative to 100, capped at 100. Same thresholds
-// as the Low badge (red at 5 or fewer, amber at 20 or fewer).
-const getStockBarColor = (stock) => {
-  if (stock <= 5) return "error";
+// Stock level bar: stock relative to 100, capped at 100. Red at the
+// product's own low-stock threshold or fewer, amber at 20 or fewer.
+const getStockBarColor = (product) => {
+  const stock = Number(product.stock) || 0;
+  if (isLowStock(product)) return "error";
   if (stock <= 20) return "warning";
   return "success";
 };
@@ -216,10 +219,10 @@ const ProductTable = ({
                   <LinearProgress
                     variant="determinate"
                     value={Math.min(Number(product.stock) || 0, 100)}
-                    color={getStockBarColor(Number(product.stock) || 0)}
+                    color={getStockBarColor(product)}
                     sx={{ width: 80, borderRadius: 1 }}
                   />
-                  {getStockBadge(Number(product.stock) || 0)}
+                  {getStockBadge(product)}
                 </Box>
               </TableCell>
               <TableCell align="right">

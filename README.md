@@ -19,7 +19,10 @@ manage shops and users.
 - Shop creation and management, with subscription plans (free plan: up to
   3 products)
 - Product management — add, edit, delete, stock tracking with low-stock
-  warnings, plus search, category and low-stock filters. A product can
+  warnings, plus search, category and low-stock filters. Each product
+  has its own low-stock threshold (default 5) — a fast mover can warn
+  at 20 while a slow one warns at 2 — and the table badge, dashboard
+  banner, filter and reports all use that product's own number. A product can
   have a discount price (below the regular price) — POS, orders and
   reports then use the discount price, and receipts and invoices show
   the customer "You saved" total. Many products at once: the Import CSV
