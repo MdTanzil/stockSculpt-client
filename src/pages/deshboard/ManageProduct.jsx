@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -34,6 +35,9 @@ const ManageProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  // Product waiting on delete confirmation (a MUI dialog, not
+  // window.confirm — the confirm dialog must be clickable everywhere).
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [editProduct, setEditProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -234,15 +238,16 @@ const ManageProduct = () => {
     setOpen(true);
   };
 
-  const handleDelete = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axiosSecure.delete(`/products/${productId}`);
+      await axiosSecure.delete(`/products/${deleteTarget._id}`);
       toast.success("Product deleted successfully!");
       refetch();
     } catch (error) {
       toast.error("Failed to delete product.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -436,6 +441,22 @@ const ManageProduct = () => {
             </DialogActions>
           </form>
         </Dialog>
+        <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
+          <DialogTitle>Delete product?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {deleteTarget?.name} will be permanently deleted.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="error" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
       <div className="p-2 mt-4">
         {isProductLoading ? (
@@ -511,7 +532,12 @@ const ManageProduct = () => {
               hasActiveFilters={hasActiveFilters}
               onClearFilters={clearFilters}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={(productId) =>
+                setDeleteTarget(
+                  products.find((product) => product._id === productId) ||
+                    null
+                )
+              }
               canEdit={canEdit}
               canDelete={canDelete}
             />

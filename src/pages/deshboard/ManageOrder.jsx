@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -41,6 +42,9 @@ const ManageOrder = () => {
   const [orderSearchTerm, setOrderSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedProducts, setSelectedProducts] = useState([]);
+  // Order waiting on delete confirmation (a MUI dialog, not
+  // window.confirm — the confirm dialog must be clickable everywhere).
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const axiosSecure = useAxiosSecure();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const {
@@ -172,18 +176,25 @@ const ManageOrder = () => {
   };
 
   // Delete an order
-  const handleDelete = async (orderId) => {
-    if (!window.confirm("Are you sure you want to delete this order?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axiosSecure.delete(`/order/${orderId}`);
+      await axiosSecure.delete(`/order/${deleteTarget._id}`);
       orderRefetch();
       // Deleting an order gives its stock back — refresh the list.
       refetch();
       toast.success("Order deleted successfully.");
     } catch (error) {
       toast.error("Failed to delete order.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
+
+  // The order number shown in the table: the last 6 characters of the
+  // id, uppercase, with a # in front.
+  const orderNumber = (order) =>
+    order ? `#${String(order._id).slice(-6).toUpperCase()}` : "—";
 
   // Edit an order — populate the form directly instead of relying on
   // an effect: the old effect only re-ran when selectedOrder changed
@@ -425,11 +436,37 @@ const ManageOrder = () => {
             hasActiveFilters={hasActiveFilters}
             onClearFilters={clearFilters}
             onEdit={handleEdit}
-            onDelete={handleDelete}
+            onDelete={(orderId) =>
+              setDeleteTarget(
+                orders.find((order) => order._id === orderId) || null
+              )
+            }
             onStatusChange={handleStatusChange}
             canEdit={canEdit}
             canDelete={canDelete}
           />
+          <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
+            <DialogTitle>Delete order?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Order {orderNumber(deleteTarget)} will be permanently
+                deleted.
+                {deleteTarget?.orderStatus !== "canceled" &&
+                  " Its items will be returned to stock."}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="outlined"
+                onClick={() => setDeleteTarget(null)}
+              >
+                Cancel
+              </Button>
+              <Button variant="contained" color="error" onClick={handleDelete}>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </>
       )}
     </div>

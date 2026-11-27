@@ -361,7 +361,7 @@ const Reports = () => {
       title: "Low Stock Items",
       value: summary.lowStockCount ?? 0,
       icon: AlertTriangle,
-      hint: "Stock 5 or fewer · current",
+      hint: "At or below each product's own threshold · current",
     },
   ];
 
